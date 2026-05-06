@@ -1,0 +1,167 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Barlow+Condensed:ital,wght@0,900;1,900&display=swap');
+@import "tailwindcss";
+
+:root {
+  /* IDENTIDADE DO SISTEMA (TimesPro Admin - FIXA) */
+  --admin-primary: #a3e635;
+  --admin-primary-dark: #84cc16;
+  --admin-bg: #f8fafc;
+  --admin-surface: #ffffff;
+  --admin-text: #0f172a;
+
+  /* IDENTIDADE DO CLUBE (Site Público - DINÂMICA) */
+  --brand-primary: #dc2626;
+  --brand-primary-dark: #b91c1c;
+  --brand-primary-fg: #ffffff;
+  
+  --brand-secondary: #000000;
+  --brand-secondary-dark: #111111;
+  --brand-secondary-fg: #ffffff;
+  
+  /* Estrutura do Site Público */
+  --site-bg: #000000;
+  --site-text: #ffffff;
+  --site-text-muted: #9ca3af;
+  --site-border: rgba(255, 255, 255, 0.1);
+  --site-card: #0a0a0a;
+}
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-barlow: "Barlow Condensed", sans-serif;
+  
+  /* Mapeamento Admin (Aliases para compatibilidade) */
+  --color-admin-primary: var(--admin-primary);
+  --color-admin-bg: var(--admin-bg);
+  --color-admin-surface: var(--admin-surface);
+  
+  --color-saas-primary: var(--admin-primary);
+  --color-saas-primary-dark: var(--admin-primary-dark);
+  --color-saas-bg: var(--admin-bg);
+  --color-saas-surface: var(--admin-surface);
+  
+  /* Mapeamento Site (Brand) */
+  --color-primary: var(--brand-primary);
+  --color-primary-dark: var(--brand-primary-dark);
+  --color-primary-fg: var(--brand-primary-fg);
+  
+  --color-secondary: var(--brand-secondary);
+  --color-secondary-dark: var(--brand-secondary-dark);
+  --color-secondary-fg: var(--brand-secondary-fg);
+  
+  --color-bg: var(--site-bg);
+  --color-text: var(--site-text);
+  --color-text-muted: var(--site-text-muted);
+  --color-border: var(--site-border);
+  --color-card: var(--site-card);
+}
+
+@layer base {
+  /* O Body agora é neutro ou segue o Admin se estiver no admin */
+  body {
+    @apply bg-black text-white antialiased;
+  }
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-white/10 rounded-full hover:bg-white/20 transition-colors;
+}
+
+/* Premium News Editor (Quill) */
+.premium-quill .ql-toolbar {
+  @apply border-none bg-zinc-900/50 py-4 px-6;
+}
+
+.premium-quill .ql-container {
+  @apply border-none font-sans text-sm min-h-[300px];
+}
+
+.premium-quill .ql-editor {
+  @apply px-8 py-6 text-white leading-relaxed;
+}
+
+.premium-quill .ql-editor.ql-blank::before {
+  @apply text-zinc-700 italic left-8;
+}
+
+.premium-quill .ql-stroke {
+  stroke: #71717a !important;
+}
+
+.premium-quill .ql-fill {
+  fill: #71717a !important;
+}
+
+.premium-quill .ql-picker {
+  color: #71717a !important;
+}
+
+/* News Preview Content Styling */
+.news-preview-content {
+  @apply font-sans leading-[1.8] text-zinc-300;
+}
+
+.news-preview-content p {
+  @apply mb-6;
+}
+
+.news-preview-content h1, 
+.news-preview-content h2, 
+.news-preview-content h3 {
+  @apply font-barlow font-black uppercase italic tracking-tighter text-white mt-10 mb-4;
+}
+
+.news-preview-content img {
+  @apply rounded-[24px] shadow-2xl my-10;
+}
+
+.news-preview-content blockquote {
+  @apply border-l-4 border-saas-primary pl-6 py-2 italic text-white bg-saas-primary/5 rounded-r-2xl my-8;
+}
+
+.news-preview-content a {
+  @apply text-saas-primary underline underline-offset-4 font-bold;
+}
+/* Premium News Editor LIGHT (Quill) */
+.premium-quill-light .ql-toolbar {
+  @apply border-none bg-slate-100/50 py-4 px-6 rounded-t-xl;
+}
+
+.premium-quill-light .ql-container {
+  @apply border-none font-sans text-sm min-h-[300px];
+}
+
+.premium-quill-light .ql-editor {
+  @apply px-8 py-6 text-slate-900 leading-relaxed;
+}
+
+.premium-quill-light .ql-editor.ql-blank::before {
+  @apply text-slate-400 italic left-8;
+}
+
+/* News Preview Content LIGHT Styling */
+.news-preview-content-light {
+  @apply font-sans leading-[1.8] text-slate-600;
+}
+
+.news-preview-content-light p {
+  @apply mb-6;
+}
+
+.news-preview-content-light h1, 
+.news-preview-content-light h2, 
+.news-preview-content-light h3 {
+  @apply font-barlow font-black uppercase italic tracking-tighter text-slate-900 mt-10 mb-4;
+}
+
+.news-preview-content-light blockquote {
+  @apply border-l-4 border-saas-primary pl-6 py-2 italic text-slate-900 bg-saas-primary/5 rounded-r-2xl my-8;
+}
