@@ -31,6 +31,7 @@ import {
   Target,
   MessageSquare,
   UserPlus,
+  User,
   MousePointer2
 } from 'lucide-react';
 import { 
@@ -122,6 +123,8 @@ export default function Admin() {
       let playersQuery = supabase.from('players').select('*');
       let viewsQuery = supabase.from('page_views').select('*');
       let usersQuery = supabase.from('profiles').select('*');
+      let registrationsQuery = supabase.from('registrations').select('*');
+      let socioLeadsQuery = supabase.from('socio_leads').select('*');
 
       if (orgId) {
         newsQuery = newsQuery.eq('org_id', orgId);
