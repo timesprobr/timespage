@@ -54,7 +54,7 @@ const ACTIVE_CONFIG = STATIC_CONFIG;
 export default function Admin() {
 
    const [loading, setLoading] = useState(true);
-   const [activeTab, setActiveTab] = useState<'dashboard' | 'news' | 'trophies' | 'transparency' | 'campaign' | 'squad' | 'leads' | 'board' | 'users' | 'identity'>('dashboard');
+   const [activeTab, setActiveTab] = useState<'dashboard' | 'news' | 'trophies' | 'transparency' | 'campaign' | 'squad' | 'leads' | 'board' | 'users' | 'identity' | 'conversion'>('dashboard');
    const [theme, setTheme] = useState<'light' | 'dark'>('light');
    const [notification, setNotification] = useState<{ message: string, type: 'success' | 'error' | 'info' } | null>(null);
    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -83,6 +83,8 @@ export default function Admin() {
    const [analyticsData, setAnalyticsData] = useState<any[]>([]);
    const [locationStats, setLocationStats] = useState<any[]>([]);
    const [totalVisits, setTotalVisits] = useState(0);
+   const [pageStats, setPageStats] = useState<any[]>([]);
+   const [clickMapData, setClickMapData] = useState<any[]>([]);
 
    const [isAddingNews, setIsAddingNews] = useState(false);
    const [editingNews, setEditingNews] = useState<any>(null);
@@ -209,12 +211,30 @@ export default function Admin() {
 
          if (viewsData) {
             setTotalVisits(viewsData.length);
+            
+            // Gráfico de acessos por dia
             const grouped = viewsData.reduce((acc: any, view: any) => {
                const date = new Date(view.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
                acc[date] = (acc[date] || 0) + 1;
                return acc;
             }, {});
             setAnalyticsData(Object.entries(grouped).map(([name, value]) => ({ name, value })));
+
+            // Estatísticas por página
+            const pageGroups = viewsData.reduce((acc: any, view: any) => {
+               const url = view.url || '/';
+               if (!acc[url]) acc[url] = { url, visits: 0, totalDuration: 0, clicks: 0 };
+               acc[url].visits += 1;
+               acc[url].totalDuration += (view.duration_seconds || 0);
+               acc[url].clicks += (view.click_data?.length || 0);
+               return acc;
+            }, {});
+
+            setPageStats(Object.values(pageGroups).sort((a: any, b: any) => b.visits - a.visits));
+
+            // Mapa de Cliques Agregado
+            const allClicks = viewsData.flatMap((v: any) => v.click_data || []);
+            setClickMapData(allClicks);
 
             const locs = viewsData.reduce((acc: any, view: any) => {
                const key = view.city && view.region ? `${view.city}, ${view.region}` : 'Desconhecido';
@@ -366,8 +386,8 @@ export default function Admin() {
                         <img src={ACTIVE_CONFIG.logo.main} alt="Club Logo" className="w-full h-full object-contain" />
                      </div>
                      <div className="flex flex-col">
-                        <span className="font-manrope font-extrabold uppercase tracking-tight text-base leading-none text-white">{orgName || ACTIVE_CONFIG.shortName}</span>
-                        <span className="text-[9px] font-black uppercase tracking-widest text-saas-primary italic mt-1">Administração</span>
+                        <span className="font-manrope font-bold uppercase tracking-tight text-sm leading-none text-white">{orgName || ACTIVE_CONFIG.shortName}</span>
+                        <span className="text-[8px] font-bold uppercase tracking-widest text-saas-primary italic mt-1">Administração</span>
                      </div>
                   </div>
                ) : (
@@ -386,10 +406,11 @@ export default function Admin() {
 
             <nav className="flex-1 p-3 space-y-4 overflow-y-auto custom-scrollbar">
                <div>
-                  {!isSidebarCollapsed && <span className="px-4 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 italic mb-2 block">Analytics</span>}
+                  {!isSidebarCollapsed && <span className="px-4 text-[8px] font-bold uppercase tracking-[0.2em] text-zinc-600 italic mb-2 block">Analytics</span>}
                   <div className="space-y-1">
                      {[
                         { id: 'dashboard', label: 'Overview', icon: LayoutDashboard },
+                        { id: 'conversion', label: 'Conversão', icon: Target },
                         { id: 'leads', label: 'Leads & CRM', icon: Users },
                      ].map((item) => (
                         <button
@@ -398,14 +419,14 @@ export default function Admin() {
                            className={`w-full flex items-center gap-3 px-4 py-2 rounded-xl transition-all relative group ${activeTab === item.id ? 'bg-[#a3e635] text-black shadow-[0_0_20px_rgba(163,230,53,0.3)]' : 'text-zinc-500 hover:bg-white/5 hover:text-white'} ${isSidebarCollapsed ? 'justify-center' : ''}`}
                         >
                            <item.icon size={18} strokeWidth={activeTab === item.id ? 2.5 : 2} />
-                           {!isSidebarCollapsed && <span className="text-[10px] font-black uppercase tracking-wider">{item.label}</span>}
+                           {!isSidebarCollapsed && <span className="text-[9px] font-bold uppercase tracking-wider">{item.label}</span>}
                         </button>
                      ))}
                   </div>
                </div>
 
                <div>
-                  {!isSidebarCollapsed && <span className="px-4 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 italic mb-2 block">Conteúdo</span>}
+                  {!isSidebarCollapsed && <span className="px-4 text-[8px] font-bold uppercase tracking-[0.2em] text-zinc-600 italic mb-2 block">Conteúdo</span>}
                   <div className="space-y-1">
                      {[
                         { id: 'news', label: 'Notícias', icon: FileText },
@@ -419,14 +440,14 @@ export default function Admin() {
                            className={`w-full flex items-center gap-3 px-4 py-2 rounded-xl transition-all relative group ${activeTab === item.id ? 'bg-[#a3e635] text-black shadow-[0_0_20px_rgba(163,230,53,0.3)]' : 'text-zinc-500 hover:bg-white/5 hover:text-white'} ${isSidebarCollapsed ? 'justify-center' : ''}`}
                         >
                            <item.icon size={18} strokeWidth={activeTab === item.id ? 2.5 : 2} />
-                           {!isSidebarCollapsed && <span className="text-[10px] font-black uppercase tracking-wider">{item.label}</span>}
+                           {!isSidebarCollapsed && <span className="text-[9px] font-bold uppercase tracking-wider">{item.label}</span>}
                         </button>
                      ))}
                   </div>
                </div>
 
                <div>
-                  {!isSidebarCollapsed && <span className="px-4 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 italic mb-2 block">Gestão</span>}
+                  {!isSidebarCollapsed && <span className="px-4 text-[8px] font-bold uppercase tracking-[0.2em] text-zinc-600 italic mb-2 block">Gestão</span>}
                   <div className="space-y-1">
                      {[
                         { id: 'transparency', label: 'Transparência', icon: FileText },
@@ -440,7 +461,7 @@ export default function Admin() {
                            className={`w-full flex items-center gap-3 px-4 py-2 rounded-xl transition-all relative group ${activeTab === item.id ? 'bg-[#a3e635] text-black shadow-[0_0_20px_rgba(163,230,53,0.3)]' : 'text-zinc-500 hover:bg-white/5 hover:text-white'} ${isSidebarCollapsed ? 'justify-center' : ''}`}
                         >
                            <item.icon size={18} strokeWidth={activeTab === item.id ? 2.5 : 2} />
-                           {!isSidebarCollapsed && <span className="text-[10px] font-black uppercase tracking-wider">{item.label}</span>}
+                           {!isSidebarCollapsed && <span className="text-[9px] font-bold uppercase tracking-wider">{item.label}</span>}
                         </button>
                      ))}
                   </div>
@@ -459,8 +480,8 @@ export default function Admin() {
                   <Globe size={18} className="text-saas-primary" />
                   {!isSidebarCollapsed && (
                      <div className="flex flex-col items-start">
-                        <span className="text-[10px] font-manrope font-extrabold uppercase tracking-tight text-white">Visitar Site</span>
-                        <span className="text-[8px] font-black uppercase text-zinc-500">Online Now</span>
+                        <span className="text-[9px] font-manrope font-bold uppercase tracking-tight text-white">Visitar Site</span>
+                        <span className="text-[8px] font-bold uppercase text-zinc-500">Online Now</span>
                      </div>
                   )}
                </button>
@@ -553,36 +574,67 @@ export default function Admin() {
                         ))}
                      </div>
 
-                     {/* Gráfico de Evolução de Tráfego - Full Width */}
-                     <div className="p-6 bg-[#121214] border border-white/5 rounded-2xl shadow-xl relative overflow-hidden">
-                        <div className="flex items-center justify-between mb-8">
-                           <div>
-                              <h3 className="text-lg font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-2">
-                                 <TrendingUp size={18} className="text-saas-primary" /> Evolução de Tráfego
-                              </h3>
-                              <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-500 mt-1">Monitoramento de acessos em tempo real</p>
+
+
+                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        {/* Evolução de Tráfego */}
+                        <div className="lg:col-span-2 p-6 bg-[#121214] border border-white/5 rounded-2xl shadow-xl relative overflow-hidden">
+                           <div className="flex items-center justify-between mb-8">
+                              <div>
+                                 <h3 className="text-lg font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-2">
+                                    <TrendingUp size={18} className="text-saas-primary" /> Evolução de Tráfego
+                                 </h3>
+                                 <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-500 mt-1">Monitoramento de acessos em tempo real</p>
+                              </div>
+                           </div>
+                           <div className="h-[350px] w-full">
+                              <ResponsiveContainer width="100%" height="100%">
+                                 <AreaChart data={analyticsData.length > 0 ? analyticsData : [{ name: 'Sem Dados', value: 0 }]}>
+                                    <defs>
+                                       <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                                          <stop offset="5%" stopColor="#a3e635" stopOpacity={0.2} />
+                                          <stop offset="95%" stopColor="#a3e635" stopOpacity={0} />
+                                       </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.03)" />
+                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 9, fontWeight: 900, fill: '#52525b' }} dy={10} />
+                                    <YAxis hide />
+                                    <Tooltip
+                                       contentStyle={{ backgroundColor: '#121214', borderRadius: '16px', border: '1px solid rgba(163,230,53,0.1)', color: '#fff' }}
+                                       itemStyle={{ color: '#a3e635', fontWeight: 900, fontSize: '10px', textTransform: 'uppercase' }}
+                                       labelStyle={{ color: '#52525b', fontWeight: 900, fontSize: '10px', marginBottom: '4px' }}
+                                    />
+                                    <Area type="monotone" dataKey="value" stroke="#a3e635" strokeWidth={4} fillOpacity={1} fill="url(#colorValue)" />
+                                 </AreaChart>
+                              </ResponsiveContainer>
                            </div>
                         </div>
-                        <div className="h-[350px] w-full">
-                           <ResponsiveContainer width="100%" height="100%">
-                              <AreaChart data={analyticsData.length > 0 ? analyticsData : [{ name: 'Sem Dados', value: 0 }]}>
-                                 <defs>
-                                    <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                                       <stop offset="5%" stopColor="#a3e635" stopOpacity={0.2} />
-                                       <stop offset="95%" stopColor="#a3e635" stopOpacity={0} />
-                                    </linearGradient>
-                                 </defs>
-                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.03)" />
-                                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 9, fontWeight: 900, fill: '#52525b' }} dy={10} />
-                                 <YAxis hide />
-                                 <Tooltip
-                                    contentStyle={{ backgroundColor: '#121214', borderRadius: '16px', border: '1px solid rgba(163,230,53,0.1)', color: '#fff' }}
-                                    itemStyle={{ color: '#a3e635', fontWeight: 900, fontSize: '10px', textTransform: 'uppercase' }}
-                                    labelStyle={{ color: '#52525b', fontWeight: 900, fontSize: '10px', marginBottom: '4px' }}
-                                 />
-                                 <Area type="monotone" dataKey="value" stroke="#a3e635" strokeWidth={4} fillOpacity={1} fill="url(#colorValue)" />
-                              </AreaChart>
-                           </ResponsiveContainer>
+
+                        {/* Top Páginas Widget */}
+                        <div className="p-6 bg-[#121214] border border-white/5 rounded-2xl shadow-xl flex flex-col">
+                           <div className="flex items-center justify-between mb-6">
+                              <h3 className="text-sm font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-2">
+                                 <Target size={18} className="text-saas-primary" /> Top Páginas
+                              </h3>
+                              <button onClick={() => setActiveTab('conversion')} className="text-[8px] font-black uppercase text-saas-primary hover:underline">Ver Todos</button>
+                           </div>
+                           <div className="space-y-4 flex-1">
+                              {pageStats.slice(0, 5).map((page, i) => (
+                                 <div key={i} className="flex items-center justify-between group">
+                                    <div className="flex flex-col min-w-0">
+                                       <span className="text-[10px] font-bold text-white truncate uppercase tracking-tight group-hover:text-saas-primary transition-colors cursor-pointer">{page.url}</span>
+                                       <span className="text-[8px] font-black text-zinc-500 uppercase tracking-widest">{Math.round(page.totalDuration / page.visits)}s de permanência média</span>
+                                    </div>
+                                    <span className="text-xs font-black text-white bg-white/5 px-2 py-1 rounded-lg border border-white/5">{page.visits}</span>
+                                 </div>
+                              ))}
+                              {pageStats.length === 0 && (
+                                 <div className="flex flex-col items-center justify-center h-full text-zinc-600 gap-2 opacity-50">
+                                    <Activity size={24} />
+                                    <span className="text-[9px] font-black uppercase tracking-widest">Sem dados de acesso</span>
+                                 </div>
+                              )}
+                           </div>
                         </div>
                      </div>
 
@@ -593,21 +645,21 @@ export default function Admin() {
                   <div className="space-y-6">
                      <div className="flex justify-between items-center">
                         <div>
-                           <h3 className="text-3xl font-manrope font-extrabold uppercase tracking-tight text-white">Gestão de Notícias</h3>
-                           <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 italic mt-1">Publique conteúdo oficial no portal</p>
+                           <h3 className="text-[20px] font-manrope font-extrabold uppercase tracking-tight text-white leading-none">Gestão de Notícias</h3>
+                           <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-500 italic mt-1.5">Publique conteúdo oficial no portal</p>
                         </div>
                         <button
                            onClick={() => { setEditingNews(null); setNewsForm({ title: '', content: '', category: 'Notícias', image: '', summary: '' }); setIsAddingNews(true); }}
-                           className="bg-[#a3e635] text-black px-6 py-4 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-3 transition-all shadow-lg shadow-saas-primary/20 hover:scale-105 active:scale-95"
+                           className="bg-[#a3e635] text-black px-4 py-3 rounded-xl font-bold text-[9px] uppercase tracking-[0.2em] flex items-center gap-2 transition-all shadow-lg shadow-saas-primary/20 hover:scale-105 active:scale-95"
                         >
-                           <PlusCircle size={16} strokeWidth={3} /> Nova Notícia
+                           <PlusCircle size={14} strokeWidth={3} /> Nova Notícia
                         </button>
                      </div>
-                     <div className="grid grid-cols-1 gap-4 pb-20">
+                     <div className="grid grid-cols-1 gap-2 pb-20">
                         {news.map(n => (
-                           <div key={n.id} className="p-5 flex justify-between items-center bg-[#121214] border border-white/5 rounded-[32px] transition-all group hover:border-saas-primary/30">
-                              <div className="flex items-center gap-6">
-                                 <div className="w-20 h-20 bg-zinc-800 border border-white/5 rounded-[20px] overflow-hidden shadow-inner relative">
+                           <div key={n.id} className="p-4 flex justify-between items-center bg-[#121214] border border-white/5 rounded-2xl transition-all group hover:border-saas-primary/30">
+                              <div className="flex items-center gap-4">
+                                 <div className="w-14 h-14 bg-zinc-800 border border-white/5 rounded-lg overflow-hidden shadow-inner relative shrink-0">
                                     <img src={n.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                                     <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors"></div>
                                  </div>
@@ -616,19 +668,19 @@ export default function Admin() {
                                        <span className="px-2.5 py-1 rounded-full bg-[#a3e635]/10 text-saas-primary text-[8px] font-black uppercase tracking-widest border border-saas-primary/10">{n.category}</span>
                                        <span className="text-[9px] text-zinc-500 uppercase font-black italic">{n.date}</span>
                                     </div>
-                                    <h4 className="font-manrope font-extrabold uppercase text-lg tracking-tight text-white leading-none">{n.title}</h4>
+                                    <h4 className="font-manrope font-bold uppercase text-base tracking-tight text-white leading-none">{n.title}</h4>
                                     <div className="flex items-center gap-4 mt-3">
                                        <div className="flex items-center gap-1.5 text-zinc-500">
                                           <Eye size={12} />
-                                          <span className="text-[9px] font-black uppercase">{n.views || 0} Visitas</span>
+                                          <span className="text-[8px] font-bold uppercase">{n.views || 0} Visitas</span>
                                        </div>
                                     </div>
                                  </div>
                               </div>
                               <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0 pr-4">
-                                 <a href={`/noticias/${n.id}`} target="_blank" className="p-3 rounded-xl bg-zinc-800 border border-white/5 text-zinc-400 hover:text-white transition-all"><ArrowUpRight size={18} /></a>
-                                 <button onClick={() => { setEditingNews(n); setNewsForm({ title: n.title, content: n.content, category: n.category, image: n.image, summary: n.summary || '' }); setIsAddingNews(true); }} className="p-3 rounded-xl bg-saas-primary/10 text-saas-primary border border-saas-primary/10 hover:bg-saas-primary hover:text-black transition-all"><Edit3 size={18} /></button>
-                                 <button className="p-3 rounded-xl bg-red-500/10 text-red-500 border border-red-500/10 hover:bg-red-500 hover:text-white transition-all"><Trash2 size={18} /></button>
+                                 <a href={`/noticias/${n.id}`} target="_blank" className="p-2 rounded-lg bg-zinc-800 border border-white/5 text-zinc-400 hover:text-white transition-all"><ArrowUpRight size={14} /></a>
+                                 <button onClick={() => { setEditingNews(n); setNewsForm({ title: n.title, content: n.content, category: n.category, image: n.image, summary: n.summary || '' }); setIsAddingNews(true); }} className="p-2 rounded-lg bg-saas-primary/10 text-saas-primary border border-saas-primary/10 hover:bg-saas-primary hover:text-black transition-all"><Edit3 size={14} /></button>
+                                 <button className="p-2 rounded-lg bg-red-500/10 text-red-500 border border-red-500/10 hover:bg-red-500 hover:text-white transition-all"><Trash2 size={14} /></button>
                               </div>
                            </div>
                         ))}
@@ -734,6 +786,91 @@ export default function Admin() {
                               </div>
                            </div>
                         ))}
+                     </div>
+                  </div>
+               )}
+
+               {activeTab === 'conversion' && (
+                  <div className="space-y-8 pb-12">
+                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                        <div>
+                           <h1 className="text-xl font-manrope font-extrabold uppercase tracking-tight text-white">Análise de Conversão</h1>
+                           <p className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 mt-1">Entenda o comportamento e a jornada do usuário</p>
+                        </div>
+                     </div>
+
+                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        {/* Páginas Mais Visitadas */}
+                        <div className="bg-[#121214] border border-white/5 rounded-[32px] overflow-hidden flex flex-col">
+                           <div className="p-6 border-b border-white/5 flex items-center justify-between">
+                              <h3 className="text-sm font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-2">
+                                 <FileText size={16} className="text-saas-primary" /> Páginas Mais Visitadas
+                              </h3>
+                           </div>
+                           <div className="flex-1 overflow-x-auto">
+                              <table className="w-full text-left">
+                                 <thead>
+                                    <tr className="bg-white/2 border-b border-white/5">
+                                       <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-zinc-500">URL / Página</th>
+                                       <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-zinc-500 text-center">Acessos</th>
+                                       <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-zinc-500 text-center">Tempo Médio</th>
+                                    </tr>
+                                 </thead>
+                                 <tbody className="divide-y divide-white/5">
+                                    {pageStats.slice(0, 8).map((page, i) => (
+                                       <tr key={i} className="hover:bg-white/2 transition-colors">
+                                          <td className="px-6 py-4">
+                                             <span className="text-[10px] font-bold text-white uppercase tracking-tight">{page.url}</span>
+                                          </td>
+                                          <td className="px-6 py-4 text-center">
+                                             <span className="text-[10px] font-black text-saas-primary">{page.visits}</span>
+                                          </td>
+                                          <td className="px-6 py-4 text-center">
+                                             <span className="text-[10px] font-black text-zinc-400">
+                                                {Math.round(page.totalDuration / page.visits)}s
+                                             </span>
+                                          </td>
+                                       </tr>
+                                    ))}
+                                 </tbody>
+                              </table>
+                           </div>
+                        </div>
+
+                        {/* Mapa de Cliques (Simulação Visual) */}
+                        <div className="bg-[#121214] border border-white/5 rounded-[32px] p-6 flex flex-col">
+                           <div className="flex items-center justify-between mb-6">
+                              <h3 className="text-sm font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-2">
+                                 <MousePointer2 size={16} className="text-saas-primary" /> Intensidade de Cliques
+                              </h3>
+                              <span className="text-[9px] font-black uppercase text-zinc-500 italic">Mapa de Calor</span>
+                           </div>
+                           
+                           <div className="flex-1 bg-black/40 rounded-2xl border border-white/5 relative overflow-hidden flex items-center justify-center group">
+                              {/* Visualização abstrata do heatmap */}
+                              <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_50%_50%,rgba(163,230,53,0.3)_0%,transparent_70%)]"></div>
+                              
+                              {clickMapData.slice(0, 100).map((click, i) => (
+                                 <div 
+                                    key={i}
+                                    className="absolute w-2 h-2 rounded-full bg-saas-primary/30 blur-[2px]"
+                                    style={{ 
+                                       left: `${click.x}%`, 
+                                       top: `${click.y}%`,
+                                       transform: 'translate(-50%, -50%)'
+                                    }}
+                                 />
+                              ))}
+
+                              <div className="relative z-10 text-center p-8">
+                                 <div className="w-16 h-16 bg-saas-primary/10 rounded-full flex items-center justify-center text-saas-primary mx-auto mb-4 border border-saas-primary/20">
+                                    <Activity size={32} />
+                                 </div>
+                                 <p className="text-[10px] font-black uppercase text-white tracking-widest mb-1">{clickMapData.length} Interações</p>
+                                 <p className="text-[9px] text-zinc-500 uppercase font-medium">Pontos de maior retenção identificados</p>
+                              </div>
+                           </div>
+                        </div>
                      </div>
                   </div>
                )}

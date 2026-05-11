@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import Home from './pages/Home';
@@ -162,6 +162,9 @@ function AppContent() {
 
 function AnalyticsTracker() {
   const location = useLocation();
+  const [currentViewId, setCurrentViewId] = useState<string | null>(null);
+  const startTimeRef = useRef<number>(Date.now());
+  const clicksRef = useRef<{ x: number, y: number, element: string }[]>([]);
   
   useEffect(() => {
     const trackView = async () => {
@@ -172,12 +175,17 @@ function AnalyticsTracker() {
         const orgId = params.get('orgId') || 'default';
 
         // Tentar obter dados de geolocalização (IP Público)
-        const geoResponse = await fetch('https://ipapi.co/json/');
-        const geoData = await geoResponse.json();
+        let geoData = { ip: '', city: '', region: '', country_name: '' };
+        try {
+          const geoResponse = await fetch('https://ipapi.co/json/');
+          geoData = await geoResponse.json();
+        } catch (e) {
+          console.log('Geo tracking blocked or failed');
+        }
 
         const device = /Mobile|Android|iPhone/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop';
         
-        await supabase.from('page_views').insert({
+        const { data, error } = await supabase.from('page_views').insert({
           org_id: orgId,
           url: location.pathname,
           referrer: document.referrer,
@@ -186,14 +194,54 @@ function AnalyticsTracker() {
           region: geoData.region,
           country: geoData.country_name,
           device: device,
-          user_agent: navigator.userAgent
-        });
+          user_agent: navigator.userAgent,
+          duration_seconds: 0,
+          click_data: []
+        }).select('id').single();
+
+        if (data && !error) {
+          setCurrentViewId(data.id);
+          startTimeRef.current = Date.now();
+          clicksRef.current = [];
+        }
       } catch (err) {
         console.error('Analytics error:', err);
       }
     };
 
     trackView();
+
+    // Reset for next page
+    return () => {
+      if (currentViewId) {
+        const duration = Math.floor((Date.now() - startTimeRef.current) / 1000);
+        supabase.from('page_views')
+          .update({ 
+            duration_seconds: duration,
+            click_data: clicksRef.current 
+          })
+          .eq('id', currentViewId)
+          .then();
+      }
+    };
+  }, [location.pathname]);
+
+  // Click listener
+  useEffect(() => {
+    const handleGlobalClick = (e: MouseEvent) => {
+      if (location.pathname.startsWith('/admin')) return;
+      
+      const clickInfo = {
+        x: Math.round((e.pageX / window.innerWidth) * 100), // Percentagem para ser responsivo
+        y: Math.round((e.pageY / document.documentElement.scrollHeight) * 100),
+        element: (e.target as HTMLElement).tagName + ( (e.target as HTMLElement).id ? `#${(e.target as HTMLElement).id}` : '' )
+      };
+      
+      clicksRef.current.push(clickInfo);
+    };
+
+    window.addEventListener('click', handleGlobalClick);
+    return () => window.removeEventListener('click', handleGlobalClick);
   }, [location.pathname]);
 
   return null;

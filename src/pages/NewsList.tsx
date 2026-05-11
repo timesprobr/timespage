@@ -112,17 +112,24 @@ export default function NewsList() {
                     <Link to={`/noticias/${item.id}`}>{item.title}</Link>
                   </h2>
 
-                  <p className="text-gray-600 font-medium text-sm leading-relaxed mb-8 flex-1 line-clamp-3">
+                  <p className="text-gray-600 font-medium text-sm leading-relaxed mb-6 flex-1 line-clamp-3">
                     {(item as any).subtitle || item.summary || item.content?.substring(0, 150) + '...'}
                   </p>
 
-                  <Link 
-                    to={`/noticias/${item.id}`}
-                    className="inline-flex items-center gap-2 text-black font-black uppercase text-xs tracking-widest group/btn"
-                  >
-                    Ler Matéria Completa 
-                    <ArrowRight size={16} className="text-red-600 group-hover/btn:translate-x-2 transition-transform" />
-                  </Link>
+                  <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-50">
+                    <div className="flex items-center gap-1.5 text-gray-400 font-bold text-[9px] uppercase tracking-widest">
+                       <Eye size={12} className="text-gray-300" />
+                       {(item as any).views || 0} Leituras
+                    </div>
+                    
+                    <Link 
+                      to={`/noticias/${item.id}`}
+                      className="inline-flex items-center gap-2 text-black font-black uppercase text-[10px] tracking-widest group/btn"
+                    >
+                      Ler Matéria 
+                      <ArrowRight size={14} className="text-red-600 group-hover/btn:translate-x-1 transition-transform" />
+                    </Link>
+                  </div>
                 </div>
               </motion.article>
             ))}
