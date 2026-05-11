@@ -29,6 +29,7 @@ import {
    Zap,
    RefreshCw,
    Target,
+   Tag,
    MessageSquare,
    MessageCircle,
    UserPlus,
@@ -119,36 +120,33 @@ export default function Admin() {
       setTimeout(() => setNotification(null), 4000);
    };
 
-   const handleFileUpload = async (file: File, path: string) => {
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = `${path}/${fileName}`;
+   const handleFileUpload = async (file: File, bucketName: string = 'noticias') => {
+      try {
+         const fileExt = file.name.split('.').pop();
+         const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+         const filePath = `${fileName}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from('tp_escudo')
-        .upload(filePath, file);
+         const { error: uploadError } = await supabase.storage
+            .from(bucketName)
+            .upload(filePath, file);
 
-      if (uploadError) {
-        if (uploadError.message.includes('Bucket not found')) {
-          showNotification('Erro: O bucket "tp_escudo" não foi encontrado.', 'error');
-        } else {
-          showNotification(`Erro no upload: ${uploadError.message}`, 'error');
-        }
-        throw uploadError;
+         if (uploadError) {
+            console.error(`Erro no bucket ${bucketName}:`, uploadError);
+            showNotification(`Erro no upload: ${uploadError.message}`, 'error');
+            return null;
+         }
+
+         const { data } = supabase.storage
+            .from(bucketName)
+            .getPublicUrl(filePath);
+
+         return data.publicUrl;
+      } catch (error) {
+         console.error('Erro crítico no upload:', error);
+         showNotification('Erro ao processar imagem', 'error');
+         return null;
       }
-
-      const { data } = supabase.storage
-        .from('tp_escudo')
-        .getPublicUrl(filePath);
-
-      return data.publicUrl;
-    } catch (error) {
-      console.error('Erro no upload:', error);
-      showNotification('Erro ao fazer upload da imagem', 'error');
-      return null;
-    }
-  };
+   };
 
   const fetchData = async (orgId: string | null) => {
       try {
@@ -257,35 +255,40 @@ export default function Admin() {
 
    const handleSaveNews = async (e: FormEvent) => {
       e.preventDefault();
-      setIsSaving(true);
-      const orgId = currentOrgId || 'dc1f5d6a-4714-46b2-92cc-5ff423c2b3ed';
+      try {
+         setIsSaving(true);
+         const orgId = currentOrgId || 'dc1f5d6a-4714-46b2-92cc-5ff423c2b3ed';
 
-      const newsData = {
-         ...newsForm,
-         org_id: orgId,
-         date: new Date().toLocaleDateString('pt-BR'),
-         views: editingNews ? editingNews.views : 0
-      };
+         const newsData = {
+            ...newsForm,
+            org_id: orgId,
+            date: new Date().toLocaleDateString('pt-BR'),
+            views: editingNews ? editingNews.views : 0
+         };
 
-      let error;
-      if (editingNews) {
-         const { error: err } = await supabase.from('news').update(newsData).eq('id', editingNews.id);
-         error = err;
-      } else {
-         const { error: err } = await supabase.from('news').insert([newsData]);
-         error = err;
+         let result;
+         if (editingNews) {
+            result = await supabase.from('news').update(newsData).eq('id', editingNews.id);
+         } else {
+            result = await supabase.from('news').insert([newsData]);
+         }
+
+         if (!result.error) {
+            showNotification(editingNews ? 'Matéria atualizada com sucesso!' : 'Matéria publicada com sucesso!', 'success');
+            setIsAddingNews(false);
+            setEditingNews(null);
+            setNewsForm({ title: '', content: '', category: 'Notícias', image: '', summary: '' });
+            fetchData(currentOrgId);
+         } else {
+            console.error('Erro Supabase:', result.error);
+            showNotification(`Erro ao salvar: ${result.error.message}`, 'error');
+         }
+      } catch (err) {
+         console.error('Erro crítico no salvamento:', err);
+         showNotification('Erro interno ao processar a publicação', 'error');
+      } finally {
+         setIsSaving(false);
       }
-
-      if (!error) {
-         showNotification(editingNews ? 'Notícia atualizada!' : 'Notícia publicada!');
-         setIsAddingNews(false);
-         setEditingNews(null);
-         setNewsForm({ title: '', content: '', category: 'Notícias', image: '', summary: '' });
-         fetchData(currentOrgId);
-      } else {
-         showNotification('Erro ao salvar notícia', 'error');
-      }
-      setIsSaving(false);
    };
 
    useEffect(() => {
@@ -340,8 +343,14 @@ export default function Admin() {
    return (
       <div className="min-h-screen flex bg-[#09090b] text-white font-sans overflow-hidden">
          {notification && (
-            <div className={`fixed bottom-8 right-8 z-[100] flex items-center gap-3 px-6 py-4 border shadow-2xl backdrop-blur-md ${notification.type === 'error' ? 'bg-red-500/10 border-red-500/20 text-red-500' : 'bg-[#a3e635]/10 border-[#a3e635]/20 text-[#a3e635]'} rounded-2xl`}>
-               <p className="text-[10px] font-black uppercase tracking-widest">{notification.message}</p>
+            <div className={`fixed bottom-8 right-8 z-[500] flex items-center gap-4 px-8 py-5 border shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-xl animate-in fade-in slide-in-from-bottom-5 duration-300 ${notification.type === 'error' ? 'bg-red-500/10 border-red-500/20 text-red-500' : 'bg-[#a3e635]/20 border-[#a3e635]/30 text-white'} rounded-[24px]`}>
+               <div className={`w-8 h-8 rounded-full flex items-center justify-center ${notification.type === 'error' ? 'bg-red-500/20' : 'bg-[#a3e635] text-black shadow-[0_0_15px_rgba(163,230,53,0.5)]'}`}>
+                  {notification.type === 'error' ? <X size={14} strokeWidth={3} /> : <Zap size={14} strokeWidth={3} fill="currentColor" />}
+               </div>
+               <div className="flex flex-col">
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50 italic">Notificação do Sistema</span>
+                  <p className="text-xs font-bold uppercase tracking-tight">{notification.message}</p>
+               </div>
             </div>
          )}
 
@@ -617,7 +626,7 @@ export default function Admin() {
                                  </div>
                               </div>
                               <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0 pr-4">
-                                 <a href={`/noticia/${n.id}`} target="_blank" className="p-3 rounded-xl bg-zinc-800 border border-white/5 text-zinc-400 hover:text-white transition-all"><ArrowUpRight size={18} /></a>
+                                 <a href={`/noticias/${n.id}`} target="_blank" className="p-3 rounded-xl bg-zinc-800 border border-white/5 text-zinc-400 hover:text-white transition-all"><ArrowUpRight size={18} /></a>
                                  <button onClick={() => { setEditingNews(n); setNewsForm({ title: n.title, content: n.content, category: n.category, image: n.image, summary: n.summary || '' }); setIsAddingNews(true); }} className="p-3 rounded-xl bg-saas-primary/10 text-saas-primary border border-saas-primary/10 hover:bg-saas-primary hover:text-black transition-all"><Edit3 size={18} /></button>
                                  <button className="p-3 rounded-xl bg-red-500/10 text-red-500 border border-red-500/10 hover:bg-red-500 hover:text-white transition-all"><Trash2 size={18} /></button>
                               </div>
@@ -1131,63 +1140,212 @@ export default function Admin() {
          </main>
 
          {isAddingNews && (
-            <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-               <div className="absolute inset-0 bg-black/90 backdrop-blur-md" onClick={() => setIsAddingNews(false)}></div>
-               <div className="relative w-full max-w-6xl h-[90vh] overflow-hidden rounded-[40px] border border-white/5 bg-[#121214] flex flex-col shadow-2xl">
-                  <div className="p-8 border-b border-white/5 flex justify-between items-center shrink-0">
-                     <div className="flex items-center gap-5">
-                        <div className="w-12 h-12 bg-saas-primary/10 rounded-2xl flex items-center justify-center text-saas-primary border border-saas-primary/10">
-                           <Plus size={24} strokeWidth={3} />
+            <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-6">
+               <div className="absolute inset-0 bg-black/80 backdrop-blur-xl" onClick={() => setIsAddingNews(false)}></div>
+               
+               <div className="relative w-full max-w-5xl h-[85vh] overflow-hidden rounded-[32px] border border-white/10 bg-[#121214] flex flex-col shadow-[0_0_50px_rgba(0,0,0,0.5)] animate-in fade-in zoom-in-95 duration-300">
+                  
+                  {/* Modal Header */}
+                  <div className="px-8 py-6 border-b border-white/5 flex justify-between items-center bg-[#18181b]/50 backdrop-blur-md shrink-0">
+                     <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 bg-[#a3e635]/10 rounded-xl flex items-center justify-center text-saas-primary border border-saas-primary/20">
+                           {editingNews ? <Edit3 size={20} /> : <Plus size={20} strokeWidth={3} />}
                         </div>
                         <div>
-                           <h2 className="text-2xl font-manrope font-extrabold uppercase tracking-tight leading-none text-white">{editingNews ? 'Editar Notícia' : 'Publicar Nova Notícia'}</h2>
-                           <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mt-1.5 italic">Editor de Conteúdo Premium</p>
+                           <h2 className="text-xl font-manrope font-extrabold uppercase tracking-tight leading-none text-white">
+                              {editingNews ? 'Editar Notícia' : 'Publicar Conteúdo'}
+                           </h2>
+                           <p className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 mt-1 italic">
+                              Interface de Edição Premium
+                           </p>
                         </div>
                      </div>
-                     <button onClick={() => setIsAddingNews(false)} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 text-zinc-400 hover:text-white transition-all"><X size={20} /></button>
+                     <button 
+                        onClick={() => setIsAddingNews(false)} 
+                        className="w-9 h-9 flex items-center justify-center rounded-full bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all active:scale-90"
+                     >
+                        <X size={18} />
+                     </button>
                   </div>
-                  <div className="flex-1 overflow-y-auto custom-scrollbar p-8 bg-[#09090b]/50">
-                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                        <div className="space-y-8">
-                           <form onSubmit={handleSaveNews} className="space-y-6">
+
+                  <div className="flex-1 flex overflow-hidden">
+                     {/* Form Side */}
+                     <div className="flex-1 overflow-y-auto custom-scrollbar p-8">
+                        <form onSubmit={handleSaveNews} className="space-y-8 max-w-2xl mx-auto lg:mx-0">
+                           <div className="grid grid-cols-1 gap-6">
                               <div className="space-y-2">
-                                 <label className="text-[10px] font-black uppercase text-zinc-500 italic tracking-widest">Título da Notícia</label>
-                                 <input type="text" required value={newsForm.title} onChange={e => setNewsForm({ ...newsForm, title: e.target.value })} placeholder="Ex: Grande Vitória no Clássico..." className="w-full p-4 rounded-xl bg-zinc-800 border border-white/5 text-xs font-bold text-white outline-none focus:border-saas-primary shadow-inner" />
+                                 <label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-1">Título da Matéria</label>
+                                 <input 
+                                    type="text" 
+                                    required 
+                                    value={newsForm.title} 
+                                    onChange={e => setNewsForm({ ...newsForm, title: e.target.value })} 
+                                    placeholder="Ex: Reforço de peso chega ao clube..." 
+                                    className="w-full p-4 rounded-2xl bg-zinc-900/50 border border-white/5 text-sm font-bold text-white outline-none focus:border-saas-primary/50 focus:bg-zinc-800/80 transition-all placeholder:text-zinc-700" 
+                                 />
                               </div>
-                              <div className="grid grid-cols-2 gap-6">
+
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                  <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-zinc-500 italic tracking-widest">Categoria</label>
-                                    <select value={newsForm.category} onChange={e => setNewsForm({ ...newsForm, category: e.target.value })} className="w-full p-4 rounded-xl bg-zinc-800 border border-white/5 text-[10px] font-black uppercase text-white outline-none shadow-inner cursor-pointer">
-                                       <option value="Notícias">Notícias</option>
-                                       <option value="Clube">Clube</option>
-                                       <option value="Futebol">Futebol</option>
-                                    </select>
+                                    <label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-1">Categoria</label>
+                                    <div className="relative">
+                                       <input 
+                                          type="text" 
+                                          required 
+                                          value={newsForm.category} 
+                                          onChange={e => setNewsForm({ ...newsForm, category: e.target.value })} 
+                                          placeholder="Ex: Futebol, Clube..."
+                                          className="w-full p-4 pl-12 rounded-2xl bg-zinc-900/50 border border-white/5 text-[10px] font-black uppercase text-white outline-none focus:border-saas-primary/50 transition-all placeholder:text-zinc-700" 
+                                       />
+                                       <Tag size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600" />
+                                    </div>
                                  </div>
                                  <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-zinc-500 italic tracking-widest">Imagem de Capa (URL)</label>
-                                    <input type="text" required value={newsForm.image} onChange={e => setNewsForm({ ...newsForm, image: e.target.value })} className="w-full p-4 rounded-xl bg-zinc-800 border border-white/5 text-[10px] font-bold text-white outline-none focus:border-saas-primary shadow-inner" />
+                                     <div className="flex justify-between items-end ml-1">
+                                        <label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em]">Capa da Notícia</label>
+                                        <span className="text-[8px] font-bold text-saas-primary uppercase italic tracking-widest opacity-60">Ideal: 1200x630px</span>
+                                     </div>
+                                    <div className="flex gap-3">
+                                       <div className="relative flex-1">
+                                          <input 
+                                             type="text" 
+                                             required 
+                                             value={newsForm.image} 
+                                             onChange={e => setNewsForm({ ...newsForm, image: e.target.value })} 
+                                             placeholder="URL da imagem ou faça upload..."
+                                             className="w-full p-4 pl-12 rounded-2xl bg-zinc-900/50 border border-white/5 text-[10px] font-bold text-white outline-none focus:border-saas-primary/50 transition-all placeholder:text-zinc-700" 
+                                          />
+                                          <ImageIcon size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600" />
+                                       </div>
+                                       <div className="relative group">
+                                          <button type="button" className="h-full px-5 rounded-2xl bg-zinc-800 border border-white/5 text-zinc-400 hover:text-saas-primary hover:border-saas-primary/30 transition-all flex items-center justify-center gap-2">
+                                             <Upload size={16} />
+                                             <span className="text-[9px] font-black uppercase tracking-widest hidden md:block">Upload</span>
+                                          </button>
+                                          <input 
+                                             type="file" 
+                                             accept="image/*"
+                                             className="absolute inset-0 opacity-0 cursor-pointer"
+                                             onChange={async (e) => {
+                                                const file = e.target.files?.[0];
+                                                if (file) {
+                                                   try {
+                                                      setIsSaving(true);
+                                                      const url = await handleFileUpload(file, 'noticias');
+                                                      if (url) {
+                                                         setNewsForm(prev => ({ ...prev, image: url }));
+                                                         showNotification('Imagem carregada com sucesso!', 'success');
+                                                      }
+                                                   } catch (err) {
+                                                      showNotification('Falha ao processar arquivo', 'error');
+                                                   } finally {
+                                                      setIsSaving(false);
+                                                   }
+                                                }
+                                             }}
+                                          />
+                                       </div>
+                                    </div>
                                  </div>
                               </div>
+
                               <div className="space-y-2">
-                                 <label className="text-[10px] font-black uppercase text-zinc-500 italic tracking-widest">Corpo da Notícia</label>
-                                 <div className="rounded-2xl border border-white/5 overflow-hidden bg-zinc-800 shadow-inner">
-                                    <ReactQuill theme="snow" value={newsForm.content} onChange={content => setNewsForm({ ...newsForm, content })} className="premium-quill" />
+                                 <label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-1">Resumo Curto (SEO)</label>
+                                 <textarea 
+                                    rows={2}
+                                    value={newsForm.summary} 
+                                    onChange={e => setNewsForm({ ...newsForm, summary: e.target.value })} 
+                                    placeholder="Uma breve descrição para atrair cliques..."
+                                    className="w-full p-4 rounded-2xl bg-zinc-900/50 border border-white/5 text-[10px] font-medium text-white outline-none focus:border-saas-primary/50 transition-all resize-none placeholder:text-zinc-700"
+                                 />
+                              </div>
+
+                              <div className="space-y-2">
+                                 <label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-1">Conteúdo da Notícia</label>
+                                 <div className="rounded-2xl border border-white/5 overflow-hidden bg-zinc-900/50 focus-within:border-saas-primary/30 transition-all shadow-inner">
+                                    <ReactQuill 
+                                       theme="snow" 
+                                       value={newsForm.content} 
+                                       onChange={content => setNewsForm({ ...newsForm, content })} 
+                                       className="premium-quill" 
+                                    />
                                  </div>
                               </div>
-                              <button type="submit" disabled={isSaving} className="w-full bg-[#a3e635] text-black py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] shadow-2xl shadow-saas-primary/20 hover:scale-[1.02] transition-all">
-                                 {isSaving ? 'Salvando...' : (editingNews ? 'Atualizar Notícia' : 'Publicar Agora')}
+                           </div>
+
+                           <div className="pt-4 sticky bottom-0 bg-[#09090b]/80 backdrop-blur-md pb-4 border-t border-white/5">
+                              <button 
+                                 type="submit" 
+                                 disabled={isSaving} 
+                                 className="w-full bg-[#a3e635] text-black py-4 rounded-2xl font-black uppercase tracking-[0.3em] text-[11px] shadow-[0_10px_30px_rgba(163,230,53,0.2)] hover:shadow-[0_15px_40px_rgba(163,230,53,0.3)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none"
+                              >
+                                 {isSaving ? (
+                                    <div className="flex items-center justify-center gap-2">
+                                       <RefreshCw size={14} className="animate-spin" />
+                                       <span>Sincronizando...</span>
+                                    </div>
+                                 ) : (
+                                    <div className="flex items-center justify-center gap-2">
+                                       {editingNews ? <RefreshCw size={14} /> : <Zap size={14} />}
+                                       <span>{editingNews ? 'Salvar Alterações' : 'Publicar Agora'}</span>
+                                    </div>
+                                 )}
                               </button>
-                           </form>
-                        </div>
-                        <div className="hidden lg:block sticky top-0">
-                           <label className="text-[10px] font-black uppercase text-saas-primary italic mb-4 flex items-center gap-2 tracking-widest"><Eye size={14} /> Visualização em Tempo Real</label>
-                           <div className="h-full max-h-[600px] rounded-[32px] border border-white/5 bg-[#121214] overflow-y-auto custom-scrollbar shadow-2xl relative">
-                              {newsForm.image && <img src={newsForm.image} className="w-full h-56 object-cover" />}
-                              <div className="p-8">
-                                 <div className="flex items-center gap-3 mb-4"><span className="px-3 py-1 rounded-full bg-[#a3e635] text-black text-[9px] font-black uppercase italic">{newsForm.category}</span></div>
-                                 <h1 className="text-3xl font-manrope font-extrabold uppercase tracking-tight text-white mb-6 leading-none">{newsForm.title || 'Seu Título Aparecerá Aqui'}</h1>
-                                 <div className="prose prose-invert max-w-none text-zinc-400 text-sm leading-relaxed news-preview-content" dangerouslySetInnerHTML={{ __html: newsForm.content || '<p>Comece a escrever para ver a mágica acontecer...</p>' }} />
+                           </div>
+                        </form>
+                     </div>
+
+                     {/* Preview Side - More polished */}
+                     <div className="hidden lg:block w-[400px] bg-[#09090b] border-l border-white/5 overflow-y-auto custom-scrollbar">
+                        <div className="p-8">
+                           <div className="flex items-center justify-between mb-6">
+                              <label className="text-[10px] font-black uppercase text-saas-primary italic flex items-center gap-2 tracking-[0.2em]">
+                                 <Eye size={14} /> Live Preview
+                              </label>
+                              <div className="flex gap-1">
+                                 <div className="w-2 h-2 rounded-full bg-zinc-800"></div>
+                                 <div className="w-2 h-2 rounded-full bg-zinc-800"></div>
+                                 <div className="w-2 h-2 rounded-full bg-zinc-800"></div>
                               </div>
+                           </div>
+
+                           <div className="rounded-[24px] border border-white/5 bg-[#121214] overflow-hidden shadow-2xl">
+                              <div className="aspect-video bg-zinc-800 overflow-hidden relative">
+                                 {newsForm.image ? (
+                                    <img src={newsForm.image} className="w-full h-full object-cover" alt="Preview" />
+                                 ) : (
+                                    <div className="w-full h-full flex flex-col items-center justify-center text-zinc-700 gap-2">
+                                       <ImageIcon size={32} />
+                                       <span className="text-[8px] font-black uppercase tracking-widest">Sem Imagem</span>
+                                    </div>
+                                 )}
+                                 <div className="absolute top-4 left-4">
+                                    <span className="px-3 py-1 rounded-full bg-[#a3e635] text-black text-[8px] font-black uppercase italic shadow-lg">
+                                       {newsForm.category}
+                                    </span>
+                                 </div>
+                              </div>
+                              <div className="p-6">
+                                 <div className="text-[8px] font-black text-zinc-600 uppercase tracking-widest mb-3 italic">
+                                    Publicado em {new Date().toLocaleDateString('pt-BR')}
+                                 </div>
+                                 <h1 className="text-xl font-manrope font-extrabold uppercase tracking-tight text-white mb-4 leading-tight">
+                                    {newsForm.title || 'Seu título impactante aparecerá aqui'}
+                                 </h1>
+                                 <div 
+                                    className="prose prose-invert prose-xs max-w-none text-zinc-400 text-[11px] leading-relaxed line-clamp-6 news-preview-content" 
+                                    dangerouslySetInnerHTML={{ __html: newsForm.content || '<p>O conteúdo da sua notícia será renderizado aqui com toda a formatação premium...</p>' }} 
+                                 />
+                              </div>
+                           </div>
+                           
+                           <div className="mt-8 p-6 rounded-2xl bg-saas-primary/5 border border-saas-primary/10">
+                              <p className="text-[9px] font-bold text-saas-primary uppercase tracking-widest mb-2 flex items-center gap-2">
+                                 <Target size={12} /> Dica de Engajamento
+                              </p>
+                              <p className="text-[10px] text-zinc-400 leading-relaxed italic">
+                                 Use títulos curtos e imagens de alta resolução para aumentar a taxa de cliques em até 40%.
+                              </p>
                            </div>
                         </div>
                      </div>
