@@ -85,7 +85,7 @@ export default function CampaignPopup() {
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative w-full max-w-lg bg-black rounded-[40px] overflow-hidden shadow-[0_0_50px_rgba(220,38,38,0.3)] border border-white/10"
+            className="relative w-full max-w-md bg-black rounded-[32px] overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10"
           >
             {/* Close Button */}
             <button

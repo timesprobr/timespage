@@ -1,10 +1,12 @@
 import { motion } from 'motion/react';
 import { Trophy, Award, Star, History as HistoryIcon } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { supabase } from '../lib/supabase';
+import { ConfigContext } from '../App';
 
 export default function Trophies() {
   const [trophies, setTrophies] = useState<any[]>([]);
+  const config = useContext(ConfigContext);
 
   useEffect(() => {
     const fetchTrophies = async () => {
@@ -54,12 +56,12 @@ export default function Trophies() {
             transition={{ duration: 0.8 }}
             className="space-y-4"
           >
-            <span className="text-red-600 font-black uppercase text-xs tracking-[0.5em] mb-4 block">Memorial Racing FC</span>
+            <span style={{ color: config.colors.primary }} className="font-black uppercase text-xs tracking-[0.5em] mb-4 block">Memorial {config.shortName}</span>
             <h1 className="text-4xl md:text-6xl font-manrope font-extrabold uppercase tracking-tight mb-4 leading-none text-white">
-              GALERIA DE <span className="text-red-700">TROFÉUS</span>
+              GALERIA DE <span style={{ color: config.colors.primary }}>TROFÉUS</span>
             </h1>
             <p className="text-lg text-gray-400 max-w-3xl font-medium leading-relaxed">
-              Cada conquista é um capítulo da nossa imortal história. Explore o legado de glórias do rubro-negro capixaba.
+              Cada conquista é um capítulo da nossa imortal história. Explore o legado de glórias do {config.name}.
             </p>
           </motion.div>
         </div>
@@ -75,7 +77,7 @@ export default function Trophies() {
             { label: 'Anos de Glória', value: '73', icon: HistoryIcon },
           ].map((stat, i) => (
             <div key={i} className="text-center group">
-              <stat.icon className="mx-auto mb-4 text-red-600 group-hover:scale-110 transition-transform" size={24} />
+              <stat.icon className="mx-auto mb-4 group-hover:scale-110 transition-transform" size={24} style={{ color: config.colors.primary }} />
               <div className="text-4xl font-black italic text-black mb-1">{stat.value}</div>
               <div className="text-[10px] font-bold uppercase tracking-widest text-gray-400">{stat.label}</div>
             </div>
@@ -103,20 +105,20 @@ export default function Trophies() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60"></div>
                 <div className="absolute top-6 left-6 flex flex-col items-start translate-x-[-20%] opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-500">
-                    <span className="bg-red-600 text-white px-4 py-1 font-black text-[10px] uppercase tracking-widest italic rounded-full">CONQUISTA</span>
+                    <span className="text-white px-4 py-1 font-black text-[10px] uppercase tracking-widest italic rounded-full" style={{ backgroundColor: config.colors.primary }}>CONQUISTA</span>
                 </div>
               </div>
               
               <div className="space-y-4 px-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-red-600 font-black text-3xl italic tracking-tighter">{trophy.year}</span>
+                  <span className="font-black text-3xl italic tracking-tighter" style={{ color: config.colors.primary }}>{trophy.year}</span>
                   <div className="h-px bg-gray-100 flex-grow mx-4"></div>
-                  <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-red-50 transition-colors">
-                    <Trophy size={18} className="text-gray-300 group-hover:text-red-600 transition-colors" />
+                  <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-[var(--bg-hover)] transition-colors" style={{ '--bg-hover': `${config.colors.primary}1a` } as any}>
+                    <Trophy size={18} className="text-gray-300 group-hover:text-[var(--text-hover)] transition-colors" style={{ '--text-hover': config.colors.primary } as any} />
                   </div>
                 </div>
                 
-                <div className="bg-gray-50 rounded-2xl p-4 group-hover:bg-red-600 transition-all duration-500">
+                <div className="bg-gray-50 rounded-2xl p-4 group-hover:bg-[var(--bg-hover)] transition-all duration-500" style={{ '--bg-hover': config.colors.primary } as any}>
                   <h3 className="text-xl font-black uppercase italic tracking-tight text-black transition-colors group-hover:text-white leading-tight">
                     {trophy.title}
                   </h3>
@@ -132,16 +134,16 @@ export default function Trophies() {
       </section>
 
       {/* Call to Action */}
-      <section className="py-24 bg-red-600 relative overflow-hidden">
+      <section className="relative overflow-hidden py-24" style={{ backgroundColor: config.colors.primary }}>
         <div className="max-w-7xl mx-auto px-4 text-center relative z-10">
           <h2 className="text-4xl md:text-6xl font-black text-white italic uppercase tracking-tighter mb-8 leading-none">
             A NOSSA HISTÓRIA <span className="text-black">SE SEGUE ESCREVENDO</span>
           </h2>
-          <p className="text-red-100 text-lg mb-12 font-medium max-w-2xl mx-auto">
-            Apoie o Racing FC rumo a novas conquistas. Sua participação é fundamental para o futuro do rubro-negro.
+          <p className="text-white opacity-80 text-lg mb-12 font-medium max-w-2xl mx-auto">
+            Apoie o {config.shortName} rumo a novas conquistas. Sua participação é fundamental para o futuro do clube.
           </p>
           <div className="flex flex-wrap justify-center gap-6">
-            <button className="bg-black text-white px-12 py-5 font-black uppercase text-sm tracking-widest hover:bg-zinc-900 transition-all">
+            <button className="bg-black text-white px-12 py-5 font-black uppercase text-sm tracking-widest hover:bg-zinc-900 transition-all shadow-xl">
               Visitar Memorial
             </button>
           </div>

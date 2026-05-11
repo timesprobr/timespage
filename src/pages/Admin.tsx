@@ -129,7 +129,8 @@ export default function Admin() {
       tp_twitter_x: '',
       tp_linkedin: '',
       tp_youtube: '',
-      tp_active: false
+      tp_active: false,
+      tp_short_name: ''
    });
 
    const [isSaving, setIsSaving] = useState(false);
@@ -497,7 +498,7 @@ export default function Admin() {
                            className={`w-full flex items-center gap-3 px-4 py-2 rounded-xl transition-all relative group ${activeTab === item.id ? 'bg-[#a3e635] text-black shadow-[0_0_20px_rgba(163,230,53,0.3)]' : 'text-zinc-500 hover:bg-white/5 hover:text-white'} ${isSidebarCollapsed ? 'justify-center' : ''}`}
                         >
                            <item.icon size={18} strokeWidth={activeTab === item.id ? 2.5 : 2} />
-                           {!isSidebarCollapsed && <span className="text-[7.5px] font-bold uppercase tracking-wider">{item.label}</span>}
+                           {!isSidebarCollapsed && <span className="text-[7px] font-bold uppercase tracking-wider">{item.label}</span>}
                         </button>
                      ))}
                   </div>
@@ -518,7 +519,7 @@ export default function Admin() {
                            className={`w-full flex items-center gap-3 px-4 py-2 rounded-xl transition-all relative group ${activeTab === item.id ? 'bg-[#a3e635] text-black shadow-[0_0_20px_rgba(163,230,53,0.3)]' : 'text-zinc-500 hover:bg-white/5 hover:text-white'} ${isSidebarCollapsed ? 'justify-center' : ''}`}
                         >
                            <item.icon size={18} strokeWidth={activeTab === item.id ? 2.5 : 2} />
-                           {!isSidebarCollapsed && <span className="text-[7.5px] font-bold uppercase tracking-wider">{item.label}</span>}
+                           {!isSidebarCollapsed && <span className="text-[7px] font-bold uppercase tracking-wider">{item.label}</span>}
                         </button>
                      ))}
                   </div>
@@ -539,7 +540,7 @@ export default function Admin() {
                            className={`w-full flex items-center gap-3 px-4 py-2 rounded-xl transition-all relative group ${activeTab === item.id ? 'bg-[#a3e635] text-black shadow-[0_0_20px_rgba(163,230,53,0.3)]' : 'text-zinc-500 hover:bg-white/5 hover:text-white'} ${isSidebarCollapsed ? 'justify-center' : ''}`}
                         >
                            <item.icon size={18} strokeWidth={activeTab === item.id ? 2.5 : 2} />
-                           {!isSidebarCollapsed && <span className="text-[7.5px] font-bold uppercase tracking-wider">{item.label}</span>}
+                           {!isSidebarCollapsed && <span className="text-[7px] font-bold uppercase tracking-wider">{item.label}</span>}
                         </button>
                      ))}
                   </div>
@@ -572,7 +573,7 @@ export default function Admin() {
                <div className="flex items-center gap-2">
                   <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 italic text-center">Ecossistema</span>
                   <span className="text-white/10">/</span>
-                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-saas-primary italic">{activeTab}</span>
+                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-saas-primary italic">{activeTab}</span>
                </div>
 
                <div className="flex items-center gap-4 relative">
@@ -905,7 +906,7 @@ export default function Admin() {
                                   buttonText: 'Saiba Mais',
                                   image_url: '',
                                   destinationUrl: '',
-                                  type: 'Card',
+                                  type: 'card',
                                   active: true,
                                   mkt_copy: '',
                                   social_instagram: '',
@@ -933,7 +934,7 @@ export default function Admin() {
                                      <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-white/5 bg-zinc-800 shrink-0">
                                         <img src={c.image_url || c.image || 'https://via.placeholder.com/400x400'} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
                                         <div className="absolute top-0.5 right-0.5">
-                                           <span className={`px-1.5 py-0.5 rounded text-[6px] font-black uppercase tracking-widest ${c.type === 'Popup' ? 'bg-purple-500 text-white' : 'bg-blue-500 text-white'}`}>
+                                           <span className={`px-1.5 py-0.5 rounded text-[6px] font-black uppercase tracking-widest ${c.type?.toLowerCase() === 'popup' ? 'bg-purple-500 text-white' : 'bg-blue-500 text-white'}`}>
                                               {c.type}
                                            </span>
                                         </div>
@@ -998,7 +999,7 @@ export default function Admin() {
                   <div className="space-y-8 pb-12">
                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                         <div>
-                           <h1 className="text-xl font-manrope font-extrabold uppercase tracking-tight text-white">Análise de Conversão</h1>
+                           <h1 className="text-lg font-manrope font-extrabold uppercase tracking-tight text-white">Análise de Conversão</h1>
                            <p className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 mt-1">Entenda o comportamento e a jornada do usuário</p>
                         </div>
                      </div>
@@ -1297,6 +1298,35 @@ export default function Admin() {
                         </div>
 
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-12">
+                           {/* Coluna 0: Nome do Clube */}
+                           <div className="lg:col-span-2">
+                              <div className="space-y-2">
+                                 <label className="text-[10px] font-black uppercase text-zinc-500 italic tracking-widest">Nome Oficial do Clube</label>
+                                 <input 
+                                    type="text" 
+                                    value={clubIdentity.name} 
+                                    onChange={e => setClubIdentity({ ...clubIdentity, name: e.target.value })} 
+                                    placeholder="Ex: Santos Futebol Clube"
+                                    className="w-full p-5 rounded-[20px] bg-zinc-800 border border-white/5 text-sm font-black text-white outline-none focus:border-saas-primary transition-all shadow-inner" 
+                                 />
+                                 <p className="text-[9px] text-zinc-500 font-bold uppercase mt-2 italic">Este nome será exibido em todo o site e nos metadados (SEO).</p>
+                              </div>
+                           </div>
+
+                           <div className="lg:col-span-1">
+                              <div className="space-y-2">
+                                 <label className="text-[10px] font-black uppercase text-zinc-500 italic tracking-widest">Nome Curto (Apelido)</label>
+                                 <input 
+                                    type="text" 
+                                    value={clubIdentity.tp_short_name} 
+                                    onChange={e => setClubIdentity({ ...clubIdentity, tp_short_name: e.target.value })} 
+                                    placeholder="Ex: Santos"
+                                    className="w-full p-5 rounded-[20px] bg-zinc-800 border border-white/5 text-sm font-black text-white outline-none focus:border-saas-primary transition-all shadow-inner" 
+                                 />
+                                 <p className="text-[9px] text-zinc-500 font-bold uppercase mt-2 italic">Usado em menus e rodapés compactos.</p>
+                              </div>
+                           </div>
+
                            {/* Coluna 1: Logos com Upload */}
                            <div className="space-y-8">
                               <div className="space-y-3">
@@ -1446,34 +1476,42 @@ export default function Admin() {
                            </div>
                         </div>
 
-                        <button onClick={async () => {
-                           setIsSaving(true);
-                           const params = new URLSearchParams(window.location.search);
-                           const orgId = params.get('orgId');
-                           if (orgId) {
-                              // Filtramos apenas as colunas que começam com tp_ para garantir que o banco aceite
-                              const updateData: any = {};
-                              Object.keys(clubIdentity).forEach(key => {
-                                 if (key.startsWith('tp_')) {
-                                    updateData[key] = (clubIdentity as any)[key];
-                                 }
-                              });
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <button onClick={async () => {
+                               setIsSaving(true);
+                               const params = new URLSearchParams(window.location.search);
+                               const orgId = params.get('orgId');
+                               if (orgId) {
+                                  const updateData: any = {};
+                                  Object.keys(clubIdentity).forEach(key => {
+                                     if (key.startsWith('tp_') || key === 'name') {
+                                        updateData[key] = (clubIdentity as any)[key];
+                                     }
+                                  });
 
-                              const { error } = await supabase.from('organizations').update(updateData).eq('id', orgId);
-                              
-                              if (!error) { 
-                                 showNotification('Identidade Visual e Social Atualizada!'); 
-                                 // Pequeno delay para o usuário ver a mensagem antes de atualizar
-                                 setTimeout(() => window.location.reload(), 1000);
-                              } else { 
-                                 console.error('Erro detalhado do Supabase:', error);
-                                 showNotification(`Erro ao salvar: ${error.message}. Verifique se rodou o SQL.`, 'error'); 
-                              }
-                           }
-                           setIsSaving(false);
-                        }} disabled={isSaving} className="w-full bg-[#a3e635] text-black py-5 rounded-2xl font-black uppercase tracking-[0.3em] text-[11px] shadow-2xl shadow-saas-primary/20 hover:scale-[1.01] active:scale-95 transition-all">
-                           {isSaving ? 'Sincronizando...' : 'Salvar Configurações da Marca'}
-                        </button>
+                                  const { error } = await supabase.from('organizations').update(updateData).eq('id', orgId);
+                                  
+                                  if (!error) { 
+                                     showNotification('Identidade Visual Sincronizada!'); 
+                                     setTimeout(() => window.location.reload(), 1000);
+                                  } else { 
+                                     showNotification(`Erro ao salvar: ${error.message}`, 'error'); 
+                                  }
+                               }
+                               setIsSaving(false);
+                            }} disabled={isSaving} className="w-full bg-[#a3e635] text-black py-5 rounded-2xl font-black uppercase tracking-[0.3em] text-[11px] shadow-2xl shadow-saas-primary/20 hover:scale-[1.01] active:scale-95 transition-all">
+                               {isSaving ? 'Sincronizando...' : 'Salvar Alterações'}
+                            </button>
+                            <a 
+                               href={`/?orgId=${currentOrgId}`} 
+                               target="_blank" 
+                               rel="noopener noreferrer"
+                               className="w-full bg-white/5 text-white border border-white/10 py-5 rounded-2xl font-black uppercase tracking-[0.3em] text-[11px] flex items-center justify-center gap-3 hover:bg-white/10 transition-all"
+                            >
+                               <ExternalLink size={14} />
+                               Visualizar Site Ao Vivo
+                            </a>
+                         </div>
                      </div>
                   </div>
                )}

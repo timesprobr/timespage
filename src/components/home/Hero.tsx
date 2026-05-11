@@ -133,7 +133,7 @@ export default function Hero() {
                 scale: { duration: 0.2 },
                 y: { duration: 0.2 }
               }}
-              className="relative group max-w-sm w-full cursor-pointer"
+              className="relative group max-w-[280px] w-full cursor-pointer"
             >
               <div className="absolute inset-0 bg-primary/20 rounded-xl blur-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
 
@@ -147,33 +147,32 @@ export default function Hero() {
                 >
                   <div className="relative aspect-[21/9] w-full overflow-hidden">
                     <img 
-                      src={activeCard.image} 
+                      src={activeCard.image_url || activeCard.image} 
                       alt={activeCard.title} 
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
                   </div>
 
-                  <div className="p-4 flex items-center justify-between gap-4 relative z-10">
-                    <div className="flex items-center gap-3 overflow-hidden">
-                      <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 border border-white/5 bg-black flex items-center justify-center">
+                  <div className="p-3 flex items-center justify-between gap-3 relative z-10">
+                    <div className="flex items-center gap-2 overflow-hidden">
+                      <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 border border-white/5 bg-black flex items-center justify-center">
                         <img 
                           src={ACTIVE_CONFIG.logo.main} 
                           alt={ACTIVE_CONFIG.shortName} 
-                          className="w-8 h-8 object-contain opacity-50 group-hover:opacity-100 transition-opacity"
+                          className="w-6 h-6 object-contain opacity-50 group-hover:opacity-100 transition-opacity"
                         />
                       </div>
                       <div className="flex flex-col overflow-hidden">
-                        <h3 className="text-white font-black uppercase italic text-sm leading-tight truncate group-hover:text-primary transition-colors">
+                        <h3 className="text-white font-black uppercase italic text-[11px] leading-tight truncate group-hover:text-primary transition-colors">
                           {activeCard.headline || activeCard.title}
                         </h3>
-                        <p className="text-gray-400 text-[10px] font-bold uppercase italic leading-tight line-clamp-1">
+                        <p className="text-gray-400 text-[8px] font-bold uppercase italic leading-tight line-clamp-1">
                           {activeCard.subtitle || 'Clique para saber mais'}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="bg-primary hover:opacity-90 text-white px-5 py-2.5 rounded-sm text-[10px] font-black uppercase tracking-widest transition-all duration-300 shadow-lg shadow-primary/20 group-hover:shadow-primary/40 whitespace-nowrap italic">
+                      <span className="bg-primary hover:opacity-90 text-white px-3 py-2 rounded-sm text-[8px] font-black uppercase tracking-widest transition-all duration-300 shadow-lg shadow-primary/20 group-hover:shadow-primary/40 whitespace-nowrap italic">
                         {activeCard.buttonText || 'Acessar'}
                       </span>
                     </div>

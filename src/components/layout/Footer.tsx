@@ -1,45 +1,47 @@
-import { Instagram, Youtube, ArrowRight } from 'lucide-react';
+import { Instagram, Youtube, ArrowRight, Facebook, Twitter } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { ACTIVE_CONFIG } from '../../App';
+import { useContext } from 'react';
+import { ConfigContext } from '../../App';
 
 export default function Footer() {
+  const config = useContext(ConfigContext);
+
   return (
     <footer className="bg-black text-white pt-24 pb-12 border-t border-white/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-20">
           {/* Brand/About */}
           <div className="md:col-span-4 space-y-8">
-            <Link to="/" className="flex items-center gap-3 group">
+            <Link to={config.orgId ? `/?orgId=${config.orgId}` : "/"} className="flex items-center gap-3 group">
               <div className="w-14 h-14 flex items-center justify-center transition-transform group-hover:scale-105">
-                <img src={ACTIVE_CONFIG.logo.main} alt={`${ACTIVE_CONFIG.shortName} Shield`} className="w-full h-full object-contain" />
+                <img src={config.logo.main} alt={`${config.shortName} Shield`} className="w-full h-full object-contain" />
               </div>
-              <span className="text-2xl font-black tracking-tighter italic uppercase">{ACTIVE_CONFIG.shortName}</span>
+              <span className="text-2xl font-black tracking-tighter italic uppercase">{config.shortName}</span>
             </Link>
             <p className="text-gray-400 font-medium leading-relaxed max-w-sm">
-              Mais que um clube, uma paixão que move multidões. O {ACTIVE_CONFIG.name} é tradição, garra e glória desde a sua fundação.
+              Mais que um clube, uma paixão que move multidões. O {config.name} é tradição, garra e glória desde a sua fundação.
             </p>
             <div className="flex gap-4">
-               {[
-                 { Icon: Instagram, url: ACTIVE_CONFIG.social.instagram },
-                 { isX: true, url: ACTIVE_CONFIG.social.twitter },
-                 { Icon: Youtube, url: ACTIVE_CONFIG.social.youtube }
-               ].map((item, i) => (
-                 <a 
-                   key={i} 
-                   href={item.url} 
-                   target="_blank" 
-                   rel="noopener noreferrer" 
-                   className="w-10 h-10 border border-white/20 rounded-full flex items-center justify-center hover:bg-primary hover:border-primary transition-all"
-                 >
-                    {'isX' in item ? (
-                       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                         <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                       </svg>
-                    ) : (
-                       <item.Icon size={18} />
-                    )}
-                 </a>
-               ))}
+              {config.social.instagram && (
+                <a href={config.social.instagram} target="_blank" rel="noopener noreferrer" className="w-10 h-10 border border-white/20 rounded-full flex items-center justify-center hover:bg-primary hover:border-primary transition-all">
+                  <Instagram size={18} />
+                </a>
+              )}
+              {config.social.facebook && (
+                <a href={config.social.facebook} target="_blank" rel="noopener noreferrer" className="w-10 h-10 border border-white/20 rounded-full flex items-center justify-center hover:bg-primary hover:border-primary transition-all">
+                  <Facebook size={18} />
+                </a>
+              )}
+              {config.social.twitter && (
+                <a href={config.social.twitter} target="_blank" rel="noopener noreferrer" className="w-10 h-10 border border-white/20 rounded-full flex items-center justify-center hover:bg-primary hover:border-primary transition-all">
+                  <Twitter size={18} />
+                </a>
+              )}
+              {config.social.youtube && (
+                <a href={config.social.youtube} target="_blank" rel="noopener noreferrer" className="w-10 h-10 border border-white/20 rounded-full flex items-center justify-center hover:bg-primary hover:border-primary transition-all">
+                  <Youtube size={18} />
+                </a>
+              )}
             </div>
           </div>
 
@@ -47,19 +49,19 @@ export default function Footer() {
           <div className="md:col-span-2 space-y-6">
              <h4 className="text-xs font-black uppercase tracking-[0.3em] text-primary">O Clube</h4>
              <ul className="space-y-4">
-                <li><Link to="/elenco/profissional" className="text-gray-400 hover:text-white transition-colors font-medium text-sm">Atletas</Link></li>
-                <li><Link to="/o-clube" className="text-gray-400 hover:text-white transition-colors font-medium text-sm">História</Link></li>
-                <li><Link to="/trofeus" className="text-gray-400 hover:text-white transition-colors font-medium text-sm">Títulos</Link></li>
-                <li><Link to="/noticias" className="text-gray-400 hover:text-white transition-colors font-medium text-sm">Notícias</Link></li>
+                <li><Link to={config.orgId ? `/elenco/profissional?orgId=${config.orgId}` : "/elenco/profissional"} className="text-gray-400 hover:text-white transition-colors font-medium text-sm">Atletas</Link></li>
+                <li><Link to={config.orgId ? `/o-clube?orgId=${config.orgId}` : "/o-clube"} className="text-gray-400 hover:text-white transition-colors font-medium text-sm">História</Link></li>
+                <li><Link to={config.orgId ? `/trofeus?orgId=${config.orgId}` : "/trofeus"} className="text-gray-400 hover:text-white transition-colors font-medium text-sm">Títulos</Link></li>
+                <li><Link to={config.orgId ? `/noticias?orgId=${config.orgId}` : "/noticias"} className="text-gray-400 hover:text-white transition-colors font-medium text-sm">Notícias</Link></li>
              </ul>
           </div>
 
           <div className="md:col-span-2 space-y-6">
              <h4 className="text-xs font-black uppercase tracking-[0.3em] text-primary">Institucional</h4>
              <ul className="space-y-4">
-                <li><Link to="/transparencia" className="text-gray-400 hover:text-white transition-colors font-medium text-sm">Transparência</Link></li>
-                <li><Link to="/diretoria" className="text-gray-400 hover:text-white transition-colors font-medium text-sm">Diretoria</Link></li>
-                <li><Link to="/estatuto" className="text-gray-400 hover:text-white transition-colors font-medium text-sm">Estatuto</Link></li>
+                <li><Link to={config.orgId ? `/transparencia?orgId=${config.orgId}` : "/transparencia"} className="text-gray-400 hover:text-white transition-colors font-medium text-sm">Transparência</Link></li>
+                <li><Link to={config.orgId ? `/diretoria?orgId=${config.orgId}` : "/diretoria"} className="text-gray-400 hover:text-white transition-colors font-medium text-sm">Diretoria</Link></li>
+                <li><Link to={config.orgId ? `/estatuto?orgId=${config.orgId}` : "/estatuto"} className="text-gray-400 hover:text-white transition-colors font-medium text-sm">Estatuto</Link></li>
              </ul>
           </div>
 
@@ -67,14 +69,14 @@ export default function Footer() {
           <div className="md:col-span-4 space-y-6">
              <h4 className="text-xs font-black uppercase tracking-[0.3em] text-primary">Sede Social</h4>
              <p className="text-gray-400 font-medium text-sm leading-relaxed max-w-[280px]">
-               {ACTIVE_CONFIG.address}
+               {config.address}
              </p>
           </div>
         </div>
 
         <div className="mb-12 text-center">
           <span className="text-gray-500 text-[10px] md:text-xs font-bold uppercase tracking-widest">
-            © 2026 {ACTIVE_CONFIG.name}. Todos os direitos reservados.
+            © 2026 {config.name}. Todos os direitos reservados.
           </span>
         </div>
 

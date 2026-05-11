@@ -1,14 +1,16 @@
 import { useParams } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { motion } from 'motion/react';
 import { supabase } from '../lib/supabase';
 import { Player } from '../types';
 import { User, Shield } from 'lucide-react';
+import { ConfigContext } from '../App';
 
 export default function Squad() {
   const { category } = useParams<{ category: string }>();
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(true);
+  const config = useContext(ConfigContext);
 
   // Map URL category to Display Name
   const categoryMap: Record<string, string> = {
@@ -52,19 +54,19 @@ export default function Squad() {
     <div className="min-h-screen bg-white">
       {/* Header - Keep Dark */}
       <section className="relative h-[20vh] flex items-center overflow-hidden bg-black">
-        <div className="absolute inset-0 bg-[#c40000]/10 z-0"></div>
+        <div className="absolute inset-0 z-0 opacity-20" style={{ backgroundColor: config.colors.primary }}></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 w-full">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             className="space-y-1"
           >
-            <span className="text-red-600 font-black uppercase text-[8px] tracking-[0.5em]">Racing Futebol Clube</span>
+            <span style={{ color: config.colors.primary }} className="font-black uppercase text-[8px] tracking-[0.5em]">{config.name}</span>
             <h1 className="text-xl md:text-3xl font-manrope font-extrabold text-white uppercase tracking-tight leading-none">
-              Elenco <span className="text-[#c40000]">{displayName}</span>
+              Elenco <span style={{ color: config.colors.primary }}>{displayName}</span>
             </h1>
             <p className="text-gray-400 font-medium text-xs max-w-2xl">
-              Conheça os atletas da categoria {displayName}.
+              Conheça os atletas da categoria {displayName} do {config.shortName}.
             </p>
           </motion.div>
         </div>
@@ -104,7 +106,7 @@ export default function Squad() {
 
                   {/* Info Area */}
                   <div className="space-y-0">
-                    <h3 className="text-red-600 font-black uppercase italic text-sm tracking-tighter group-hover:translate-x-1 transition-transform truncate">
+                    <h3 className="font-black uppercase italic text-sm tracking-tighter group-hover:translate-x-1 transition-transform truncate" style={{ color: config.colors.primary }}>
                       {player.nickname}
                     </h3>
                     <div className="space-y-0">

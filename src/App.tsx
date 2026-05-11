@@ -20,11 +20,14 @@ import NewsDetail from './pages/NewsDetail';
 import BrandKit from './pages/BrandKit';
 import CampaignPopup from './components/layout/CampaignPopup';
 
-// Exportamos o config ativo para ser usado em outros componentes
-export let ACTIVE_CONFIG = STATIC_CONFIG;
+import { createContext, useContext } from 'react';
+
+// Criamos o Contexto para a Identidade Visual
+export const ConfigContext = createContext<any>(STATIC_CONFIG);
 
 export default function App() {
   const [isReady, setIsReady] = useState(false);
+  const [activeConfig, setActiveConfig] = useState(STATIC_CONFIG);
 
   useEffect(() => {
     const fetchOrgData = async () => {
@@ -39,22 +42,30 @@ export default function App() {
 
       // Função para escurecer uma cor HEX
       const darkenColor = (hex: string, percent: number) => {
-        let r = parseInt(hex.slice(1, 3), 16);
-        let g = parseInt(hex.slice(3, 5), 16);
-        let b = parseInt(hex.slice(5, 7), 16);
-        r = Math.floor(r * (1 - percent / 100));
-        g = Math.floor(g * (1 - percent / 100));
-        b = Math.floor(b * (1 - percent / 100));
-        return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+        try {
+          let r = parseInt(hex.slice(1, 3), 16);
+          let g = parseInt(hex.slice(3, 5), 16);
+          let b = parseInt(hex.slice(5, 7), 16);
+          r = Math.floor(r * (1 - percent / 100));
+          g = Math.floor(g * (1 - percent / 100));
+          b = Math.floor(b * (1 - percent / 100));
+          return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+        } catch (e) {
+          return hex;
+        }
       };
 
       // Função para determinar cor de contraste (preto ou branco)
       const getContrastFG = (hex: string) => {
-        const r = parseInt(hex.slice(1, 3), 16);
-        const g = parseInt(hex.slice(3, 5), 16);
-        const b = parseInt(hex.slice(5, 7), 16);
-        const yiq = (r * 299 + g * 587 + b * 114) / 1000;
-        return yiq >= 128 ? '#000000' : '#ffffff';
+        try {
+          const r = parseInt(hex.slice(1, 3), 16);
+          const g = parseInt(hex.slice(3, 5), 16);
+          const b = parseInt(hex.slice(5, 7), 16);
+          const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+          return yiq >= 128 ? '#000000' : '#ffffff';
+        } catch (e) {
+          return '#ffffff';
+        }
       };
 
       if (orgId) {
@@ -66,25 +77,30 @@ export default function App() {
             .single();
 
           if (data && !error) {
-            // Atualizar a Configuração Ativa com campos Timespage (tp_)
-            ACTIVE_CONFIG.name = data.name;
-            ACTIVE_CONFIG.shortName = data.name.split(' ')[0];
-            ACTIVE_CONFIG.colors = {
+            const newConfig = {
+              ...STATIC_CONFIG,
+              name: data.name,
+              shortName: data.tp_short_name || data.name.split(' ')[0],
+              colors: {
                 primary: data.tp_primary_color || data.primary_color || STATIC_CONFIG.colors.primary,
                 secondary: data.tp_secondary_color || data.secondary_color || STATIC_CONFIG.colors.secondary,
-            };
-            ACTIVE_CONFIG.logo = {
+              },
+              logo: {
                 main: data.tp_logo_url || data.logo_url || STATIC_CONFIG.logo.main,
                 white: data.tp_logo_url || data.logo_url || STATIC_CONFIG.logo.white,
-            };
-            ACTIVE_CONFIG.social = {
+              },
+              social: {
                 instagram: data.tp_instagram || STATIC_CONFIG.social.instagram,
                 facebook: data.tp_facebook || STATIC_CONFIG.social.facebook,
                 twitter: data.tp_twitter_x || STATIC_CONFIG.social.twitter,
                 youtube: data.tp_youtube || STATIC_CONFIG.social.youtube,
                 whatsapp: data.tp_whatsapp || '',
+              },
+              address: data.tp_address || data.address || STATIC_CONFIG.address,
+              orgId: orgId
             };
-            ACTIVE_CONFIG.address = data.tp_address || data.address || STATIC_CONFIG.address;
+
+            setActiveConfig(newConfig);
 
             document.title = data.name;
             let favicon = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
@@ -97,8 +113,8 @@ export default function App() {
 
             // Injetar Tokens White Label (CSS Variables)
             const root = document.documentElement;
-            const p = data.tp_primary_color || data.primary_color || STATIC_CONFIG.colors.primary;
-            const s = data.tp_secondary_color || data.secondary_color || STATIC_CONFIG.colors.secondary;
+            const p = newConfig.colors.primary;
+            const s = newConfig.colors.secondary;
 
             root.style.setProperty('--brand-primary', p);
             root.style.setProperty('--brand-primary-dark', darkenColor(p, 20));
@@ -122,15 +138,18 @@ export default function App() {
   if (!isReady) return null;
 
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    <ConfigContext.Provider value={activeConfig}>
+      <Router>
+        <AppContent />
+      </Router>
+    </ConfigContext.Provider>
   );
 }
 
 function AppContent() {
   const location = useLocation();
   const isAdmin = location.pathname === '/admin';
+  const config = useContext(ConfigContext);
 
   return (
     <div className={`min-h-screen font-sans selection:bg-primary selection:text-white ${isAdmin ? 'bg-admin-bg' : 'bg-black'}`}>

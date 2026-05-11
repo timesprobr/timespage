@@ -1,9 +1,11 @@
 import { motion } from 'motion/react';
 import { FileText, Download, ShieldCheck, Calendar, FileImage, ChevronDown, ChevronUp, Eye, Paperclip } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { supabase } from '../lib/supabase';
+import { ConfigContext } from '../App';
 
 export default function Transparency() {
+  const config = useContext(ConfigContext);
   const [reports, setReports] = useState<any[]>([]);
   const [expandedReports, setExpandedReports] = useState<Record<string, boolean>>({});
 
@@ -51,12 +53,12 @@ export default function Transparency() {
             transition={{ duration: 0.6 }}
             className="space-y-3"
           >
-            <span className="text-red-600 font-black uppercase text-[10px] tracking-[0.5em] mb-2 block">Portal da Transparência</span>
+            <span style={{ color: config.colors.primary }} className="font-black uppercase text-[10px] tracking-[0.5em] mb-2 block">Portal da Transparência</span>
             <h1 className="text-4xl md:text-6xl font-manrope font-extrabold uppercase tracking-tight leading-none text-white">
-              PORTAL DA <span className="text-red-700">TRANSPARÊNCIA</span>
+              PORTAL DA <span style={{ color: config.colors.primary }}>TRANSPARÊNCIA</span>
             </h1>
             <p className="text-sm md:text-base text-gray-400 max-w-2xl font-medium leading-relaxed">
-              Compromisso com a ética, integridade e clareza na gestão do Racing Futebol Clube. 
+              Compromisso com a ética, integridade e clareza na gestão do {config.name}. 
               Acesso público a relatórios, balanços e documentos oficiais.
             </p>
           </motion.div>
@@ -78,9 +80,10 @@ export default function Transparency() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-white border-t-4 border-t-red-600 border border-gray-200 p-8 md:p-12 relative group shadow-[0_20px_50px_-20px_rgba(0,0,0,0.15)] rounded-sm hover:shadow-2xl transition-all duration-500"
+                className="bg-white border-t-4 border border-gray-200 p-8 md:p-12 relative group shadow-[0_20px_50px_-20px_rgba(0,0,0,0.15)] rounded-sm hover:shadow-2xl transition-all duration-500"
+                style={{ borderTopColor: config.colors.primary }}
               >
-                <div className="absolute top-0 right-8 -translate-y-1/2 bg-black text-white px-6 py-2 font-black italic text-xs shadow-2xl tracking-widest border border-red-600/20">
+                <div className="absolute top-0 right-8 -translate-y-1/2 bg-black text-white px-6 py-2 font-black italic text-xs shadow-2xl tracking-widest border" style={{ borderColor: `${config.colors.primary}33` }}>
                   EXERCÍCIO {report.year}
                 </div>
 
@@ -90,7 +93,7 @@ export default function Transparency() {
                       <h2 className="text-2xl md:text-3xl font-black uppercase italic tracking-tighter text-black leading-none">
                         {report.title}
                       </h2>
-                      <div className="flex items-center gap-2 text-red-600 font-bold text-[10px] uppercase tracking-widest">
+                      <div className="flex items-center gap-2 font-bold text-[10px] uppercase tracking-widest" style={{ color: config.colors.primary }}>
                         <Calendar size={12} />
                         Publicado em: {report.datePublished}
                       </div>
@@ -102,7 +105,7 @@ export default function Transparency() {
 
                   <div className="relative">
                     <div className={`text-gray-700 font-medium leading-loose text-sm md:text-base whitespace-pre-wrap transition-all duration-700 ease-in-out overflow-hidden ${!expandedReports[report.id] ? 'max-h-48' : 'max-h-[10000px]'}`}>
-                      <div className="bg-gray-50/50 p-6 md:p-8 border-l-4 border-red-600 rounded-r-sm italic">
+                      <div className="bg-gray-50/50 p-6 md:p-8 border-l-4 rounded-r-sm italic" style={{ borderLeftColor: config.colors.primary }}>
                         {report.content}
                       </div>
                     </div>
@@ -114,7 +117,8 @@ export default function Transparency() {
                     {report.content && report.content.length > 200 && (
                       <button 
                         onClick={() => toggleReport(report.id)}
-                        className="mt-8 flex items-center justify-center gap-3 w-full md:w-auto px-10 py-5 bg-red-600 text-white font-black uppercase text-xs tracking-[0.2em] hover:bg-black transition-all shadow-[0_10px_20px_-5px_rgba(220,38,38,0.4)] hover:shadow-black/20 group relative z-20 active:scale-95"
+                        className="mt-8 flex items-center justify-center gap-3 w-full md:w-auto px-10 py-5 text-white font-black uppercase text-xs tracking-[0.2em] hover:bg-black transition-all shadow-lg group relative z-20 active:scale-95"
+                        style={{ backgroundColor: config.colors.primary }}
                       >
                         {expandedReports[report.id] ? (
                           <>Recolher Relatório <ChevronUp size={18} className="group-hover:-translate-y-1 transition-transform" /></>
@@ -128,17 +132,18 @@ export default function Transparency() {
                   {report.attachments && report.attachments.length > 0 && (
                     <div className="pt-8 mt-8 border-t border-gray-100 space-y-6">
                       <h4 className="text-xs font-black uppercase tracking-[0.3em] text-black flex items-center gap-2">
-                        <Paperclip size={16} className="text-red-600" /> Documentação Auxiliar
+                        <Paperclip size={16} style={{ color: config.colors.primary }} /> Documentação Auxiliar
                       </h4>
                       <div className="space-y-3">
                         {report.attachments.map((file: any, i: number) => (
                           <div 
                             key={i}
-                            className="flex flex-col md:flex-row md:items-center justify-between p-6 bg-gray-50/50 border border-gray-100 hover:border-red-600/30 transition-all shadow-sm rounded-sm gap-4 group/att"
+                            className="flex flex-col md:flex-row md:items-center justify-between p-6 bg-gray-50/50 border border-gray-100 transition-all shadow-sm rounded-sm gap-4 group/att hover:border-[var(--hover-color)]"
+                            style={{ '--hover-color': `${config.colors.primary}4d` } as any}
                           >
                             <div className="flex items-center gap-4">
                               {file.type === 'pdf' ? (
-                                <div className="bg-red-600 text-white p-3 rounded shadow-lg">
+                                <div className="text-white p-3 rounded shadow-lg" style={{ backgroundColor: config.colors.primary }}>
                                   <FileText size={20} />
                                 </div>
                               ) : (
@@ -152,7 +157,7 @@ export default function Transparency() {
                                   <span className="text-[9px] bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full font-black uppercase tracking-tighter">
                                     {file.type || 'PDF'}
                                   </span>
-                                  <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Racing FC ©</span>
+                                  <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">{config.shortName} ©</span>
                                 </div>
                               </div>
                             </div>
@@ -162,7 +167,8 @@ export default function Transparency() {
                                 href={getSafeUrl(file.url)}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex-1 md:flex-none text-center px-6 py-3 bg-red-600 text-white text-[10px] font-black uppercase tracking-[0.2em] hover:bg-black transition-all flex items-center justify-center gap-2 shadow-lg shadow-red-600/10 active:scale-95"
+                                className="flex-1 md:flex-none text-center px-6 py-3 text-white text-[10px] font-black uppercase tracking-[0.2em] hover:bg-black transition-all flex items-center justify-center gap-2 shadow-lg active:scale-95"
+                                style={{ backgroundColor: config.colors.primary }}
                               >
                                 Visualizar <Eye size={14} />
                               </a>

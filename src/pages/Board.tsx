@@ -1,11 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { motion } from 'motion/react';
 import { Shield, User } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { ConfigContext } from '../App';
 
 export default function Board() {
   const [boardMembers, setBoardMembers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const config = useContext(ConfigContext);
 
   useEffect(() => {
     const fetchBoard = async () => {
@@ -50,20 +52,20 @@ export default function Board() {
   return (
     <div className="min-h-screen bg-white">
       {/* Reduced Header - Keep Dark */}
-      <section className="relative h-[30vh] flex items-center overflow-hidden bg-black">
-        <div className="absolute inset-0 bg-[#c40000]/10 z-0"></div>
+      <section className="relative h-[25vh] flex items-center overflow-hidden bg-black">
+        <div className="absolute inset-0 z-0 opacity-20" style={{ backgroundColor: config.colors.primary }}></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 w-full">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             className="space-y-2"
           >
-            <span className="text-red-600 font-black uppercase text-[10px] tracking-[0.4em]">Racing Futebol Clube</span>
+            <span style={{ color: config.colors.primary }} className="font-black uppercase text-[10px] tracking-[0.4em]">{config.name}</span>
             <h1 className="text-3xl md:text-5xl font-manrope font-extrabold text-white uppercase tracking-tight leading-none">
-              Diretoria <span className="text-[#c40000]">Institucional</span>
+              Diretoria <span style={{ color: config.colors.primary }}>Institucional</span>
             </h1>
             <p className="text-gray-400 font-medium text-sm max-w-xl">
-              Liderança e governança dedicada à excelência do rubro-negro.
+              Liderança e governança dedicada à excelência do {config.shortName}.
             </p>
           </motion.div>
         </div>
@@ -85,7 +87,7 @@ export default function Board() {
                   <h2 className="text-2xl font-manrope font-extrabold text-black uppercase tracking-tight whitespace-nowrap">
                     {section.title}
                   </h2>
-                  <div className="h-px bg-red-600/20 w-full"></div>
+                  <div className="h-px w-full" style={{ backgroundColor: `${config.colors.primary}33` }}></div>
                 </div>
                 <p className="text-gray-500 text-xs font-medium uppercase tracking-wider">{section.description}</p>
               </div>
@@ -100,16 +102,16 @@ export default function Board() {
                     transition={{ delay: index * 0.05 }}
                     className="group"
                   >
-                    <div className="bg-gray-50 border border-gray-100 p-4 hover:border-red-600/40 transition-all text-center shadow-sm h-full">
-                      <div className="aspect-square bg-gray-200 rounded-full mb-4 mx-auto overflow-hidden border-2 border-white group-hover:border-red-600/30 transition-colors flex items-center justify-center">
+                    <div className="bg-gray-50 border border-gray-100 p-4 transition-all text-center shadow-sm h-full hover:border-[var(--hover-color)]" style={{ '--hover-color': `${config.colors.primary}66` } as any}>
+                      <div className="aspect-square bg-gray-200 rounded-full mb-4 mx-auto overflow-hidden border-2 border-white group-hover:border-[var(--hover-color)] transition-colors flex items-center justify-center" style={{ '--hover-color': `${config.colors.primary}4d` } as any}>
                          {member.photoUrl ? (
                            <img src={member.photoUrl} alt={member.name} className="w-full h-full object-cover" />
                          ) : (
-                           <User size={32} className="text-gray-400 group-hover:text-red-600 transition-colors" />
+                           <User size={32} className="text-gray-400 group-hover:text-[var(--hover-color)] transition-colors" style={{ '--hover-color': config.colors.primary } as any} />
                          )}
                       </div>
                       <h3 className="text-xs font-black text-black uppercase italic tracking-tight leading-tight">{member.name}</h3>
-                      <p className="text-[10px] text-red-600 font-bold uppercase mt-1 tracking-tight">{member.role}</p>
+                      <p className="text-[10px] font-bold uppercase mt-1 tracking-tight" style={{ color: config.colors.primary }}>{member.role}</p>
                     </div>
                   </motion.div>
                 ))}
