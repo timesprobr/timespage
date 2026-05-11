@@ -55,7 +55,7 @@ export default function Trophies() {
             className="space-y-4"
           >
             <span className="text-red-600 font-black uppercase text-xs tracking-[0.5em] mb-4 block">Memorial Racing FC</span>
-            <h1 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter mb-4 leading-none text-white">
+            <h1 className="text-4xl md:text-6xl font-manrope font-extrabold uppercase tracking-tight mb-4 leading-none text-white">
               GALERIA DE <span className="text-red-700">TROFÉUS</span>
             </h1>
             <p className="text-lg text-gray-400 max-w-3xl font-medium leading-relaxed">

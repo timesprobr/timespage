@@ -50,7 +50,7 @@ export default function Registration() {
             className="space-y-2"
           >
             <span className="text-primary font-black uppercase text-[10px] tracking-[0.4em]">Escolinha de Futebol</span>
-            <h1 className="text-3xl md:text-5xl font-black text-white uppercase italic tracking-tighter leading-none">
+            <h1 className="text-3xl md:text-5xl font-manrope font-extrabold text-white uppercase tracking-tight leading-none">
               Pré-Matrícula <span className="text-primary">Atleta</span>
             </h1>
             <p className="text-gray-400 font-medium text-sm max-w-xl">

@@ -66,17 +66,25 @@ export default function App() {
             .single();
 
           if (data && !error) {
-            // Atualizar a Configuração Ativa (Mutação para garantir visibilidade nos componentes)
+            // Atualizar a Configuração Ativa com campos Timespage (tp_)
             ACTIVE_CONFIG.name = data.name;
             ACTIVE_CONFIG.shortName = data.name.split(' ')[0];
             ACTIVE_CONFIG.colors = {
-                primary: data.primary_color || STATIC_CONFIG.colors.primary,
-                secondary: data.secondary_color || STATIC_CONFIG.colors.secondary,
+                primary: data.tp_primary_color || data.primary_color || STATIC_CONFIG.colors.primary,
+                secondary: data.tp_secondary_color || data.secondary_color || STATIC_CONFIG.colors.secondary,
             };
             ACTIVE_CONFIG.logo = {
-                main: data.logo_url || STATIC_CONFIG.logo.main,
-                white: data.logo_url || STATIC_CONFIG.logo.white,
+                main: data.tp_logo_url || data.logo_url || STATIC_CONFIG.logo.main,
+                white: data.tp_logo_url || data.logo_url || STATIC_CONFIG.logo.white,
             };
+            ACTIVE_CONFIG.social = {
+                instagram: data.tp_instagram || STATIC_CONFIG.social.instagram,
+                facebook: data.tp_facebook || STATIC_CONFIG.social.facebook,
+                twitter: data.tp_twitter_x || STATIC_CONFIG.social.twitter,
+                youtube: data.tp_youtube || STATIC_CONFIG.social.youtube,
+                whatsapp: data.tp_whatsapp || '',
+            };
+            ACTIVE_CONFIG.address = data.tp_address || data.address || STATIC_CONFIG.address;
 
             document.title = data.name;
             let favicon = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
@@ -85,12 +93,12 @@ export default function App() {
               favicon.rel = 'icon';
               document.head.appendChild(favicon);
             }
-            favicon.href = data.logo_url || '/favicon.ico';
+            favicon.href = data.tp_favicon_url || data.tp_logo_url || data.logo_url || '/favicon.ico';
 
-            // Injetar Tokens White Label
+            // Injetar Tokens White Label (CSS Variables)
             const root = document.documentElement;
-            const p = data.primary_color || STATIC_CONFIG.colors.primary;
-            const s = data.secondary_color || STATIC_CONFIG.colors.secondary;
+            const p = data.tp_primary_color || data.primary_color || STATIC_CONFIG.colors.primary;
+            const s = data.tp_secondary_color || data.secondary_color || STATIC_CONFIG.colors.secondary;
 
             root.style.setProperty('--brand-primary', p);
             root.style.setProperty('--brand-primary-dark', darkenColor(p, 20));

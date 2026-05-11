@@ -60,7 +60,7 @@ export default function Squad() {
             className="space-y-1"
           >
             <span className="text-red-600 font-black uppercase text-[8px] tracking-[0.5em]">Racing Futebol Clube</span>
-            <h1 className="text-xl md:text-3xl font-black text-white uppercase italic tracking-tighter leading-none">
+            <h1 className="text-xl md:text-3xl font-manrope font-extrabold text-white uppercase tracking-tight leading-none">
               Elenco <span className="text-[#c40000]">{displayName}</span>
             </h1>
             <p className="text-gray-400 font-medium text-xs max-w-2xl">

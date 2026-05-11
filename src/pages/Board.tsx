@@ -59,7 +59,7 @@ export default function Board() {
             className="space-y-2"
           >
             <span className="text-red-600 font-black uppercase text-[10px] tracking-[0.4em]">Racing Futebol Clube</span>
-            <h1 className="text-3xl md:text-5xl font-black text-white uppercase italic tracking-tighter leading-none">
+            <h1 className="text-3xl md:text-5xl font-manrope font-extrabold text-white uppercase tracking-tight leading-none">
               Diretoria <span className="text-[#c40000]">Institucional</span>
             </h1>
             <p className="text-gray-400 font-medium text-sm max-w-xl">
@@ -82,7 +82,7 @@ export default function Board() {
             <div key={section.id} className="space-y-8">
               <div className="space-y-2">
                 <div className="flex items-center gap-4">
-                  <h2 className="text-2xl font-black text-black uppercase italic tracking-tighter whitespace-nowrap">
+                  <h2 className="text-2xl font-manrope font-extrabold text-black uppercase tracking-tight whitespace-nowrap">
                     {section.title}
                   </h2>
                   <div className="h-px bg-red-600/20 w-full"></div>

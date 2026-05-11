@@ -52,8 +52,8 @@ export default function Transparency() {
             className="space-y-3"
           >
             <span className="text-red-600 font-black uppercase text-[10px] tracking-[0.5em] mb-2 block">Portal da Transparência</span>
-            <h1 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter leading-none text-white">
-              PRESTAÇÃO <span className="text-red-600">DE CONTAS</span>
+            <h1 className="text-4xl md:text-6xl font-manrope font-extrabold uppercase tracking-tight leading-none text-white">
+              PORTAL DA <span className="text-red-700">TRANSPARÊNCIA</span>
             </h1>
             <p className="text-sm md:text-base text-gray-400 max-w-2xl font-medium leading-relaxed">
               Compromisso com a ética, integridade e clareza na gestão do Racing Futebol Clube. 

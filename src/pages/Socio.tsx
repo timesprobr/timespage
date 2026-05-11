@@ -57,7 +57,7 @@ export default function Socio() {
             className="space-y-4"
           >
             <span className="text-primary font-black uppercase text-[10px] tracking-[0.5em]">Programa Oficial</span>
-            <h1 className="text-4xl md:text-6xl font-black text-white uppercase italic tracking-tighter leading-none">
+            <h1 className="text-4xl md:text-6xl font-manrope font-extrabold text-white uppercase tracking-tight leading-none">
               Sócio <span className="text-primary">Torcedor</span>
             </h1>
             <p className="text-gray-300 font-medium text-lg max-w-2xl italic">

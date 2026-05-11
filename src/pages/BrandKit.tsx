@@ -49,7 +49,7 @@ export default function BrandKit() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter mb-6"
+            className="text-4xl md:text-5xl font-manrope font-extrabold uppercase tracking-tight mb-6"
           >
             Kit de <span className="text-red-600">Marca</span>
           </motion.h1>
@@ -103,7 +103,7 @@ export default function BrandKit() {
             >
               <div className="flex items-center gap-3 text-red-600 mb-8">
                 <Palette className="w-6 h-6" />
-                <h2 className="text-xl md:text-2xl font-black uppercase italic tracking-tight">Cores Oficiais</h2>
+                <h2 className="text-xl md:text-2xl font-manrope font-extrabold uppercase tracking-tight">Cores Oficiais</h2>
               </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -146,13 +146,13 @@ export default function BrandKit() {
             >
               <div className="flex items-center gap-3 text-red-600 mb-8">
                 <Type className="w-6 h-6" />
-                <h2 className="text-xl md:text-2xl font-black uppercase italic tracking-tight">Tipografia</h2>
+                <h2 className="text-xl md:text-2xl font-manrope font-extrabold uppercase tracking-tight">Tipografia</h2>
               </div>
               
               <div className="space-y-8 flex-1 flex flex-col justify-center">
                 <div className="space-y-1">
                   <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Principal</span>
-                  <p className="text-2xl font-black italic uppercase tracking-tighter">Racing FC Bold</p>
+                  <p className="text-2xl font-manrope font-extrabold uppercase tracking-tight">Manrope Bold</p>
                 </div>
                 <div className="space-y-1">
                   <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Secundária</span>
