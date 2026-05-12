@@ -92,12 +92,12 @@ export default function Navbar() {
         <div className="bg-primary h-20 flex items-center relative z-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex items-center justify-between">
             {/* Logo / Shield - Overlapping */}
-            <div className="relative w-40 h-full flex-shrink-0">
-              <Link to={config.orgId ? `/?orgId=${config.orgId}` : "/"} className="absolute -top-12 left-0 z-50 group">
+            <div className="relative w-28 h-full flex-shrink-0 flex items-center">
+              <Link to={config.orgId ? `/?orgId=${config.orgId}` : "/"} className="absolute -top-6 left-0 z-50 group">
                 <img 
                   src={config.logo.main} 
                   alt={`${config.shortName} Shield`} 
-                  className="w-40 h-48 object-contain transition-transform group-hover:scale-105 [filter:drop-shadow(2px_0_0_white)_drop-shadow(-2px_0_0_white)_drop-shadow(0_2px_0_white)_drop-shadow(0_-2px_0_white)]" 
+                  className="w-28 h-32 object-contain transition-transform group-hover:scale-105 [filter:drop-shadow(2px_0_0_white)_drop-shadow(-2px_0_0_white)_drop-shadow(0_2px_0_white)_drop-shadow(0_-2px_0_white)]" 
                 />
               </Link>
             </div>
@@ -209,7 +209,7 @@ export default function Navbar() {
               <img 
                 src={config.logo.main} 
                 alt={`${config.shortName} Shield`} 
-                className="h-24 w-auto drop-shadow-2xl [filter:drop-shadow(1px_1px_0_white)_drop-shadow(-1px_-1px_0_white)]" 
+                className="h-20 w-auto drop-shadow-2xl [filter:drop-shadow(1px_1px_0_white)_drop-shadow(-1px_-1px_0_white)]" 
               />
             </Link>
           </div>

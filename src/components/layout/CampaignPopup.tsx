@@ -9,10 +9,12 @@ interface Campaign {
   id: string;
   type: string;
   image: string;
-  destinationUrl: string;
+  destination_url?: string;
   title?: string;
   active: boolean;
   clicks?: number;
+  button_text?: string;
+  image_url?: string;
 }
 
 export default function CampaignPopup() {
@@ -33,7 +35,7 @@ export default function CampaignPopup() {
 
         if (docs && docs.length > 0) {
           // Filtra popups e pega o mais recente
-          const popups = docs.filter(c => c.type === 'popup');
+          const popups = docs.filter(c => c.type?.toLowerCase() === 'popup');
           if (popups.length > 0) {
             const latest = popups.sort((a: any, b: any) => {
               const dateA = new Date(a.created_at || a.createdAt || 0).getTime();
@@ -105,18 +107,26 @@ export default function CampaignPopup() {
             <div className="relative aspect-square w-full overflow-hidden">
                {/* Clickable Area */}
                <a 
-                 href={campaign.destinationUrl || '#'} 
-                 target={campaign.destinationUrl?.startsWith('http') ? '_blank' : '_self'}
+                 href={campaign.destination_url || campaign.destinationUrl || '#'} 
+                 target={(campaign.destination_url || campaign.destinationUrl)?.startsWith('http') ? '_blank' : '_self'}
                  rel="noopener noreferrer"
                  onClick={() => { handlePopupClick(); closePopup(); }}
                  className="block w-full h-full"
                >
                   <img 
-                    src={campaign.image} 
+                    src={campaign.image_url || campaign.image} 
                     alt={campaign.title || `Campanha ${config.shortName}`} 
                     className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                   />
                   
+                  {/* Botão CTA Overlay */}
+                  {campaign.button_text && (
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6 pointer-events-none">
+                       <span className="w-full text-center py-4 rounded-2xl bg-[#a3e635] text-black text-xs font-black uppercase tracking-[0.2em] shadow-[0_0_20px_rgba(163,230,53,0.3)]">
+                          {campaign.button_text}
+                       </span>
+                    </div>
+                  )}
                </a>
             </div>
             

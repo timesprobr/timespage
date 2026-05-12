@@ -141,14 +141,14 @@ export default function Hero() {
                 scale: { duration: 0.2 },
                 y: { duration: 0.2 }
               }}
-              className="relative group max-w-[280px] w-full cursor-pointer"
+              className="relative group max-w-[340px] w-full cursor-pointer"
             >
               <div className="absolute inset-0 bg-primary/20 rounded-xl blur-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
 
               <div className="relative bg-[#0f0f0f] rounded-xl overflow-hidden shadow-2xl border border-white/5 group-hover:border-white/20 transition-colors duration-300">
                 <a 
-                  href={activeCard.destinationUrl || '#'} 
-                  target={activeCard.destinationUrl?.startsWith('http') ? '_blank' : '_self'}
+                  href={activeCard.destination_url || activeCard.destinationUrl || '#'} 
+                  target={(activeCard.destination_url || activeCard.destinationUrl)?.startsWith('http') ? '_blank' : '_self'}
                   rel="noopener noreferrer"
                   onClick={handleCardClick}
                   className="block"
@@ -181,7 +181,7 @@ export default function Hero() {
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="bg-primary hover:opacity-90 text-white px-3 py-2 rounded-sm text-[8px] font-black uppercase tracking-widest transition-all duration-300 shadow-lg shadow-primary/20 group-hover:shadow-primary/40 whitespace-nowrap italic">
-                        {activeCard.buttonText || 'Acessar'}
+                        {activeCard.button_text || activeCard.buttonText || 'Acessar'}
                       </span>
                     </div>
                   </div>

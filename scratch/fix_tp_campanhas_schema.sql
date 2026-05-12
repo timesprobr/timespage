@@ -1,7 +1,11 @@
--- Criação da tabela tp_campanhas para isolar as campanhas de marketing do Timespage
--- Execute este script no SQL Editor do Supabase
+-- Script de correção da tabela tp_campanhas
+-- Execute no SQL Editor do Supabase
 
-CREATE TABLE IF NOT EXISTS public.tp_campanhas (
+-- Passo 1: Remover a tabela atual que estava com campos errados
+DROP TABLE IF EXISTS public.tp_campanhas;
+
+-- Passo 2: Criar a tabela novamente com todos os campos mapeados corretamente em minúsculo (snake_case)
+CREATE TABLE public.tp_campanhas (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     org_id uuid NOT NULL,
     title text,
@@ -9,7 +13,7 @@ CREATE TABLE IF NOT EXISTS public.tp_campanhas (
     subtitle text,
     button_text text,
     image_url text,
-    destinationUrl text,
+    destination_url text,
     type text,
     active boolean DEFAULT true,
     mkt_copy text,
@@ -24,18 +28,14 @@ CREATE TABLE IF NOT EXISTS public.tp_campanhas (
 -- Configura as políticas de RLS
 ALTER TABLE public.tp_campanhas ENABLE ROW LEVEL SECURITY;
 
--- Permite acesso anônimo para leitura (necessário para o site público)
 CREATE POLICY "Permitir leitura anônima de campanhas ativas" 
 ON public.tp_campanhas FOR SELECT 
 USING (active = true);
 
--- Permite todas as operações para usuários autenticados (Admin)
 CREATE POLICY "Permitir controle total para admins" 
 ON public.tp_campanhas FOR ALL 
 USING (auth.role() = 'authenticated');
 
--- Atualiza a contagem de cliques (precisa permitir UPDATE mesmo anônimo caso usem RPC ou update direto, embora idealmente fosse por RPC. Como atualmente fazem update direto com a key anon, precisamos liberar UPDATE para o campo clicks)
--- ATENÇÃO: Permitir UPDATE anônimo diretamente na tabela pode ser um risco, mas para manter a compatibilidade com a implementação atual onde o front faz .update({clicks}):
 CREATE POLICY "Permitir contagem de cliques anônima" 
 ON public.tp_campanhas FOR UPDATE 
 USING (true)

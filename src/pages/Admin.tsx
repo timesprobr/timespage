@@ -128,9 +128,9 @@ export default function Admin() {
       title: '',
       headline: '',
       subtitle: '',
-      buttonText: 'Saiba Mais',
+      button_text: 'Saiba Mais',
       image_url: '',
-      destinationUrl: '',
+      destination_url: '',
       type: 'Card',
       active: true,
       mkt_copy: '',
@@ -419,9 +419,9 @@ export default function Admin() {
                title: '',
                headline: '',
                subtitle: '',
-               buttonText: 'Saiba Mais',
+               button_text: 'Saiba Mais',
                image_url: '',
-               destinationUrl: '',
+               destination_url: '',
                type: 'Card',
                active: true,
                mkt_copy: '',
@@ -1642,9 +1642,9 @@ export default function Admin() {
                                  title: '',
                                  headline: '',
                                  subtitle: '',
-                                 buttonText: 'Saiba Mais',
+                                 button_text: 'Saiba Mais',
                                  image_url: '',
-                                 destinationUrl: '',
+                                 destination_url: '',
                                  type: 'Popup',
                                  active: true,
                                  mkt_copy: '',
@@ -1718,8 +1718,8 @@ export default function Admin() {
                                                 setEditingCampaign(camp);
                                                 setCampaignForm({
                                                    title: camp.title || '', headline: camp.headline || '', subtitle: camp.subtitle || '',
-                                                   buttonText: camp.buttonText || 'Saiba Mais', image_url: camp.image_url || '',
-                                                   destinationUrl: camp.destinationUrl || '', type: camp.type || 'Card',
+                                                   button_text: camp.button_text || camp.buttonText || 'Saiba Mais', image_url: camp.image_url || '',
+                                                   destination_url: camp.destination_url || camp.destinationUrl || '', type: camp.type || 'Card',
                                                    active: camp.active !== false, mkt_copy: camp.mkt_copy || '',
                                                    social_instagram: camp.social_instagram || '', responsible_whatsapp: camp.responsible_whatsapp || '',
                                                    social_facebook: camp.social_facebook || ''
@@ -1905,6 +1905,18 @@ export default function Admin() {
 
                                              <div className="space-y-1.5">
                                                 <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 block">
+                                                   Texto do Botão (CTA) <span className="text-saas-primary font-bold">(Call to Action)</span>
+                                                </label>
+                                                <input 
+                                                   type="text" required placeholder="Ex: ACESSAR OFERTA"
+                                                   value={campaignForm.button_text}
+                                                   onChange={e => setCampaignForm({...campaignForm, button_text: e.target.value})}
+                                                   className="w-full bg-zinc-900 border border-white/5 rounded-xl p-3 text-xs text-white font-bold outline-none focus:border-saas-primary/50 transition-all"
+                                                />
+                                             </div>
+
+                                             <div className="space-y-1.5">
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 block">
                                                    Imagem de Alta Conversão <span className="text-saas-primary font-bold">(Sugestão: 1080 x 1080px)</span>
                                                 </label>
                                                 <div className="flex gap-2">
@@ -1933,8 +1945,8 @@ export default function Admin() {
                                                 <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 block">URL de Destino do Clique</label>
                                                 <input 
                                                    type="url" required placeholder="https://loja.clube.com.br/produto"
-                                                   value={campaignForm.destinationUrl}
-                                                   onChange={e => setCampaignForm({...campaignForm, destinationUrl: e.target.value})}
+                                                   value={campaignForm.destination_url}
+                                                   onChange={e => setCampaignForm({...campaignForm, destination_url: e.target.value})}
                                                    className="w-full bg-zinc-900 border border-white/5 rounded-xl p-3 text-xs text-white font-bold outline-none focus:border-saas-primary/50 transition-all font-mono"
                                                 />
                                              </div>
@@ -1960,7 +1972,7 @@ export default function Admin() {
                                                          <img src={campaignForm.image_url} alt="Preview" className="w-full h-full object-cover" />
                                                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-4">
                                                             <span className="w-full text-center py-2 rounded-xl bg-saas-primary text-black text-[10px] font-black uppercase tracking-wider shadow-lg">
-                                                               Acessar Oferta
+                                                               {campaignForm.button_text || 'Acessar Oferta'}
                                                             </span>
                                                          </div>
                                                       </div>
@@ -2095,8 +2107,8 @@ export default function Admin() {
                                                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 block">Título do Botão</label>
                                                    <input 
                                                       type="text" required placeholder="Ex: Seja Sócio Agora"
-                                                      value={campaignForm.buttonText}
-                                                      onChange={e => setCampaignForm({...campaignForm, buttonText: e.target.value})}
+                                                      value={campaignForm.button_text}
+                                                      onChange={e => setCampaignForm({...campaignForm, button_text: e.target.value})}
                                                       className="w-full bg-zinc-900 border border-white/5 rounded-xl p-3 text-xs text-saas-primary font-black uppercase tracking-wider outline-none focus:border-saas-primary/50 transition-all"
                                                    />
                                                 </div>
@@ -2104,8 +2116,8 @@ export default function Admin() {
                                                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 block">Link de Destino</label>
                                                    <input 
                                                       type="url" required placeholder="https://socio.clube.com.br"
-                                                      value={campaignForm.destinationUrl}
-                                                      onChange={e => setCampaignForm({...campaignForm, destinationUrl: e.target.value})}
+                                                      value={campaignForm.destination_url}
+                                                      onChange={e => setCampaignForm({...campaignForm, destination_url: e.target.value})}
                                                       className="w-full bg-zinc-900 border border-white/5 rounded-xl p-3 text-xs text-white font-bold outline-none focus:border-saas-primary/50 transition-all font-mono"
                                                    />
                                                 </div>
@@ -2150,7 +2162,7 @@ export default function Admin() {
 
                                                    <div className="pt-2">
                                                       <div className="w-full text-center py-2.5 rounded-xl bg-saas-primary text-black font-black text-[10px] uppercase tracking-wider shadow-md truncate px-4">
-                                                         {campaignForm.buttonText || 'Clique Aqui'}
+                                                         {campaignForm.button_text || 'Clique Aqui'}
                                                       </div>
                                                    </div>
                                                 </div>
