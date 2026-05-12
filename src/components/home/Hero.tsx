@@ -37,7 +37,7 @@ export default function Hero() {
     const fetchHero = async () => {
       try {
         const { data, error } = await supabase
-          .from('highlights')
+          .from('tp_highlights')
           .select('*')
           .eq('id', 'hero')
           .single();
@@ -53,7 +53,7 @@ export default function Hero() {
       try {
         if (config.orgId) {
           const { data: orgCampaigns, error: campaignError } = await supabase
-            .from('campaigns')
+            .from('tp_campanhas')
             .select('*')
             .eq('org_id', config.orgId)
             .eq('active', true);
@@ -81,7 +81,7 @@ export default function Hero() {
       // Para o Supabase, precisaríamos de uma query RPC ou um update direto
       // Se não houver campo 'clicks', isso pode falhar. Assumindo que existe.
       const { error } = await supabase
-        .from('campaigns')
+        .from('tp_campanhas')
         .update({ clicks: (activeCard.clicks || 0) + 1 })
         .eq('id', activeCard.id);
     } catch (e) {

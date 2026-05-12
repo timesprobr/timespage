@@ -228,13 +228,13 @@ export default function Admin() {
 
   const fetchData = async (orgId: string | null) => {
       try {
-         let newsQuery = supabase.from('news').select('*');
-         let trophiesQuery = supabase.from('trophies').select('*');
-         let campaignsQuery = supabase.from('campaigns').select('*');
-         let boardQuery = supabase.from('board').select('*');
-         let transparencyQuery = supabase.from('transparency').select('*');
+         let newsQuery = supabase.from('tp_news').select('*');
+         let trophiesQuery = supabase.from('tp_trophies').select('*');
+         let campaignsQuery = supabase.from('tp_campanhas').select('*');
+         let boardQuery = supabase.from('tp_board').select('*');
+         let transparencyQuery = supabase.from('tp_transparency').select('*');
          let playersQuery = supabase.from('athletes').select('*, athlete_categories(id, name), athlete_modalities(id, name)');
-         let viewsQuery = supabase.from('page_views').select('*');
+         let viewsQuery = supabase.from('tp_page_views').select('*');
          let usersQuery = supabase.from('profiles').select('*');
          let registrationsQuery = supabase.from('registrations').select('*');
          let socioLeadsQuery = supabase.from('socio_leads').select('*');
@@ -265,7 +265,7 @@ export default function Admin() {
          ] = await Promise.all([
             newsQuery.order('createdAt', { ascending: false }),
             trophiesQuery.order('year', { ascending: false }),
-            campaignsQuery.order('createdAt', { ascending: false }),
+            campaignsQuery.order('created_at', { ascending: false }),
             boardQuery.order('name', { ascending: true }),
             transparencyQuery.order('year', { ascending: false }),
             registrationsQuery.order('created_at', { ascending: false }),
@@ -370,9 +370,9 @@ export default function Admin() {
 
          let result;
          if (editingNews) {
-            result = await supabase.from('news').update(newsData).eq('id', editingNews.id);
+            result = await supabase.from('tp_news').update(newsData).eq('id', editingNews.id);
          } else {
-            result = await supabase.from('news').insert([newsData]);
+            result = await supabase.from('tp_news').insert([newsData]);
          }
 
          if (!result.error) {
@@ -401,14 +401,14 @@ export default function Admin() {
 
          const campaignData = {
             ...campaignForm,
-            organization_id: orgId
+            org_id: orgId
          };
 
          let result;
          if (editingCampaign) {
-            result = await supabase.from('campaigns').update(campaignData).eq('id', editingCampaign.id);
+            result = await supabase.from('tp_campanhas').update(campaignData).eq('id', editingCampaign.id);
          } else {
-            result = await supabase.from('campaigns').insert([campaignData]);
+            result = await supabase.from('tp_campanhas').insert([campaignData]);
          }
 
          if (!result.error) {
@@ -443,7 +443,7 @@ export default function Admin() {
    const handleDeleteCampaign = async (id: string) => {
       if (!confirm('Deseja realmente excluir esta campanha?')) return;
       try {
-         const { error } = await supabase.from('campaigns').delete().eq('id', id);
+         const { error } = await supabase.from('tp_campanhas').delete().eq('id', id);
          if (!error) {
             showNotification('Campanha excluída!');
             fetchData(currentOrgId);
@@ -1072,7 +1072,7 @@ export default function Admin() {
                                        <button 
                                           onClick={async () => {
                                              if (confirm('Tem certeza que deseja excluir esta matéria?')) {
-                                                await supabase.from('news').delete().eq('id', item.id);
+                                                await supabase.from('tp_news').delete().eq('id', item.id);
                                                 setNews(news.filter(n => n.id !== item.id));
                                                 showNotification('Matéria excluída com sucesso', 'info');
                                              }
@@ -1703,7 +1703,7 @@ export default function Admin() {
                                           <button 
                                              onClick={async () => {
                                                 const updated = !camp.active;
-                                                await supabase.from('campaigns').update({ active: updated }).eq('id', camp.id);
+                                                await supabase.from('tp_campanhas').update({ active: updated }).eq('id', camp.id);
                                                 showNotification(`Campanha ${updated ? 'ativada' : 'pausada'} com sucesso!`, 'info');
                                                 fetchData(currentOrgId);
                                              }}

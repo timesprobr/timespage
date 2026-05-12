@@ -13,7 +13,7 @@ export default function Board() {
     const fetchBoard = async () => {
       try {
         const { data, error } = await supabase
-          .from('board')
+          .from('tp_board')
           .select('*')
           .order('name', { ascending: true });
 

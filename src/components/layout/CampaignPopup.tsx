@@ -26,7 +26,7 @@ export default function CampaignPopup() {
         if (!config.orgId) return;
 
         const { data: docs, error } = await supabase
-          .from('campaigns')
+          .from('tp_campanhas')
           .select('*')
           .eq('org_id', config.orgId)
           .eq('active', true);
@@ -36,8 +36,8 @@ export default function CampaignPopup() {
           const popups = docs.filter(c => c.type === 'popup');
           if (popups.length > 0) {
             const latest = popups.sort((a: any, b: any) => {
-              const dateA = new Date(a.createdAt || 0).getTime();
-              const dateB = new Date(b.createdAt || 0).getTime();
+              const dateA = new Date(a.created_at || a.createdAt || 0).getTime();
+              const dateB = new Date(b.created_at || b.createdAt || 0).getTime();
               return dateB - dateA;
             })[0];
             
@@ -63,7 +63,7 @@ export default function CampaignPopup() {
     if (!campaign) return;
     try {
       await supabase
-        .from('campaigns')
+        .from('tp_campanhas')
         .update({ clicks: (campaign.clicks || 0) + 1 })
         .eq('id', campaign.id);
     } catch (e) {

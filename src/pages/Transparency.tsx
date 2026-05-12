@@ -21,7 +21,7 @@ export default function Transparency() {
     const fetchReports = async () => {
       try {
         const { data, error } = await supabase
-          .from('transparency')
+          .from('tp_transparency')
           .select('*')
           .order('year', { ascending: false });
 

@@ -216,7 +216,7 @@ function AnalyticsTracker() {
 
         const device = /Mobile|Android|iPhone/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop';
         
-        const { data, error } = await supabase.from('page_views').insert({
+        const { data, error } = await supabase.from('tp_page_views').insert({
           org_id: orgId,
           url: location.pathname,
           referrer: document.referrer,
@@ -246,7 +246,7 @@ function AnalyticsTracker() {
     return () => {
       if (currentViewId) {
         const duration = Math.floor((Date.now() - startTimeRef.current) / 1000);
-        supabase.from('page_views')
+        supabase.from('tp_page_views')
           .update({ 
             duration_seconds: duration,
             click_data: clicksRef.current 

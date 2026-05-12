@@ -27,7 +27,7 @@ export default function Navbar() {
           console.warn('Geo API Error:', e);
         }
 
-        const { error } = await supabase.from('page_views').insert({
+        const { error } = await supabase.from('tp_page_views').insert({
           org_id: config.orgId || 'default',
           url: window.location.href,
           referrer: document.referrer || 'Direto',

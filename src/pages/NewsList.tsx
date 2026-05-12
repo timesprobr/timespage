@@ -28,7 +28,7 @@ export default function NewsList() {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        let query = supabase.from('news').select('*');
+        let query = supabase.from('tp_news').select('*');
         
         if (orgId) {
           query = query.eq('org_id', orgId);

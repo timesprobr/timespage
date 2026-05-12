@@ -10,7 +10,7 @@ export default function NewsBar() {
     const fetchNews = async () => {
       try {
         const { data, error } = await supabase
-          .from('news')
+          .from('tp_news')
           .select('*')
           .order('createdAt', { ascending: false })
           .limit(4);

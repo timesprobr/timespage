@@ -12,7 +12,7 @@ export default function Trophies() {
     const fetchTrophies = async () => {
       try {
         const { data, error } = await supabase
-          .from('trophies')
+          .from('tp_trophies')
           .select('*')
           .order('year', { ascending: false });
 

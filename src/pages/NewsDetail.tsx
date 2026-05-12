@@ -71,7 +71,7 @@ export default function NewsDetail() {
       if (!id) return;
       try {
         const { data, error } = await supabase
-          .from('news')
+          .from('tp_news')
           .select('*')
           .eq('id', id)
           .single();
