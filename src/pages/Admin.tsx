@@ -64,7 +64,7 @@ export default function Admin() {
    const [notification, setNotification] = useState<{ message: string, type: 'success' | 'error' | 'info' } | null>(null);
    const [session, setSession] = useState<any>(null);
    const [email, setEmail] = useState('');
-   const [password, setPassword] = useState('');
+   const [isEmailSent, setIsEmailSent] = useState(false);
    const [authError, setAuthError] = useState('');
    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
    const [orgName, setOrgName] = useState<string>('');
@@ -149,9 +149,15 @@ export default function Admin() {
       try {
          setIsSaving(true);
          setAuthError('');
-         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+         const { error } = await supabase.auth.signInWithOtp({ 
+            email,
+            options: {
+               emailRedirectTo: `${window.location.origin}/admin`
+            }
+         });
          if (error) throw error;
-         setSession(data.session);
+         setIsEmailSent(true);
+         showNotification('Link de acesso enviado!', 'success');
       } catch (err: any) {
          setAuthError(err.message || 'Erro ao realizar login');
       } finally {
@@ -414,55 +420,94 @@ export default function Admin() {
    };
 
    useEffect(() => {
-      // Verificar sessão
-      const checkSession = async () => {
+      document.title = "TimesPage - Construa seu site";
+      
+      let favicon = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
+      if (!favicon) {
+         favicon = document.createElement('link');
+         favicon.rel = 'icon';
+         document.head.appendChild(favicon);
+      }
+      favicon.href = '/icon%20timespro.jpg';
+
+      // Verificar sessão e carregar organização
+      const initializeAdmin = async () => {
          const { data: { session: currentSession } } = await supabase.auth.getSession();
          setSession(currentSession);
+         
+         const params = new URLSearchParams(window.location.search);
+         let targetOrgId = params.get('orgId');
+
+         if (currentSession?.user) {
+            // Tenta pegar do banco de dados caso seja um login fresco
+            const { data: profile } = await supabase
+               .from('profiles')
+               .select('organization_id')
+               .eq('id', currentSession.user.id)
+               .single();
+
+            if (profile?.organization_id) {
+               targetOrgId = profile.organization_id;
+               
+               // Se a URL não tiver o orgId, vamos adicionar para manter consistência
+               if (!params.get('orgId')) {
+                  const url = new URL(window.location.href);
+                  url.searchParams.set('orgId', targetOrgId);
+                  window.history.replaceState({}, '', url);
+               }
+            }
+         }
+
+         if (targetOrgId) {
+            setCurrentOrgId(targetOrgId);
+            // Busca o nome do clube e identidade
+            supabase.from('organizations').select('*').eq('id', targetOrgId).single().then(({ data }) => {
+               if (data) {
+                  setOrgName(data.name);
+                  document.title = `Admin - ${data.name}`;
+                  setClubIdentity({
+                     name: data.name || '',
+                     tp_primary_color: data.tp_primary_color || '#a3e635',
+                     tp_secondary_color: data.tp_secondary_color || '#000000',
+                     tp_logo_url: data.tp_logo_url || data.logo_url || '',
+                     tp_favicon_url: data.tp_favicon_url || data.logo_url || '',
+                     tp_email: data.tp_email || '',
+                     tp_phone: data.tp_phone || '',
+                     tp_whatsapp: data.tp_whatsapp || '',
+                     tp_address: data.tp_address || '',
+                     tp_instagram: data.tp_instagram || '',
+                     tp_facebook: data.tp_facebook || '',
+                     tp_twitter_x: data.tp_twitter_x || '',
+                     tp_linkedin: data.tp_linkedin || '',
+                     tp_youtube: data.tp_youtube || '',
+                     tp_active: data.tp_active || false,
+                     tp_short_name: ''
+                  });
+               }
+            });
+            fetchData(targetOrgId);
+         } else {
+            fetchData(null);
+         }
+
          setLoading(false);
       };
-      checkSession();
+      initializeAdmin();
 
       // Escutar mudanças de autenticação
       const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
         setSession(session);
+        if (_event === 'SIGNED_IN') {
+           initializeAdmin();
+        }
       });
 
       // Forçar Light Mode para alinhar com o sistema principal
       setTheme('light');
 
-      const params = new URLSearchParams(window.location.search);
-      const orgId = params.get('orgId');
-
-      if (orgId) {
-         setCurrentOrgId(orgId);
-         // Busca o nome do clube e identidade Timespage para personalizar o painel
-         supabase.from('organizations').select('*').eq('id', orgId).single().then(({ data }) => {
-            if (data) {
-               setOrgName(data.name);
-               document.title = `Admin - ${data.name}`;
-               setClubIdentity({
-                  name: data.name || '',
-                  tp_primary_color: data.tp_primary_color || '#a3e635',
-                  tp_secondary_color: data.tp_secondary_color || '#000000',
-                  tp_logo_url: data.tp_logo_url || '',
-                  tp_favicon_url: data.tp_favicon_url || '',
-                  tp_email: data.tp_email || '',
-                  tp_phone: data.tp_phone || '',
-                  tp_whatsapp: data.tp_whatsapp || '',
-                  tp_address: data.tp_address || '',
-                  tp_instagram: data.tp_instagram || '',
-                  tp_facebook: data.tp_facebook || '',
-                  tp_twitter_x: data.tp_twitter_x || '',
-                  tp_linkedin: data.tp_linkedin || '',
-                  tp_youtube: data.tp_youtube || '',
-                  tp_active: data.tp_active || false
-               });
-            }
-         });
-         fetchData(orgId);
-      } else {
-         fetchData(null);
-      }
+      return () => {
+         subscription.unsubscribe();
+      };
       setLoading(false);
    }, []);
 
@@ -489,62 +534,70 @@ export default function Admin() {
             >
                <div className="bg-[#121214] border border-white/5 p-10 rounded-[32px] shadow-2xl">
                   <div className="flex flex-col items-center mb-10">
-                     <div className="w-16 h-16 bg-zinc-800 rounded-2xl p-3 border border-white/10 mb-4 shadow-xl">
-                        <img src={STATIC_CONFIG.logo.main} alt="Logo" className="w-full h-full object-contain" />
+                     <div className="w-16 h-16 rounded-full border border-white/10 mb-4 shadow-xl overflow-hidden bg-black flex items-center justify-center">
+                        <img src="/icon%20timespro.jpg" alt="Logo TimesPage" className="w-full h-full object-cover" />
                      </div>
                      <h1 className="text-2xl font-manrope font-extrabold uppercase tracking-tight text-white">TimesPage</h1>
                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-saas-primary mt-2 italic text-center">Construtor de Site para Times</p>
                   </div>
 
-                  <form onSubmit={handleLogin} className="space-y-6">
-                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-1">E-mail Administrativo</label>
-                        <div className="relative">
-                           <input 
-                              type="email" 
-                              required
-                              value={email}
-                              onChange={e => setEmail(e.target.value)}
-                              className="w-full bg-zinc-900/50 border border-white/5 rounded-2xl p-4 pl-12 text-sm font-bold text-white outline-none focus:border-saas-primary/50 transition-all"
-                              placeholder="admin@timespro.com.br"
-                           />
-                           <Users size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600" />
-                        </div>
-                     </div>
-
-                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-1">Senha de Acesso</label>
-                        <div className="relative">
-                           <input 
-                              type="password" 
-                              required
-                              value={password}
-                              onChange={e => setPassword(e.target.value)}
-                              className="w-full bg-zinc-900/50 border border-white/5 rounded-2xl p-4 pl-12 text-sm font-bold text-white outline-none focus:border-saas-primary/50 transition-all"
-                              placeholder="••••••••"
-                           />
-                           <ShieldCheck size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600" />
-                        </div>
-                     </div>
-
-                     {authError && (
-                        <motion.div 
-                           initial={{ opacity: 0, scale: 0.95 }}
-                           animate={{ opacity: 1, scale: 1 }}
-                           className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-bold uppercase tracking-tight"
-                        >
-                           {authError}
-                        </motion.div>
-                     )}
-
-                     <button 
-                        type="submit" 
-                        disabled={isSaving}
-                        className="w-full bg-saas-primary text-black font-black uppercase tracking-[0.3em] text-[11px] py-4 rounded-2xl shadow-[0_10px_30px_rgba(163,230,53,0.2)] hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
+                  {isEmailSent ? (
+                     <motion.div 
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="flex flex-col items-center text-center space-y-4 py-4"
                      >
-                        {isSaving ? 'Validando Credenciais...' : 'Entrar no Sistema'}
-                     </button>
-                  </form>
+                        <div className="w-16 h-16 rounded-full bg-saas-primary/10 flex items-center justify-center border border-saas-primary/20">
+                           <Zap size={24} className="text-saas-primary animate-pulse" />
+                        </div>
+                        <h2 className="text-white font-bold uppercase tracking-tight">Verifique seu e-mail</h2>
+                        <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest leading-relaxed">
+                           Enviamos um link de acesso para <span className="text-white">{email}</span>.<br/>Clique no link para entrar no sistema.
+                        </p>
+                        <button 
+                           onClick={() => setIsEmailSent(false)}
+                           className="text-[9px] font-black uppercase tracking-[0.2em] text-saas-primary hover:underline mt-4"
+                        >
+                           Tentar outro e-mail
+                        </button>
+                     </motion.div>
+                  ) : (
+                     <form onSubmit={handleLogin} className="space-y-6">
+                        <div className="space-y-2">
+                           <label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-1">E-mail de Acesso</label>
+                           <div className="relative">
+                              <input 
+                                 type="email" 
+                                 required
+                                 value={email}
+                                 onChange={e => setEmail(e.target.value)}
+                                 className="w-full bg-zinc-900/50 border border-white/5 rounded-2xl p-4 pl-12 text-sm font-bold text-white outline-none focus:border-saas-primary/50 transition-all"
+                                 placeholder="seu-email@exemplo.com"
+                              />
+                              <Users size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600" />
+                           </div>
+                           <p className="text-[8px] text-zinc-600 font-bold uppercase tracking-tight ml-1 italic">* Use o mesmo e-mail utilizado na compra.</p>
+                        </div>
+
+                        {authError && (
+                           <motion.div 
+                              initial={{ opacity: 0, scale: 0.95 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-bold uppercase tracking-tight"
+                           >
+                              {authError}
+                           </motion.div>
+                        )}
+
+                        <button 
+                           type="submit" 
+                           disabled={isSaving}
+                           className="w-full bg-saas-primary text-black font-black uppercase tracking-[0.3em] text-[11px] py-4 rounded-2xl shadow-[0_10px_30px_rgba(163,230,53,0.2)] hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
+                        >
+                           {isSaving ? 'Enviando Link...' : 'Receber Link de Acesso'}
+                        </button>
+                     </form>
+                  )}
                </div>
 
                <div className="mt-8 flex flex-col items-center gap-4">
@@ -555,6 +608,7 @@ export default function Admin() {
                      className="group flex flex-col items-center gap-2"
                   >
                      <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 group-hover:bg-saas-primary/10 group-hover:border-saas-primary/30 transition-all">
+                        <img src="/icon%20timespro.jpg" alt="TimesPro Logo" className="w-3 h-3 rounded-full object-cover" />
                         <span className="text-[9px] font-black uppercase tracking-widest text-zinc-400 group-hover:text-saas-primary">TimesPro</span>
                         <div className="w-[1px] h-3 bg-white/10"></div>
                         <span className="text-[9px] font-bold text-zinc-500 group-hover:text-white transition-colors">www.timespro.com.br</span>
@@ -591,16 +645,15 @@ export default function Admin() {
                {!isSidebarCollapsed ? (
                   <div className="flex items-center gap-3">
                      <div className="w-10 h-10 flex items-center justify-center bg-zinc-800 rounded-xl p-1.5 shadow-inner border border-white/5">
-                        <img src={ACTIVE_CONFIG.logo.main} alt="Club Logo" className="w-full h-full object-contain" />
+                        <img src={clubIdentity.tp_logo_url || ACTIVE_CONFIG.logo.main} alt="Club Logo" className="w-full h-full object-contain" />
                      </div>
                      <div className="flex flex-col">
                         <span className="font-manrope font-bold uppercase tracking-tight text-sm leading-none text-white">{orgName || ACTIVE_CONFIG.shortName}</span>
-                        <span className="text-[8px] font-bold uppercase tracking-widest text-saas-primary italic mt-1">Administração</span>
                      </div>
                   </div>
                ) : (
                   <div className="w-10 h-10 flex items-center justify-center bg-zinc-800 rounded-xl p-1.5 mx-auto border border-white/5 shadow-inner">
-                     <img src={ACTIVE_CONFIG.logo.main} alt="Club Logo" className="w-full h-full object-contain" />
+                     <img src={clubIdentity.tp_logo_url || ACTIVE_CONFIG.logo.main} alt="Club Logo" className="w-full h-full object-contain" />
                   </div>
                )}
             </div>
@@ -679,9 +732,7 @@ export default function Admin() {
             <div className="p-3 border-t border-white/5">
                <button
                   onClick={() => {
-                     const params = new URLSearchParams(window.location.search);
-                     const orgId = params.get('orgId');
-                     window.open(orgId ? `/?orgId=${orgId}` : '/', '_blank');
+                     window.open(currentOrgId ? `/?orgId=${currentOrgId}` : '/', '_blank');
                   }}
                   className="w-full flex items-center gap-3 px-4 py-2.5 rounded-2xl transition-all border border-white/5 bg-white/5 hover:bg-white/10 group"
                >
@@ -698,11 +749,17 @@ export default function Admin() {
 
          {/* Main Content */}
          <main className="flex-1 flex flex-col h-screen overflow-hidden">
-            <header className="h-20 bg-[#121214] border-b border-white/5 flex items-center justify-between px-8 shrink-0">
+            <header className="h-20 bg-[#121214] border-b border-white/5 flex items-center justify-between px-8 shrink-0 relative">
                <div className="flex items-center gap-2">
                   <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 italic text-center">Ecossistema</span>
                   <span className="text-white/10">/</span>
                   <span className="text-[9px] font-black uppercase tracking-[0.3em] text-saas-primary italic">{activeTab}</span>
+               </div>
+
+               <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-1.5 rounded-full bg-zinc-800 border border-white/5 shadow-inner">
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400">Builder do Site Oficial</span>
+                  <div className="w-[1px] h-3 bg-white/10 mx-1" />
+                  <span className="text-[10px] font-black uppercase tracking-tight text-white">{orgName || ACTIVE_CONFIG.shortName}</span>
                </div>
 
                <div className="flex items-center gap-4 relative">
@@ -727,7 +784,7 @@ export default function Admin() {
                            <div className="absolute right-0 mt-3 w-64 bg-[#121214] border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                               <div className="p-5 border-b border-white/5">
                                  <p className="text-[8px] font-bold uppercase text-zinc-500 tracking-[0.2em] mb-1.5">Administrador</p>
-                                 <p className="text-[11px] font-bold text-white truncate">admin@timespro.com.br</p>
+                                 <p className="text-[11px] font-bold text-white truncate">{session?.user?.email}</p>
                               </div>
                               <div className="p-2">
                                  <button

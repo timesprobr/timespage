@@ -102,7 +102,9 @@ export default function App() {
 
             setActiveConfig(newConfig);
 
-            document.title = data.name;
+            if (!window.location.pathname.startsWith('/admin')) {
+              document.title = data.name;
+            }
             let favicon = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
             if (!favicon) {
               favicon = document.createElement('link');
