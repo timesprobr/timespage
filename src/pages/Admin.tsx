@@ -1,4 +1,6 @@
 import { useState, useEffect, FormEvent } from 'react';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import {
    LayoutDashboard,
@@ -55,10 +57,15 @@ const ACTIVE_CONFIG = STATIC_CONFIG;
 
 export default function Admin() {
 
+   const navigate = useNavigate();
    const [loading, setLoading] = useState(true);
    const [activeTab, setActiveTab] = useState<'dashboard' | 'news' | 'trophies' | 'transparency' | 'campaign' | 'squad' | 'leads' | 'board' | 'users' | 'identity' | 'conversion'>('dashboard');
    const [theme, setTheme] = useState<'light' | 'dark'>('light');
    const [notification, setNotification] = useState<{ message: string, type: 'success' | 'error' | 'info' } | null>(null);
+   const [session, setSession] = useState<any>(null);
+   const [email, setEmail] = useState('');
+   const [password, setPassword] = useState('');
+   const [authError, setAuthError] = useState('');
    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
    const [orgName, setOrgName] = useState<string>('');
    const [currentOrgId, setCurrentOrgId] = useState<string | null>(null);
@@ -136,6 +143,21 @@ export default function Admin() {
 
    const [isSaving, setIsSaving] = useState(false);
    const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+   const handleLogin = async (e: FormEvent) => {
+      e.preventDefault();
+      try {
+         setIsSaving(true);
+         setAuthError('');
+         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+         if (error) throw error;
+         setSession(data.session);
+      } catch (err: any) {
+         setAuthError(err.message || 'Erro ao realizar login');
+      } finally {
+         setIsSaving(false);
+      }
+   };
 
    const showNotification = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
       setNotification({ message, type });
@@ -392,6 +414,19 @@ export default function Admin() {
    };
 
    useEffect(() => {
+      // Verificar sessão
+      const checkSession = async () => {
+         const { data: { session: currentSession } } = await supabase.auth.getSession();
+         setSession(currentSession);
+         setLoading(false);
+      };
+      checkSession();
+
+      // Escutar mudanças de autenticação
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        setSession(session);
+      });
+
       // Forçar Light Mode para alinhar com o sistema principal
       setTheme('light');
 
@@ -433,9 +468,102 @@ export default function Admin() {
 
    if (loading) {
       return (
-         <div className="h-screen bg-[#f8fafc] flex flex-col items-center justify-center gap-4">
+         <div className="h-screen bg-[#09090b] flex flex-col items-center justify-center gap-4">
             <div className="w-12 h-12 border-4 border-saas-primary border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-saas-primary animate-pulse">Carregando Ecossistema...</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-saas-primary animate-pulse">Autenticando...</p>
+         </div>
+      );
+   }
+
+   if (!session) {
+      return (
+         <div className="min-h-screen bg-[#09090b] flex items-center justify-center p-4 relative overflow-hidden">
+            {/* Background elements */}
+            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-saas-primary/10 blur-[120px] rounded-full"></div>
+            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-saas-primary/5 blur-[120px] rounded-full"></div>
+            
+            <motion.div 
+               initial={{ opacity: 0, y: 20 }}
+               animate={{ opacity: 1, y: 0 }}
+               className="w-full max-w-md relative z-10"
+            >
+               <div className="bg-[#121214] border border-white/5 p-10 rounded-[32px] shadow-2xl">
+                  <div className="flex flex-col items-center mb-10">
+                     <div className="w-16 h-16 bg-zinc-800 rounded-2xl p-3 border border-white/10 mb-4 shadow-xl">
+                        <img src={STATIC_CONFIG.logo.main} alt="Logo" className="w-full h-full object-contain" />
+                     </div>
+                     <h1 className="text-2xl font-manrope font-extrabold uppercase tracking-tight text-white">TimesPage</h1>
+                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-saas-primary mt-2 italic text-center">Construtor de Site para Times</p>
+                  </div>
+
+                  <form onSubmit={handleLogin} className="space-y-6">
+                     <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-1">E-mail Administrativo</label>
+                        <div className="relative">
+                           <input 
+                              type="email" 
+                              required
+                              value={email}
+                              onChange={e => setEmail(e.target.value)}
+                              className="w-full bg-zinc-900/50 border border-white/5 rounded-2xl p-4 pl-12 text-sm font-bold text-white outline-none focus:border-saas-primary/50 transition-all"
+                              placeholder="admin@timespro.com.br"
+                           />
+                           <Users size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600" />
+                        </div>
+                     </div>
+
+                     <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-1">Senha de Acesso</label>
+                        <div className="relative">
+                           <input 
+                              type="password" 
+                              required
+                              value={password}
+                              onChange={e => setPassword(e.target.value)}
+                              className="w-full bg-zinc-900/50 border border-white/5 rounded-2xl p-4 pl-12 text-sm font-bold text-white outline-none focus:border-saas-primary/50 transition-all"
+                              placeholder="••••••••"
+                           />
+                           <ShieldCheck size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600" />
+                        </div>
+                     </div>
+
+                     {authError && (
+                        <motion.div 
+                           initial={{ opacity: 0, scale: 0.95 }}
+                           animate={{ opacity: 1, scale: 1 }}
+                           className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-bold uppercase tracking-tight"
+                        >
+                           {authError}
+                        </motion.div>
+                     )}
+
+                     <button 
+                        type="submit" 
+                        disabled={isSaving}
+                        className="w-full bg-saas-primary text-black font-black uppercase tracking-[0.3em] text-[11px] py-4 rounded-2xl shadow-[0_10px_30px_rgba(163,230,53,0.2)] hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
+                     >
+                        {isSaving ? 'Validando Credenciais...' : 'Entrar no Sistema'}
+                     </button>
+                  </form>
+               </div>
+
+               <div className="mt-8 flex flex-col items-center gap-4">
+                  <a 
+                     href="https://www.timespro.com.br" 
+                     target="_blank" 
+                     rel="noopener noreferrer"
+                     className="group flex flex-col items-center gap-2"
+                  >
+                     <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 group-hover:bg-saas-primary/10 group-hover:border-saas-primary/30 transition-all">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-zinc-400 group-hover:text-saas-primary">TimesPro</span>
+                        <div className="w-[1px] h-3 bg-white/10"></div>
+                        <span className="text-[9px] font-bold text-zinc-500 group-hover:text-white transition-colors">www.timespro.com.br</span>
+                        <ArrowUpRight size={10} className="text-zinc-600 group-hover:text-saas-primary transition-colors" />
+                     </div>
+                     <p className="text-[9px] font-bold text-zinc-600 uppercase tracking-tight">Conheça a solução completa para a gestão do seu clube</p>
+                  </a>
+               </div>
+            </motion.div>
          </div>
       );
    }
@@ -603,9 +731,9 @@ export default function Admin() {
                               </div>
                               <div className="p-2">
                                  <button
-                                    onClick={() => {
-                                       supabase.auth.signOut();
-                                       window.location.reload();
+                                    onClick={async () => {
+                                       await supabase.auth.signOut();
+                                       setSession(null);
                                     }}
                                     className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-500/10 transition-all group"
                                  >
