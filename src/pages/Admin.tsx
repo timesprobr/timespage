@@ -1152,7 +1152,7 @@ export default function Admin() {
                            
                            <div className="space-y-4">
                               <label className="text-[10px] font-black uppercase text-zinc-500 tracking-widest block">
-                                 Capa Principal (Hero Image)
+                                 Capa Principal (Hero) <span className="text-saas-primary font-bold lowercase italic">(1920x1080px - Mantenha o foco no centro)</span>
                               </label>
                               <div className="relative group overflow-hidden rounded-2xl border-2 border-dashed border-white/10 bg-black aspect-video flex items-center justify-center">
                                  {clubIdentity.tp_hero_image_url ? (
@@ -1191,14 +1191,14 @@ export default function Admin() {
 
                            <div className="space-y-2">
                               <label className="text-[10px] font-black uppercase text-zinc-500 tracking-widest block">
-                                 Frase de Efeito da HEAD (Vazio = Oculto)
+                                 Frase de Efeito da HEAD <span className="text-saas-primary lowercase italic">(Use * para destacar com a cor do clube)</span>
                               </label>
-                              <input 
-                                 type="text" 
-                                 placeholder="Ex: TRADIÇÃO E RAÇA DESDE 1945"
-                                 value={clubIdentity.tp_hero_phrase}
+                              <textarea 
+                                 rows={3}
+                                 placeholder="Ex: Uma vez Clube\n*Sempre Clube...*"
+                                 value={clubIdentity.tp_hero_phrase || ''}
                                  onChange={e => setClubIdentity({ ...clubIdentity, tp_hero_phrase: e.target.value })}
-                                 className="w-full bg-zinc-900/50 border border-white/5 rounded-xl p-4 text-xs text-white font-extrabold outline-none focus:border-saas-primary/50 tracking-wide"
+                                 className="w-full bg-zinc-900/50 border border-white/5 rounded-xl p-3 text-xs text-white font-bold outline-none focus:border-saas-primary/50 resize-none"
                               />
                            </div>
                         </div>

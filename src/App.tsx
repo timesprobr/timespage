@@ -97,6 +97,10 @@ export default function App() {
                 whatsapp: data.tp_whatsapp || '',
               },
               address: data.tp_address || data.address || STATIC_CONFIG.address,
+              hero: {
+                image_url: data.tp_hero_image_url || null,
+                phrase: data.tp_hero_phrase || null,
+              },
               orgId: orgId
             };
 

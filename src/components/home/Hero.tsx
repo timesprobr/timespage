@@ -89,26 +89,35 @@ export default function Hero() {
     }
   };
 
+  const hasPhrase = config.hero?.phrase && config.hero.phrase.trim() !== '';
+  const hasContent = hasPhrase || activeCard;
+
   return (
     <section className="relative h-[80vh] w-full overflow-hidden bg-black">
       {/* Background Image / Pattern */}
-      <div className="absolute inset-0 opacity-60">
+      <div className={`absolute inset-0 ${hasContent ? 'opacity-60' : 'opacity-100'}`}>
         <img
-          src={imageUrl}
+          src={config.hero?.image_url || imageUrl || '/campeao.png'}
           alt="Stadium atmosphere"
           className="w-full h-full object-cover"
           referrerPolicy="no-referrer"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
-        <div 
-          className="absolute inset-0 bg-gradient-to-r from-primary/40 via-transparent to-transparent opacity-80" 
-          style={{ backgroundImage: `linear-gradient(to right, ${config.colors?.primary || '#000000'}66, transparent)` }}
-        ></div>
+        {hasContent && (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+            <div 
+              className="absolute inset-0 bg-gradient-to-r from-primary/40 via-transparent to-transparent opacity-80" 
+              style={{ backgroundImage: `linear-gradient(to right, ${config.colors?.primary || '#000000'}66, transparent)` }}
+            ></div>
+          </>
+        )}
       </div>
 
       {/* Main Content Overlay */}
-      <div className="relative z-20 h-full flex items-end pb-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+      {hasContent && (
+        <>
+          <div className="relative z-20 h-full flex items-end pb-10">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           
           {/* Badge */}
           <motion.div
@@ -121,14 +130,17 @@ export default function Hero() {
             </span>
           </motion.div>
 
-          <motion.h1
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="text-4xl md:text-6xl font-black text-white uppercase italic tracking-tighter leading-[0.9] mb-12"
-          >
-            Uma vez {config.shortName}<br />
-            <span className="text-primary">Sempre {config.shortName}...</span>
-          </motion.h1>
+          {config.hero?.phrase && config.hero.phrase.trim() !== '' && (
+            <motion.h1
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="text-4xl md:text-6xl font-black text-white uppercase italic tracking-tighter leading-[0.9] mb-12 whitespace-pre-line"
+            >
+              {config.hero.phrase.split('*').map((part: string, i: number) => 
+                i % 2 === 1 ? <span key={i} className="text-primary">{part}</span> : part
+              )}
+            </motion.h1>
+          )}
 
           {/* Advertising Card - Dynamic from Firestore */}
           {activeCard && (
@@ -189,17 +201,19 @@ export default function Hero() {
               </div>
             </motion.div>
           )}
+          </div>
         </div>
-      </div>
 
-      {/* Side Decorative Element */}
-      <div className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 opacity-5">
-        <div className="grid grid-cols-4 gap-1 p-2">
-           {Array.from({ length: 16 }).map((_, i) => (
-             <div key={i} className="w-12 h-12 border border-white"></div>
-           ))}
-        </div>
-      </div>
+        {/* Side Decorative Element */}
+        <div className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 opacity-5">
+          <div className="grid grid-cols-4 gap-1 p-2">
+             {Array.from({ length: 16 }).map((_, i) => (
+               <div key={i} className="w-12 h-12 border border-white"></div>
+             ))}
+            </div>
+          </div>
+        </>
+      )}
     </section>
   );
 }
