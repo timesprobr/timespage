@@ -697,7 +697,7 @@ export default function Admin() {
                   <div className="space-y-1">
                      {[
                         { id: 'dashboard', label: 'Overview', icon: LayoutDashboard },
-                        { id: 'conversion', label: 'Conversão', icon: Target },
+                        
                         { id: 'leads', label: 'Leads & CRM', icon: Users },
                      ].map((item) => (
                         <button
@@ -908,7 +908,7 @@ export default function Admin() {
                               <h3 className="text-sm font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-2">
                                  <Globe size={16} className="text-saas-primary" /> Páginas Mais Visitadas
                               </h3>
-                              <button onClick={() => setActiveTab('conversion')} className="text-[8px] font-black uppercase text-saas-primary hover:underline">Ver Mapa de Cliques</button>
+                              
                            </div>
                            <div className="space-y-3 flex-1">
                               {pageStats.slice(0, 8).map((page, i) => (
