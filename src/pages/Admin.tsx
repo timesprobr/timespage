@@ -38,7 +38,12 @@ import {
    User,
    MousePointer2,
    Calendar,
-   ExternalLink
+   ExternalLink,
+   Home,
+   Search,
+   Filter,
+   Save,
+   ChevronDown
 } from 'lucide-react';
 import {
    AreaChart,
@@ -59,7 +64,7 @@ export default function Admin() {
 
    const navigate = useNavigate();
    const [loading, setLoading] = useState(true);
-   const [activeTab, setActiveTab] = useState<'dashboard' | 'news' | 'trophies' | 'transparency' | 'campaign' | 'squad' | 'leads' | 'board' | 'users' | 'identity' | 'conversion'>('dashboard');
+   const [activeTab, setActiveTab] = useState<'dashboard' | 'home' | 'news' | 'trophies' | 'transparency' | 'campaign' | 'squad' | 'leads' | 'board' | 'users' | 'identity' | 'conversion'>('dashboard');
    const [theme, setTheme] = useState<'light' | 'dark'>('light');
    const [notification, setNotification] = useState<{ message: string, type: 'success' | 'error' | 'info' } | null>(null);
    const [session, setSession] = useState<any>(null);
@@ -88,6 +93,14 @@ export default function Admin() {
    const [players, setPlayers] = useState<any[]>([]);
    const [users, setUsers] = useState<any[]>([]);
    const [demographics, setDemographics] = useState<any>({ gender: [], age: [] });
+
+   // Squad filters & edit
+   const [squadSearch, setSquadSearch] = useState('');
+   const [squadModalityFilter, setSquadModalityFilter] = useState('all');
+   const [squadCategoryFilter, setSquadCategoryFilter] = useState('all');
+   const [editingPlayer, setEditingPlayer] = useState<any>(null);
+   const [editPlayerForm, setEditPlayerForm] = useState<any>({});
+   const [savingPlayer, setSavingPlayer] = useState(false);
 
    const [analyticsData, setAnalyticsData] = useState<any[]>([]);
    const [locationStats, setLocationStats] = useState<any[]>([]);
@@ -205,7 +218,7 @@ export default function Admin() {
          let campaignsQuery = supabase.from('campaigns').select('*');
          let boardQuery = supabase.from('board').select('*');
          let transparencyQuery = supabase.from('transparency').select('*');
-         let playersQuery = supabase.from('players').select('*');
+         let playersQuery = supabase.from('athletes').select('*, athlete_categories(id, name), athlete_modalities(id, name)');
          let viewsQuery = supabase.from('page_views').select('*');
          let usersQuery = supabase.from('profiles').select('*');
          let registrationsQuery = supabase.from('registrations').select('*');
@@ -219,7 +232,7 @@ export default function Admin() {
             transparencyQuery = transparencyQuery.eq('org_id', orgId);
             registrationsQuery = registrationsQuery.eq('org_id', orgId);
             socioLeadsQuery = socioLeadsQuery.eq('org_id', orgId);
-            playersQuery = playersQuery.eq('org_id', orgId);
+            playersQuery = playersQuery.eq('organization_id', orgId);
             viewsQuery = viewsQuery.eq('org_id', orgId);
          }
 
@@ -242,7 +255,7 @@ export default function Admin() {
             transparencyQuery.order('year', { ascending: false }),
             registrationsQuery.order('created_at', { ascending: false }),
             socioLeadsQuery.order('created_at', { ascending: false }),
-            playersQuery.order('name', { ascending: true }),
+            playersQuery.order('full_name', { ascending: true }),
             viewsQuery.order('created_at', { ascending: true }),
             usersQuery
          ]);
@@ -254,7 +267,13 @@ export default function Admin() {
          setReports(reportsData || []);
          setRegistrations(regData || []);
          setSocioLeads(socioData || []);
-         setPlayers(playersData || []);
+         // Map relations into flat fields for easier access
+         const mappedPlayers = (playersData || []).map((p: any) => ({
+            ...p,
+            category_name: p.athlete_categories?.name || null,
+            modality_name: p.athlete_modalities?.name || null,
+         }));
+         setPlayers(mappedPlayers);
          setUsers(usersData || []);
 
          if (viewsData) {
@@ -481,7 +500,14 @@ export default function Admin() {
                      tp_linkedin: data.tp_linkedin || '',
                      tp_youtube: data.tp_youtube || '',
                      tp_active: data.tp_active || false,
-                     tp_short_name: ''
+                     tp_short_name: data.tp_short_name || '',
+                     tp_hero_image_url: data.tp_hero_image_url || '',
+                     tp_hero_phrase: data.tp_hero_phrase || '',
+                     tp_instagram_handle: data.tp_instagram_handle || '',
+                     tp_instagram_link: data.tp_instagram_link || '',
+                     tp_instagram_photos: data.tp_instagram_photos || [],
+                     tp_contact_phone: data.tp_contact_phone || '',
+                     tp_whatsapp_channel: data.tp_whatsapp_channel || '',
                   });
                }
             });
@@ -690,6 +716,7 @@ export default function Admin() {
                   {!isSidebarCollapsed && <span className="px-4 text-[8px] font-bold uppercase tracking-[0.2em] text-zinc-600 italic mb-2 block">Conteúdo</span>}
                   <div className="space-y-1">
                      {[
+                        { id: 'home', label: 'Home', icon: Home },
                         { id: 'news', label: 'Notícias', icon: FileText },
                         { id: 'squad', label: 'Elenco', icon: ShieldCheck },
                         { id: 'trophies', label: 'Títulos', icon: Trophy },
@@ -1010,40 +1037,622 @@ export default function Admin() {
                   </div>
                )}
 
-               {activeTab === 'squad' && (
-                  <div className="space-y-6">
+               {activeTab === 'home' && (
+                  <div className="space-y-8">
+                     {/* Header */}
                      <div className="flex justify-between items-center">
                         <div>
-                           <h3 className="text-xl font-manrope font-extrabold uppercase tracking-tight text-white">Gestão de Elenco</h3>
-                           <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 italic mt-1">Gerencie os atletas de todas as categorias</p>
+                           <h3 className="text-xl font-manrope font-extrabold uppercase tracking-tight text-white">Configuração da Home</h3>
+                           <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 italic mt-1">Personalize a página inicial do site oficial</p>
                         </div>
-                        <button className="bg-[#a3e635] text-black px-6 py-4 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-3 transition-all shadow-lg shadow-saas-primary/20 hover:scale-105">
-                           <PlusCircle size={16} strokeWidth={3} /> Adicionar Atleta
+                        <button
+                           onClick={async () => {
+                              setIsSaving(true);
+                              try {
+                                 const { error } = await supabase.from('organizations').update({
+                                    tp_hero_image_url: clubIdentity.tp_hero_image_url,
+                                    tp_hero_phrase: clubIdentity.tp_hero_phrase,
+                                    tp_instagram_handle: clubIdentity.tp_instagram_handle,
+                                    tp_instagram_link: clubIdentity.tp_instagram_link,
+                                    tp_instagram_photos: clubIdentity.tp_instagram_photos,
+                                    tp_email: clubIdentity.tp_email,
+                                    tp_phone: clubIdentity.tp_phone,
+                                    tp_contact_phone: clubIdentity.tp_contact_phone,
+                                    tp_whatsapp: clubIdentity.tp_whatsapp,
+                                    tp_address: clubIdentity.tp_address,
+                                    tp_instagram: clubIdentity.tp_instagram,
+                                    tp_facebook: clubIdentity.tp_facebook,
+                                    tp_twitter_x: clubIdentity.tp_twitter_x,
+                                    tp_linkedin: clubIdentity.tp_linkedin,
+                                    tp_youtube: clubIdentity.tp_youtube,
+                                    tp_whatsapp_channel: clubIdentity.tp_whatsapp_channel,
+                                 }).eq('id', currentOrgId);
+                                 if (error) throw error;
+                                 setNotification({ message: 'Configurações salvas com sucesso!', type: 'success' });
+                              } catch (err: any) {
+                                 setNotification({ message: 'Erro ao salvar: ' + err.message, type: 'error' });
+                              } finally {
+                                 setIsSaving(false);
+                              }
+                           }}
+                           disabled={isSaving}
+                           className="bg-[#a3e635] text-black px-6 py-4 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-3 transition-all shadow-lg shadow-saas-primary/20 hover:scale-105 disabled:opacity-50"
+                        >
+                           {isSaving ? <RefreshCw size={16} className="animate-spin" /> : <Save size={16} strokeWidth={3} />}
+                           {isSaving ? 'Salvando...' : 'Salvar Tudo'}
                         </button>
                      </div>
-                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
-                        {players.map(p => (
-                           <div key={p.id} className="bg-[#121214] border border-white/5 rounded-[32px] p-6 group hover:border-saas-primary/30 transition-all overflow-hidden relative">
-                              <div className="flex gap-4">
-                                 <div className="w-20 h-20 bg-zinc-800 rounded-2xl overflow-hidden border border-white/5 shadow-inner shrink-0 relative">
-                                    {p.photoUrl ? <img src={p.photoUrl} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-zinc-600"><Users size={32} /></div>}
-                                    <div className="absolute bottom-0 right-0 px-2 py-0.5 bg-[#a3e635] text-black text-[10px] font-black italic">#{p.number || '00'}</div>
-                                 </div>
-                                 <div className="flex flex-col justify-center min-w-0">
-                                    <span className="text-[8px] font-black uppercase tracking-[0.2em] text-saas-primary mb-1 italic">{p.category}</span>
-                                    <h4 className="font-manrope font-extrabold uppercase text-xl text-white truncate leading-none">{p.nickname || p.name}</h4>
-                                    <p className="text-[10px] font-black uppercase text-zinc-500 mt-2 italic truncate">{p.position || 'Não Definido'}</p>
-                                 </div>
+
+                     {/* HERO / CAPA */}
+                     <div className="bg-[#121214] border border-white/5 rounded-2xl p-6 space-y-5">
+                        <div className="flex items-center gap-3 mb-2">
+                           <div className="w-8 h-8 rounded-lg bg-saas-primary/10 flex items-center justify-center">
+                              <ImageIcon size={16} className="text-saas-primary" />
+                           </div>
+                           <h4 className="font-manrope font-extrabold text-white uppercase text-sm tracking-tight">Capa Principal (Hero)</h4>
+                        </div>
+                        
+                        {/* Hero Image Preview */}
+                        <div className="relative aspect-[21/9] bg-zinc-900 rounded-xl overflow-hidden border border-white/10 group">
+                           {clubIdentity.tp_hero_image_url ? (
+                              <img src={clubIdentity.tp_hero_image_url} className="w-full h-full object-cover" alt="Capa" />
+                           ) : (
+                              <div className="w-full h-full flex items-center justify-center text-zinc-600">
+                                 <ImageIcon size={48} strokeWidth={1} />
                               </div>
-                              <div className="flex gap-2 mt-6">
-                                 <button className="flex-1 py-3 rounded-xl bg-white/5 text-[9px] font-black uppercase text-zinc-400 hover:bg-saas-primary hover:text-black transition-all">Editar</button>
-                                 <button className="p-3 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all"><Trash2 size={16} /></button>
+                           )}
+                           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <span className="text-white text-xs font-bold uppercase tracking-widest">Alterar Imagem</span>
+                           </div>
+                        </div>
+                        
+                        <div>
+                           <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">URL da Imagem de Capa</label>
+                           <input
+                              type="text"
+                              value={clubIdentity.tp_hero_image_url || ''}
+                              onChange={e => setClubIdentity({ ...clubIdentity, tp_hero_image_url: e.target.value })}
+                              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
+                              placeholder="https://exemplo.com/imagem-capa.jpg"
+                           />
+                        </div>
+
+                        <div>
+                           <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Frase da Capa (opcional)</label>
+                           <input
+                              type="text"
+                              value={clubIdentity.tp_hero_phrase || ''}
+                              onChange={e => setClubIdentity({ ...clubIdentity, tp_hero_phrase: e.target.value })}
+                              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
+                              placeholder="Ex: Uma vez Gameleira, Sempre Gameleira..."
+                           />
+                           <p className="text-[9px] text-zinc-600 mt-1 italic">Deixe vazio para não exibir frase na capa.</p>
+                        </div>
+                     </div>
+
+                     {/* INSTAGRAM */}
+                     <div className="bg-[#121214] border border-white/5 rounded-2xl p-6 space-y-5">
+                        <div className="flex items-center gap-3 mb-2">
+                           <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-yellow-400/20 via-red-500/20 to-purple-600/20 flex items-center justify-center">
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-pink-400"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                           </div>
+                           <h4 className="font-manrope font-extrabold text-white uppercase text-sm tracking-tight">Instagram do Clube</h4>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                           <div>
+                              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">@ do Instagram</label>
+                              <div className="relative">
+                                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-saas-primary font-bold text-sm">@</span>
+                                 <input
+                                    type="text"
+                                    value={clubIdentity.tp_instagram_handle || ''}
+                                    onChange={e => setClubIdentity({ ...clubIdentity, tp_instagram_handle: e.target.value.replace('@', '') })}
+                                    className="w-full pl-9 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
+                                    placeholder="gameleirafc"
+                                 />
                               </div>
                            </div>
-                        ))}
+                           <div>
+                              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Link do Instagram (botão)</label>
+                              <input
+                                 type="text"
+                                 value={clubIdentity.tp_instagram_link || ''}
+                                 onChange={e => setClubIdentity({ ...clubIdentity, tp_instagram_link: e.target.value })}
+                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
+                                 placeholder="https://instagram.com/gameleirafc"
+                              />
+                           </div>
+                        </div>
+
+                        {/* 6 Photos */}
+                        <div>
+                           <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-3 block">6 Fotos do Feed</label>
+                           <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+                              {Array.from({ length: 6 }).map((_, i) => {
+                                 const photos = clubIdentity.tp_instagram_photos || [];
+                                 const photo = photos[i] || '';
+                                 return (
+                                    <div key={i} className="space-y-1.5">
+                                       <div className="aspect-square bg-zinc-900 rounded-lg overflow-hidden border border-white/10 relative group">
+                                          {photo ? (
+                                             <img src={photo} className="w-full h-full object-cover" alt={`Foto ${i + 1}`} />
+                                          ) : (
+                                             <div className="w-full h-full flex items-center justify-center text-zinc-700">
+                                                <Plus size={20} />
+                                             </div>
+                                          )}
+                                       </div>
+                                       <input
+                                          type="text"
+                                          value={photo}
+                                          onChange={e => {
+                                             const newPhotos = [...(clubIdentity.tp_instagram_photos || Array(6).fill(''))];
+                                             while (newPhotos.length < 6) newPhotos.push('');
+                                             newPhotos[i] = e.target.value;
+                                             setClubIdentity({ ...clubIdentity, tp_instagram_photos: newPhotos });
+                                          }}
+                                          className="w-full px-2 py-1.5 bg-white/5 border border-white/10 rounded-lg text-white text-[9px] focus:outline-none focus:border-saas-primary/50 transition-colors"
+                                          placeholder={`URL foto ${i + 1}`}
+                                       />
+                                    </div>
+                                 );
+                              })}
+                           </div>
+                        </div>
+                     </div>
+
+                     {/* CONTATO */}
+                     <div className="bg-[#121214] border border-white/5 rounded-2xl p-6 space-y-5">
+                        <div className="flex items-center gap-3 mb-2">
+                           <div className="w-8 h-8 rounded-lg bg-saas-primary/10 flex items-center justify-center">
+                              <MessageCircle size={16} className="text-saas-primary" />
+                           </div>
+                           <h4 className="font-manrope font-extrabold text-white uppercase text-sm tracking-tight">Contato & Localização</h4>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                           <div>
+                              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Endereço</label>
+                              <input
+                                 type="text"
+                                 value={clubIdentity.tp_address || ''}
+                                 onChange={e => setClubIdentity({ ...clubIdentity, tp_address: e.target.value })}
+                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
+                                 placeholder="Rua dos Esportes, 100 - Centro"
+                              />
+                           </div>
+                           <div>
+                              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Telefone Fixo</label>
+                              <input
+                                 type="text"
+                                 value={clubIdentity.tp_contact_phone || ''}
+                                 onChange={e => setClubIdentity({ ...clubIdentity, tp_contact_phone: e.target.value })}
+                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
+                                 placeholder="(11) 3333-4444"
+                              />
+                           </div>
+                           <div>
+                              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">E-mail</label>
+                              <input
+                                 type="email"
+                                 value={clubIdentity.tp_email || ''}
+                                 onChange={e => setClubIdentity({ ...clubIdentity, tp_email: e.target.value })}
+                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
+                                 placeholder="contato@gameleirafc.com"
+                              />
+                           </div>
+                           <div>
+                              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">WhatsApp</label>
+                              <input
+                                 type="text"
+                                 value={clubIdentity.tp_whatsapp || ''}
+                                 onChange={e => setClubIdentity({ ...clubIdentity, tp_whatsapp: e.target.value })}
+                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
+                                 placeholder="(11) 99999-9999"
+                              />
+                           </div>
+                        </div>
+                     </div>
+
+                     {/* REDES SOCIAIS */}
+                     <div className="bg-[#121214] border border-white/5 rounded-2xl p-6 space-y-5">
+                        <div className="flex items-center gap-3 mb-2">
+                           <div className="w-8 h-8 rounded-lg bg-saas-primary/10 flex items-center justify-center">
+                              <Globe size={16} className="text-saas-primary" />
+                           </div>
+                           <h4 className="font-manrope font-extrabold text-white uppercase text-sm tracking-tight">Redes Sociais</h4>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                           <div>
+                              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Instagram</label>
+                              <input
+                                 type="text"
+                                 value={clubIdentity.tp_instagram || ''}
+                                 onChange={e => setClubIdentity({ ...clubIdentity, tp_instagram: e.target.value })}
+                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
+                                 placeholder="https://instagram.com/seuperfil"
+                              />
+                           </div>
+                           <div>
+                              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Facebook</label>
+                              <input
+                                 type="text"
+                                 value={clubIdentity.tp_facebook || ''}
+                                 onChange={e => setClubIdentity({ ...clubIdentity, tp_facebook: e.target.value })}
+                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
+                                 placeholder="https://facebook.com/seuperfil"
+                              />
+                           </div>
+                           <div>
+                              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">X (Twitter)</label>
+                              <input
+                                 type="text"
+                                 value={clubIdentity.tp_twitter_x || ''}
+                                 onChange={e => setClubIdentity({ ...clubIdentity, tp_twitter_x: e.target.value })}
+                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
+                                 placeholder="https://x.com/seuperfil"
+                              />
+                           </div>
+                           <div>
+                              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">LinkedIn</label>
+                              <input
+                                 type="text"
+                                 value={clubIdentity.tp_linkedin || ''}
+                                 onChange={e => setClubIdentity({ ...clubIdentity, tp_linkedin: e.target.value })}
+                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
+                                 placeholder="https://linkedin.com/company/seuperfil"
+                              />
+                           </div>
+                           <div>
+                              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">YouTube</label>
+                              <input
+                                 type="text"
+                                 value={clubIdentity.tp_youtube || ''}
+                                 onChange={e => setClubIdentity({ ...clubIdentity, tp_youtube: e.target.value })}
+                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
+                                 placeholder="https://youtube.com/@seucanal"
+                              />
+                           </div>
+                           <div>
+                              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Canal no WhatsApp</label>
+                              <input
+                                 type="text"
+                                 value={clubIdentity.tp_whatsapp_channel || ''}
+                                 onChange={e => setClubIdentity({ ...clubIdentity, tp_whatsapp_channel: e.target.value })}
+                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
+                                 placeholder="https://whatsapp.com/channel/xxx"
+                              />
+                           </div>
+                        </div>
                      </div>
                   </div>
                )}
+
+               {activeTab === 'squad' && (() => {
+                  // Extract unique modalities and categories from loaded data
+                  const modalities = [...new Set(players.map(p => p.modality_name).filter(Boolean))] as string[];
+                  const categoriesForFilter = [...new Set(players.map(p => p.category_name).filter(Boolean))] as string[];
+
+                  // Apply filters
+                  const filtered = players.filter(p => {
+                     const matchSearch = !squadSearch || 
+                        (p.full_name || '').toLowerCase().includes(squadSearch.toLowerCase()) ||
+                        (p.nickname || '').toLowerCase().includes(squadSearch.toLowerCase()) ||
+                        (p.position || '').toLowerCase().includes(squadSearch.toLowerCase());
+                     const matchModality = squadModalityFilter === 'all' || p.modality_name === squadModalityFilter;
+                     const matchCategory = squadCategoryFilter === 'all' || p.category_name === squadCategoryFilter;
+                     return matchSearch && matchModality && matchCategory;
+                  });
+
+                  // Group by modality > category
+                  const grouped: Record<string, Record<string, any[]>> = {};
+                  filtered.forEach(p => {
+                     const mod = p.modality_name || 'Sem Modalidade';
+                     const cat = p.category_name || 'Sem Categoria';
+                     if (!grouped[mod]) grouped[mod] = {};
+                     if (!grouped[mod][cat]) grouped[mod][cat] = [];
+                     grouped[mod][cat].push(p);
+                  });
+
+                  const handleSavePlayer = async () => {
+                     if (!editingPlayer) return;
+                     setSavingPlayer(true);
+                     try {
+                        const { error } = await supabase.from('athletes').update({
+                           nickname: editPlayerForm.nickname,
+                           position: editPlayerForm.position,
+                           number: editPlayerForm.number ? parseInt(editPlayerForm.number) : null,
+                           gender: editPlayerForm.gender,
+                        }).eq('id', editingPlayer.id);
+                        if (error) throw error;
+                        setPlayers(prev => prev.map(p => p.id === editingPlayer.id ? { ...p, ...editPlayerForm, number: editPlayerForm.number ? parseInt(editPlayerForm.number) : p.number } : p));
+                        setEditingPlayer(null);
+                        setNotification({ message: 'Atleta atualizado com sucesso!', type: 'success' });
+                     } catch (err: any) {
+                        setNotification({ message: 'Erro ao salvar: ' + err.message, type: 'error' });
+                     } finally {
+                        setSavingPlayer(false);
+                     }
+                  };
+
+                  return (
+                   <div className="space-y-6">
+                      {/* Header */}
+                      <div className="flex justify-between items-center">
+                         <div>
+                            <h3 className="text-xl font-manrope font-extrabold uppercase tracking-tight text-white">Gestão de Elenco</h3>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 italic mt-1">
+                               {players.length} atleta{players.length !== 1 ? 's' : ''} · {modalities.length} modalidade{modalities.length !== 1 ? 's' : ''}
+                            </p>
+                         </div>
+                         {players.length > 0 && (
+                            <button className="bg-[#a3e635] text-black px-6 py-4 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-3 transition-all shadow-lg shadow-saas-primary/20 hover:scale-105">
+                               <PlusCircle size={16} strokeWidth={3} /> Adicionar Atleta
+                            </button>
+                         )}
+                      </div>
+
+                      {/* Filters Bar */}
+                      {players.length > 0 && (
+                         <div className="flex flex-wrap gap-3 p-4 bg-[#121214] border border-white/5 rounded-2xl">
+                            {/* Search */}
+                            <div className="relative flex-1 min-w-[200px]">
+                               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+                               <input
+                                  type="text"
+                                  placeholder="Buscar atleta..."
+                                  value={squadSearch}
+                                  onChange={e => setSquadSearch(e.target.value)}
+                                  className="w-full pl-9 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-xs placeholder:text-zinc-600 focus:outline-none focus:border-saas-primary/50 transition-colors"
+                               />
+                            </div>
+                            {/* Modality */}
+                            <div className="relative">
+                               <select
+                                  value={squadModalityFilter}
+                                  onChange={e => { setSquadModalityFilter(e.target.value); setSquadCategoryFilter('all'); }}
+                                  className="appearance-none pl-4 pr-9 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-xs focus:outline-none focus:border-saas-primary/50 transition-colors cursor-pointer"
+                               >
+                                  <option value="all" className="bg-zinc-900">Todas Modalidades</option>
+                                  {modalities.map(m => <option key={m} value={m} className="bg-zinc-900">{m}</option>)}
+                               </select>
+                               <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" />
+                            </div>
+                            {/* Category */}
+                            <div className="relative">
+                               <select
+                                  value={squadCategoryFilter}
+                                  onChange={e => setSquadCategoryFilter(e.target.value)}
+                                  className="appearance-none pl-4 pr-9 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-xs focus:outline-none focus:border-saas-primary/50 transition-colors cursor-pointer"
+                               >
+                                  <option value="all" className="bg-zinc-900">Todas Categorias</option>
+                                  {categoriesForFilter
+                                     .filter(c => squadModalityFilter === 'all' || players.some(p => p.category_name === c && p.modality_name === squadModalityFilter))
+                                     .map(c => <option key={c} value={c} className="bg-zinc-900">{c}</option>)}
+                               </select>
+                               <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" />
+                            </div>
+                         </div>
+                      )}
+
+                      {players.length === 0 ? (
+                         <div className="flex flex-col items-center justify-center py-20 px-4 text-center border border-white/5 rounded-[32px] bg-white/5">
+                            <div className="w-16 h-16 bg-zinc-800 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                               <ShieldCheck size={24} className="text-zinc-500" />
+                            </div>
+                            <h4 className="text-xl font-manrope font-extrabold text-white mb-2 uppercase tracking-tight">Nenhum atleta encontrado</h4>
+                            <p className="text-sm text-zinc-400 max-w-md mb-8">
+                               Se você já possui o plano completo do TimesPro, seus atletas cadastrados no sistema principal aparecerão aqui automaticamente.
+                            </p>
+                            <button className="bg-[#a3e635] text-black px-8 py-4 rounded-xl font-black text-[12px] uppercase tracking-[0.2em] flex items-center gap-3 transition-all shadow-lg shadow-saas-primary/20 hover:scale-105">
+                               <PlusCircle size={18} strokeWidth={3} /> Cadastrar Atleta Manualmente
+                            </button>
+                         </div>
+                      ) : filtered.length === 0 ? (
+                         <div className="flex flex-col items-center justify-center py-16 text-center">
+                            <Search size={32} className="text-zinc-600 mb-4" />
+                            <p className="text-zinc-400 text-sm">Nenhum atleta encontrado com os filtros selecionados.</p>
+                         </div>
+                      ) : (
+                         <div className="space-y-10 pb-20">
+                            {Object.entries(grouped).map(([modality, cats]) => (
+                               <div key={modality}>
+                                  {/* Modality Header */}
+                                  <div className="flex items-center gap-3 mb-6">
+                                     <div className="w-8 h-8 rounded-lg bg-saas-primary/10 flex items-center justify-center">
+                                        <ShieldCheck size={16} className="text-saas-primary" />
+                                     </div>
+                                     <h4 className="text-lg font-manrope font-extrabold uppercase tracking-tight text-white">{modality}</h4>
+                                     <div className="flex-1 h-px bg-white/5"></div>
+                                  </div>
+
+                                  {Object.entries(cats).map(([category, catPlayers]) => (
+                                     <div key={category} className="mb-8">
+                                        {/* Category Sub-Header */}
+                                        <div className="flex items-center gap-2 mb-4 ml-11">
+                                           <span className="text-[10px] font-black uppercase tracking-[0.2em] text-saas-primary italic">{category}</span>
+                                           <span className="text-[10px] text-zinc-600">({catPlayers.length})</span>
+                                        </div>
+
+                                        {/* Player Cards Grid - Vertical Portrait */}
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 ml-11">
+                                           {catPlayers.map((p: any) => {
+                                              const age = p.birth_date ? calculateAge(new Date(p.birth_date)) : null;
+                                              return (
+                                                 <div
+                                                    key={p.id}
+                                                    className="bg-[#121214] border border-white/5 rounded-2xl overflow-hidden group hover:border-saas-primary/30 transition-all hover:shadow-lg hover:shadow-saas-primary/5 cursor-pointer"
+                                                 >
+                                                    {/* Photo - Portrait */}
+                                                    <div className="aspect-[3/4] bg-zinc-900 overflow-hidden relative">
+                                                       {p.photo_url ? (
+                                                          <img src={p.photo_url} alt={p.nickname || p.full_name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                                       ) : (
+                                                          <div className="w-full h-full flex items-center justify-center text-zinc-700 bg-gradient-to-b from-zinc-800 to-zinc-900">
+                                                             <User size={48} strokeWidth={1} />
+                                                          </div>
+                                                       )}
+                                                       {/* Number Badge */}
+                                                       <div className="absolute top-2 right-2 min-w-[28px] h-7 flex items-center justify-center px-1.5 bg-black/70 backdrop-blur-sm rounded-lg border border-white/10">
+                                                          <span className="text-saas-primary font-black text-sm italic">#{p.number || '00'}</span>
+                                                       </div>
+                                                       {/* Gradient overlay */}
+                                                       <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#121214] to-transparent" />
+                                                    </div>
+
+                                                    {/* Info */}
+                                                    <div className="p-3 -mt-2 relative">
+                                                       <h5 className="font-manrope font-extrabold uppercase text-sm text-white truncate leading-none" title={p.full_name}>
+                                                          {p.nickname || p.full_name}
+                                                       </h5>
+                                                       <p className="text-[9px] font-bold uppercase text-zinc-500 mt-1.5 truncate">
+                                                          {p.position || 'Atleta'}
+                                                          {age && ` · ${age} anos`}
+                                                       </p>
+
+                                                       {/* Actions */}
+                                                       <div className="flex gap-1.5 mt-3">
+                                                          <button
+                                                             onClick={() => {
+                                                                setEditingPlayer(p);
+                                                                setEditPlayerForm({
+                                                                   nickname: p.nickname || '',
+                                                                   position: p.position || '',
+                                                                   number: p.number || '',
+                                                                   gender: p.gender || '',
+                                                                });
+                                                             }}
+                                                             className="flex-1 py-2 rounded-lg bg-white/5 text-[8px] font-black uppercase text-zinc-400 hover:bg-saas-primary hover:text-black transition-all flex items-center justify-center gap-1.5"
+                                                          >
+                                                             <Edit3 size={10} /> Editar
+                                                          </button>
+                                                       </div>
+                                                    </div>
+                                                 </div>
+                                              );
+                                           })}
+                                        </div>
+                                     </div>
+                                  ))}
+                               </div>
+                            ))}
+                         </div>
+                      )}
+
+                      {/* Edit Player Modal */}
+                      {editingPlayer && (
+                         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setEditingPlayer(null)}>
+                            <motion.div
+                               initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                               animate={{ opacity: 1, scale: 1, y: 0 }}
+                               className="bg-[#0a0a0b] border border-white/10 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl"
+                               onClick={e => e.stopPropagation()}
+                            >
+                               {/* Modal Header */}
+                               <div className="flex items-center gap-4 p-6 border-b border-white/5">
+                                  <div className="w-14 h-14 rounded-2xl overflow-hidden bg-zinc-800 border border-white/10 shrink-0">
+                                     {editingPlayer.photo_url ? (
+                                        <img src={editingPlayer.photo_url} className="w-full h-full object-cover" />
+                                     ) : (
+                                        <div className="w-full h-full flex items-center justify-center text-zinc-600"><User size={24} /></div>
+                                     )}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                     <h4 className="font-manrope font-extrabold text-white uppercase text-base truncate">{editingPlayer.full_name}</h4>
+                                     <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+                                        {editingPlayer.modality_name || 'Sem modalidade'} · {editingPlayer.category_name || 'Sem categoria'}
+                                     </p>
+                                  </div>
+                                  <button onClick={() => setEditingPlayer(null)} className="p-2 rounded-xl bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all">
+                                     <X size={18} />
+                                  </button>
+                               </div>
+
+                               {/* Modal Body */}
+                               <div className="p-6 space-y-5">
+                                  <p className="text-[10px] font-black uppercase tracking-widest text-saas-primary italic">Dados exibidos no Site Oficial</p>
+
+                                  <div className="space-y-4">
+                                     {/* Nickname */}
+                                     <div>
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Nome do Jogador (apelido)</label>
+                                        <input
+                                           type="text"
+                                           value={editPlayerForm.nickname || ''}
+                                           onChange={e => setEditPlayerForm({ ...editPlayerForm, nickname: e.target.value })}
+                                           className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
+                                           placeholder="Ex: Neymar Jr"
+                                        />
+                                     </div>
+
+                                     {/* Position */}
+                                     <div>
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Posição</label>
+                                        <input
+                                           type="text"
+                                           value={editPlayerForm.position || ''}
+                                           onChange={e => setEditPlayerForm({ ...editPlayerForm, position: e.target.value })}
+                                           className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
+                                           placeholder="Ex: Atacante"
+                                        />
+                                     </div>
+
+                                     <div className="grid grid-cols-2 gap-4">
+                                        {/* Number */}
+                                        <div>
+                                           <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Nº Camisa</label>
+                                           <input
+                                              type="number"
+                                              value={editPlayerForm.number || ''}
+                                              onChange={e => setEditPlayerForm({ ...editPlayerForm, number: e.target.value })}
+                                              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
+                                              placeholder="10"
+                                           />
+                                        </div>
+
+                                        {/* Gender */}
+                                        <div>
+                                           <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Gênero</label>
+                                           <select
+                                              value={editPlayerForm.gender || ''}
+                                              onChange={e => setEditPlayerForm({ ...editPlayerForm, gender: e.target.value })}
+                                              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors cursor-pointer appearance-none"
+                                           >
+                                              <option value="" className="bg-zinc-900">Selecionar</option>
+                                              <option value="Masculino" className="bg-zinc-900">Masculino</option>
+                                              <option value="Feminino" className="bg-zinc-900">Feminino</option>
+                                           </select>
+                                        </div>
+                                     </div>
+                                  </div>
+                               </div>
+
+                               {/* Modal Footer */}
+                               <div className="flex gap-3 p-6 border-t border-white/5">
+                                  <button
+                                     onClick={() => setEditingPlayer(null)}
+                                     className="flex-1 py-3 rounded-xl bg-white/5 text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:bg-white/10 transition-all"
+                                  >
+                                     Cancelar
+                                  </button>
+                                  <button
+                                     onClick={handleSavePlayer}
+                                     disabled={savingPlayer}
+                                     className="flex-1 py-3 rounded-xl bg-[#a3e635] text-black text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:brightness-110 transition-all disabled:opacity-50"
+                                  >
+                                     {savingPlayer ? <RefreshCw size={14} className="animate-spin" /> : <Save size={14} />}
+                                     {savingPlayer ? 'Salvando...' : 'Salvar'}
+                                  </button>
+                               </div>
+                            </motion.div>
+                         </div>
+                      )}
+                   </div>
+                  );
+                })()}
+
 
                {activeTab === 'trophies' && (
                   <div className="space-y-6">

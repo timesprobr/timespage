@@ -2,44 +2,45 @@ import { useParams } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
 import { motion } from 'motion/react';
 import { supabase } from '../lib/supabase';
-import { Player } from '../types';
-import { User, Shield } from 'lucide-react';
+import { User, Shield, ChevronRight } from 'lucide-react';
 import { ConfigContext } from '../App';
 
 export default function Squad() {
   const { category } = useParams<{ category: string }>();
-  const [players, setPlayers] = useState<Player[]>([]);
+  const [players, setPlayers] = useState<any[]>([]);
+  const [modalities, setModalities] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const config = useContext(ConfigContext);
-
-  // Map URL category to Display Name
-  const categoryMap: Record<string, string> = {
-    'profissional': 'Profissional',
-    'sub-7': 'Sub 7',
-    'sub-9': 'Sub 9',
-    'sub-11': 'Sub 11',
-    'sub-13': 'Sub 13',
-    'sub-15': 'Sub 15',
-    'sub-17': 'Sub 17',
-    'sub-21': 'Sub 21',
-    '+40': '+40',
-    '+50': '+50'
-  };
-
-  const displayName = categoryMap[category || ''] || 'Elenco';
 
   useEffect(() => {
     const fetchPlayers = async () => {
       setLoading(true);
       try {
-        const { data, error } = await supabase
-          .from('players')
-          .select('*')
-          .eq('category', displayName);
+        let query = supabase
+          .from('athletes')
+          .select('*, athlete_categories(id, name), athlete_modalities(id, name)');
 
+        if (config.orgId) {
+          query = query.eq('organization_id', config.orgId);
+        }
+
+        const { data, error } = await query.order('full_name', { ascending: true });
         if (error) throw error;
-        
-        setPlayers(data as Player[]);
+
+        const mapped = (data || []).map((p: any) => ({
+          ...p,
+          category_name: p.athlete_categories?.name || null,
+          modality_name: p.athlete_modalities?.name || null,
+        }));
+
+        setPlayers(mapped);
+
+        // Extract unique modalities and categories
+        const uniqueMods = [...new Set(mapped.map((p: any) => p.modality_name).filter(Boolean))] as string[];
+        const uniqueCats = [...new Set(mapped.map((p: any) => p.category_name).filter(Boolean))] as string[];
+        setModalities(uniqueMods);
+        setCategories(uniqueCats);
       } catch (error) {
         console.error("Error fetching players:", error);
       } finally {
@@ -48,83 +49,120 @@ export default function Squad() {
     };
 
     fetchPlayers();
-  }, [displayName]);
+  }, [config.orgId]);
+
+  // Group players: modality > category
+  const grouped: Record<string, Record<string, any[]>> = {};
+  players.forEach(p => {
+    const mod = p.modality_name || 'Geral';
+    const cat = p.category_name || 'Sem Categoria';
+    if (!grouped[mod]) grouped[mod] = {};
+    if (!grouped[mod][cat]) grouped[mod][cat] = [];
+    grouped[mod][cat].push(p);
+  });
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header - Keep Dark */}
-      <section className="relative h-[20vh] flex items-center overflow-hidden bg-black">
+      {/* Header */}
+      <section className="relative h-[25vh] flex items-center overflow-hidden bg-black">
         <div className="absolute inset-0 z-0 opacity-20" style={{ backgroundColor: config.colors.primary }}></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 w-full">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
-            className="space-y-1"
+            className="space-y-2"
           >
             <span style={{ color: config.colors.primary }} className="font-black uppercase text-[8px] tracking-[0.5em]">{config.name}</span>
-            <h1 className="text-xl md:text-3xl font-manrope font-extrabold text-white uppercase tracking-tight leading-none">
-              Elenco <span style={{ color: config.colors.primary }}>{displayName}</span>
+            <h1 className="text-2xl md:text-4xl font-manrope font-extrabold text-white uppercase tracking-tight leading-none">
+              Elencos
             </h1>
             <p className="text-gray-400 font-medium text-xs max-w-2xl">
-              Conheça os atletas da categoria {displayName} do {config.shortName}.
+              Conheça todos os atletas do {config.shortName} organizados por modalidade e categoria.
             </p>
           </motion.div>
         </div>
       </section>
 
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {loading ? (
           <div className="flex justify-center py-20">
             <div className="w-12 h-12 border-4 border-t-transparent rounded-full animate-spin" style={{ borderColor: config.colors.primary, borderTopColor: 'transparent' }}></div>
           </div>
         ) : players.length > 0 ? (
-          <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-            {players.map((player, index) => (
-              <motion.div
-                key={player.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-                className="group bg-gray-50 border border-gray-100 p-1.5 shadow-sm hover:shadow-lg transition-all relative overflow-hidden"
-              >
-                  {/* Photo Placeholder/Image */}
-                  <div className="aspect-[3/4] bg-white border border-gray-100 mb-1.5 overflow-hidden relative">
-                    {player.photoUrl ? (
-                      <img src={player.photoUrl} alt={player.nickname} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-200">
-                        <User size={30} />
-                      </div>
-                    )}
-                    
-                    {player.number && (
-                      <div className="absolute bottom-0 left-0 p-1 text-xl font-black text-black/5 group-hover:opacity-20 transition-all" style={{ color: config.colors.primary }}>
-                        #{player.number}
-                      </div>
-                    )}
+          <div className="space-y-16">
+            {Object.entries(grouped).map(([modality, cats]) => (
+              <div key={modality}>
+                {/* Modality Header */}
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: config.colors.primary + '15' }}>
+                    <Shield size={20} style={{ color: config.colors.primary }} />
                   </div>
+                  <h2 className="text-2xl font-manrope font-extrabold uppercase tracking-tight text-black">{modality}</h2>
+                  <div className="flex-1 h-px bg-gray-200"></div>
+                </div>
 
-                  {/* Info Area */}
-                  <div className="space-y-0">
-                    <h3 className="font-black uppercase italic text-sm tracking-tighter group-hover:translate-x-1 transition-transform truncate" style={{ color: config.colors.primary }}>
-                      {player.nickname}
-                    </h3>
-                    <div className="space-y-0">
-                       <p className="text-black font-bold text-[7px] uppercase tracking-widest truncate">{player.name}</p>
-                       <p className="text-gray-500 font-medium text-[7px] uppercase tracking-widest flex items-center gap-1">
-                         {player.position || 'Atleta'}
-                       </p>
+                {Object.entries(cats).map(([category, catPlayers]) => (
+                  <div key={category} className="mb-10">
+                    {/* Category */}
+                    <div className="flex items-center gap-2 mb-5 ml-13">
+                      <ChevronRight size={14} style={{ color: config.colors.primary }} />
+                      <span className="text-sm font-black uppercase tracking-widest" style={{ color: config.colors.primary }}>{category}</span>
+                      <span className="text-xs text-gray-400 font-medium">({catPlayers.length} atletas)</span>
+                    </div>
+
+                    {/* Players Grid */}
+                    <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 ml-13">
+                      {catPlayers.map((player: any, index: number) => (
+                        <motion.div
+                          key={player.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                          className="group bg-gray-50 border border-gray-100 p-1.5 shadow-sm hover:shadow-lg transition-all relative overflow-hidden"
+                        >
+                          {/* Photo */}
+                          <div className="aspect-[3/4] bg-white border border-gray-100 mb-1.5 overflow-hidden relative">
+                            {player.photo_url ? (
+                              <img src={player.photo_url} alt={player.nickname || player.full_name} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-gray-200">
+                                <User size={30} />
+                              </div>
+                            )}
+                            
+                            {player.number && (
+                              <div className="absolute bottom-0 left-0 p-1 text-xl font-black text-black/5 group-hover:opacity-20 transition-all" style={{ color: config.colors.primary }}>
+                                #{player.number}
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Info */}
+                          <div className="space-y-0">
+                            <h3 className="font-black uppercase italic text-sm tracking-tighter group-hover:translate-x-1 transition-transform truncate" style={{ color: config.colors.primary }}>
+                              {player.nickname || player.full_name}
+                            </h3>
+                            <div className="space-y-0">
+                               <p className="text-black font-bold text-[7px] uppercase tracking-widest truncate">{player.full_name}</p>
+                               <p className="text-gray-500 font-medium text-[7px] uppercase tracking-widest flex items-center gap-1">
+                                 {player.position || 'Atleta'}
+                               </p>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
                     </div>
                   </div>
-              </motion.div>
+                ))}
+              </div>
             ))}
           </div>
         ) : (
           <div className="text-center py-20 space-y-6">
-            <Shield size={64} className="mx-auto text-white/10" />
+            <Shield size={64} className="mx-auto text-gray-200" />
             <div className="space-y-2">
-              <h3 className="text-2xl font-black text-white uppercase italic tracking-tighter">Nenhum atleta cadastrado</h3>
-              <p className="text-gray-400 font-medium">Estamos preparando as informações desta categoria.</p>
+              <h3 className="text-2xl font-black text-gray-800 uppercase italic tracking-tighter">Nenhum atleta cadastrado</h3>
+              <p className="text-gray-400 font-medium">Estamos preparando as informações dos elencos.</p>
             </div>
           </div>
         )}

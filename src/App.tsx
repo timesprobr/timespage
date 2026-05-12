@@ -173,6 +173,7 @@ function AppContent() {
           <Route path="/" element={<Home />} />
           <Route path="/matriculas" element={<Registration />} />
           <Route path="/o-clube" element={<About />} />
+          <Route path="/elenco" element={<Squad />} />
           <Route path="/elenco/:category" element={<Squad />} />
           <Route path="/noticias" element={<NewsList />} />
           <Route path="/noticias/:id" element={<NewsDetail />} />
