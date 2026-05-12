@@ -43,7 +43,8 @@ import {
    Search,
    Filter,
    Save,
-   ChevronDown, Puzzle
+   ChevronDown, Puzzle,
+   ArrowLeft, ArrowRight, Maximize2, Layout, Sparkles, CheckCircle2
 } from 'lucide-react';
 import {
    AreaChart,
@@ -122,6 +123,7 @@ export default function Admin() {
 
    const [isAddingCampaign, setIsAddingCampaign] = useState(false);
    const [editingCampaign, setEditingCampaign] = useState<any>(null);
+   const [campaignFlowStep, setCampaignFlowStep] = useState<'select' | 'popup' | 'card'>('select');
    const [campaignForm, setCampaignForm] = useState({
       title: '',
       headline: '',
@@ -706,10 +708,10 @@ export default function Admin() {
                {isSidebarCollapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
             </button>
 
-            <nav className="flex-1 p-3 space-y-6 overflow-y-auto custom-scrollbar">
+            <nav className="flex-1 p-3 space-y-7 overflow-y-auto custom-scrollbar">
                <div>
-                  {!isSidebarCollapsed && <span className="px-4 text-[8.5px] font-black uppercase tracking-[0.2em] text-zinc-600 italic mb-1.5 block">Análise</span>}
-                  <div className="space-y-0.5">
+                  {!isSidebarCollapsed && <span className="px-4 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 italic mb-2 block">Análise</span>}
+                  <div className="space-y-1">
                      {[
                         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
                         { id: 'leads', label: 'Leads', icon: Users },
@@ -717,18 +719,18 @@ export default function Admin() {
                         <button
                            key={item.id}
                            onClick={() => setActiveTab(item.id as any)}
-                           className={`w-full flex items-center gap-2.5 px-4 py-1.5 rounded-xl transition-all relative group ${activeTab === item.id ? 'bg-[#a3e635] text-black shadow-[0_0_20px_rgba(163,230,53,0.3)]' : 'text-zinc-500 hover:bg-white/5 hover:text-white'} ${isSidebarCollapsed ? 'justify-center' : ''}`}
+                           className={`w-full flex items-center gap-3 px-4 py-1.5 rounded-xl transition-all relative group ${activeTab === item.id ? 'bg-[#a3e635] text-black shadow-[0_0_20px_rgba(163,230,53,0.3)] font-black' : 'text-zinc-400 hover:bg-white/5 hover:text-white'} ${isSidebarCollapsed ? 'justify-center py-2' : ''}`}
                         >
-                           <item.icon size={16} strokeWidth={activeTab === item.id ? 2.5 : 2} />
-                           {!isSidebarCollapsed && <span className="text-[9px] font-extrabold uppercase tracking-wider">{item.label}</span>}
+                           <item.icon size={17} strokeWidth={activeTab === item.id ? 2.5 : 2} />
+                           {!isSidebarCollapsed && <span className="text-[10.5px] font-extrabold uppercase tracking-wider">{item.label}</span>}
                         </button>
                      ))}
                   </div>
                </div>
 
                <div>
-                  {!isSidebarCollapsed && <span className="px-4 text-[8.5px] font-black uppercase tracking-[0.2em] text-zinc-600 italic mb-1.5 block">Marketing</span>}
-                  <div className="space-y-0.5">
+                  {!isSidebarCollapsed && <span className="px-4 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 italic mb-2 block">Marketing</span>}
+                  <div className="space-y-1">
                      {[
                         { id: 'campaign', label: 'Campanha', icon: FileImage },
                         { id: 'identity', label: 'Identidade visual', icon: Palette },
@@ -737,18 +739,18 @@ export default function Admin() {
                         <button
                            key={item.id}
                            onClick={() => setActiveTab(item.id as any)}
-                           className={`w-full flex items-center gap-2.5 px-4 py-1.5 rounded-xl transition-all relative group ${activeTab === item.id ? 'bg-[#a3e635] text-black shadow-[0_0_20px_rgba(163,230,53,0.3)]' : 'text-zinc-500 hover:bg-white/5 hover:text-white'} ${isSidebarCollapsed ? 'justify-center' : ''}`}
+                           className={`w-full flex items-center gap-3 px-4 py-1.5 rounded-xl transition-all relative group ${activeTab === item.id ? 'bg-[#a3e635] text-black shadow-[0_0_20px_rgba(163,230,53,0.3)] font-black' : 'text-zinc-400 hover:bg-white/5 hover:text-white'} ${isSidebarCollapsed ? 'justify-center py-2' : ''}`}
                         >
-                           <item.icon size={16} strokeWidth={activeTab === item.id ? 2.5 : 2} />
-                           {!isSidebarCollapsed && <span className="text-[9px] font-extrabold uppercase tracking-wider">{item.label}</span>}
+                           <item.icon size={17} strokeWidth={activeTab === item.id ? 2.5 : 2} />
+                           {!isSidebarCollapsed && <span className="text-[10.5px] font-extrabold uppercase tracking-wider">{item.label}</span>}
                         </button>
                      ))}
                   </div>
                </div>
 
                <div>
-                  {!isSidebarCollapsed && <span className="px-4 text-[8.5px] font-black uppercase tracking-[0.2em] text-zinc-600 italic mb-1.5 block">Conteúdo</span>}
-                  <div className="space-y-0.5">
+                  {!isSidebarCollapsed && <span className="px-4 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 italic mb-2 block">Conteúdo</span>}
+                  <div className="space-y-1">
                      {[
                         { id: 'home', label: 'Home', icon: Home },
                         { id: 'news', label: 'Notícias', icon: FileText },
@@ -759,28 +761,28 @@ export default function Admin() {
                         <button
                            key={item.id}
                            onClick={() => setActiveTab(item.id as any)}
-                           className={`w-full flex items-center gap-2.5 px-4 py-1.5 rounded-xl transition-all relative group ${activeTab === item.id ? 'bg-[#a3e635] text-black shadow-[0_0_20px_rgba(163,230,53,0.3)]' : 'text-zinc-500 hover:bg-white/5 hover:text-white'} ${isSidebarCollapsed ? 'justify-center' : ''}`}
+                           className={`w-full flex items-center gap-3 px-4 py-1.5 rounded-xl transition-all relative group ${activeTab === item.id ? 'bg-[#a3e635] text-black shadow-[0_0_20px_rgba(163,230,53,0.3)] font-black' : 'text-zinc-400 hover:bg-white/5 hover:text-white'} ${isSidebarCollapsed ? 'justify-center py-2' : ''}`}
                         >
-                           <item.icon size={16} strokeWidth={activeTab === item.id ? 2.5 : 2} />
-                           {!isSidebarCollapsed && <span className="text-[9px] font-extrabold uppercase tracking-wider">{item.label}</span>}
+                           <item.icon size={17} strokeWidth={activeTab === item.id ? 2.5 : 2} />
+                           {!isSidebarCollapsed && <span className="text-[10.5px] font-extrabold uppercase tracking-wider">{item.label}</span>}
                         </button>
                      ))}
                   </div>
                </div>
 
                <div>
-                  {!isSidebarCollapsed && <span className="px-4 text-[8.5px] font-black uppercase tracking-[0.2em] text-zinc-600 italic mb-1.5 block">Acesso</span>}
-                  <div className="space-y-0.5">
+                  {!isSidebarCollapsed && <span className="px-4 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 italic mb-2 block">Acesso</span>}
+                  <div className="space-y-1">
                      {[
                         { id: 'users', label: 'Usuários', icon: ShieldCheck },
                      ].map((item) => (
                         <button
                            key={item.id}
                            onClick={() => setActiveTab(item.id as any)}
-                           className={`w-full flex items-center gap-2.5 px-4 py-1.5 rounded-xl transition-all relative group ${activeTab === item.id ? 'bg-[#a3e635] text-black shadow-[0_0_20px_rgba(163,230,53,0.3)]' : 'text-zinc-500 hover:bg-white/5 hover:text-white'} ${isSidebarCollapsed ? 'justify-center' : ''}`}
+                           className={`w-full flex items-center gap-3 px-4 py-1.5 rounded-xl transition-all relative group ${activeTab === item.id ? 'bg-[#a3e635] text-black shadow-[0_0_20px_rgba(163,230,53,0.3)] font-black' : 'text-zinc-400 hover:bg-white/5 hover:text-white'} ${isSidebarCollapsed ? 'justify-center py-2' : ''}`}
                         >
-                           <item.icon size={16} strokeWidth={activeTab === item.id ? 2.5 : 2} />
-                           {!isSidebarCollapsed && <span className="text-[9px] font-extrabold uppercase tracking-wider">{item.label}</span>}
+                           <item.icon size={17} strokeWidth={activeTab === item.id ? 2.5 : 2} />
+                           {!isSidebarCollapsed && <span className="text-[10.5px] font-extrabold uppercase tracking-wider">{item.label}</span>}
                         </button>
                      ))}
                   </div>
@@ -792,16 +794,18 @@ export default function Admin() {
                   onClick={() => {
                      window.open(currentOrgId ? `/?orgId=${currentOrgId}` : '/', '_blank');
                   }}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 rounded-2xl transition-all border border-white/5 bg-white/5 hover:bg-white/10 group relative overflow-hidden"
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all border border-white/10 bg-gradient-to-r from-white/5 to-white/10 hover:from-white/10 hover:to-saas-primary/10 group relative overflow-hidden shadow-lg"
                >
-                  <Globe size={18} className="text-saas-primary shrink-0" />
+                  <Globe size={18} className="text-saas-primary shrink-0 group-hover:rotate-12 transition-transform duration-300" />
                   {!isSidebarCollapsed && (
                      <>
                         <div className="flex flex-col items-start min-w-0 flex-1">
-                           <span className="text-[9px] font-manrope font-extrabold uppercase tracking-tight text-white group-hover:text-saas-primary transition-colors">Visitar Site</span>
-                           <span className="text-[7.5px] font-bold uppercase tracking-widest text-zinc-500">Online Now</span>
+                           <span className="text-[9.5px] font-manrope font-extrabold uppercase tracking-tight text-white group-hover:text-saas-primary transition-colors">Visitar Site</span>
+                           <span className="text-[7.5px] font-bold uppercase tracking-widest text-zinc-400">Online Now</span>
                         </div>
-                        <ArrowUpRight size={14} className="text-zinc-500 group-hover:text-saas-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />
+                        <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-saas-primary/10 flex items-center justify-center border border-saas-primary/20 group-hover:bg-saas-primary group-hover:border-saas-primary transition-all duration-300">
+                           <ArrowUpRight size={12} className="text-saas-primary group-hover:text-black group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                        </div>
                      </>
                   )}
                </button>
@@ -1629,7 +1633,25 @@ export default function Admin() {
                            </p>
                         </div>
                         <button 
-                           onClick={() => { setEditingCampaign(null); setIsAddingCampaign(true); }}
+                           onClick={() => { 
+                              setEditingCampaign(null); 
+                              setCampaignForm({
+                                 title: '',
+                                 headline: '',
+                                 subtitle: '',
+                                 buttonText: 'Saiba Mais',
+                                 image_url: '',
+                                 destinationUrl: '',
+                                 type: 'Popup',
+                                 active: true,
+                                 mkt_copy: '',
+                                 social_instagram: '',
+                                 responsible_whatsapp: '',
+                                 social_facebook: ''
+                              });
+                              setCampaignFlowStep('select');
+                              setIsAddingCampaign(true); 
+                           }}
                            className="bg-[#a3e635] text-black px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] flex items-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-xl shadow-saas-primary/20"
                         >
                            <PlusCircle size={16} strokeWidth={3} /> Criar Campanha
@@ -1664,9 +1686,9 @@ export default function Admin() {
 
                                  <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                                     <div className="space-y-1">
-                                       <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest block">{camp.title}</span>
-                                       <h4 className="text-sm font-extrabold uppercase text-white line-clamp-1">{camp.headline}</h4>
-                                       <p className="text-xs text-zinc-400 line-clamp-2 font-normal">{camp.subtitle || 'Sem subtítulo'}</p>
+                                       <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest block">Controle: {camp.title || 'Sem título interno'}</span>
+                                       <h4 className="text-sm font-extrabold uppercase text-white line-clamp-1">{camp.headline || camp.title || 'Campanha'}</h4>
+                                       <p className="text-xs text-zinc-400 line-clamp-2 font-normal">{camp.subtitle || camp.mkt_copy || 'Sem descrição'}</p>
                                     </div>
 
                                     <div className="pt-4 border-t border-white/5 flex items-center justify-between">
@@ -1699,6 +1721,7 @@ export default function Admin() {
                                                    social_instagram: camp.social_instagram || '', responsible_whatsapp: camp.responsible_whatsapp || '',
                                                    social_facebook: camp.social_facebook || ''
                                                 });
+                                                setCampaignFlowStep(camp.type === 'Popup' ? 'popup' : 'card');
                                                 setIsAddingCampaign(true);
                                              }}
                                              className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-all"
@@ -1717,6 +1740,449 @@ export default function Admin() {
                                  </div>
                               </div>
                            ))}
+                        </div>
+                     )}
+
+                     {/* Modal Principal do Fluxo de Campanhas */}
+                     {isAddingCampaign && (
+                        <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+                           <div className="bg-[#121214] border border-white/10 rounded-[32px] w-full max-w-5xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+                              
+                              {/* Header do Modal */}
+                              <div className="p-6 border-b border-white/5 flex items-center justify-between shrink-0 bg-[#161618]">
+                                 <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-xl bg-saas-primary/10 text-saas-primary flex items-center justify-center border border-saas-primary/20">
+                                       <Target size={20} strokeWidth={2.5} />
+                                    </div>
+                                    <div>
+                                       <h4 className="text-base font-manrope font-extrabold uppercase tracking-tight text-white">
+                                          {campaignFlowStep === 'select' ? 'Selecione o Formato da Campanha' : `Configurar ${campaignForm.type}`}
+                                       </h4>
+                                       <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 block">
+                                          {editingCampaign ? 'Edição de Campanha Existente' : 'Nova Campanha de Marketing'}
+                                       </span>
+                                    </div>
+                                 </div>
+                                 <button 
+                                    onClick={() => setIsAddingCampaign(false)}
+                                    className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-all"
+                                 >
+                                    <X size={16} />
+                                 </button>
+                              </div>
+
+                              {/* Corpo do Modal: Passo 1 (Seleção do Tipo) */}
+                              {campaignFlowStep === 'select' && (
+                                 <div className="p-8 overflow-y-auto custom-scrollbar space-y-6">
+                                    <p className="text-xs text-zinc-400 font-medium text-center max-w-xl mx-auto">
+                                       Escolha a experiência visual ideal para engajar os torcedores no portal. Cada formato atende a um objetivo estratégico diferente de conversão.
+                                    </p>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto pt-4">
+                                       {/* Opção POPUP */}
+                                       <button
+                                          type="button"
+                                          onClick={() => {
+                                             setCampaignForm({ ...campaignForm, type: 'Popup' });
+                                             setCampaignFlowStep('popup');
+                                          }}
+                                          className="text-left p-6 rounded-3xl bg-zinc-900/60 border border-white/5 hover:border-saas-primary hover:bg-zinc-900 transition-all flex flex-col justify-between group relative overflow-hidden"
+                                       >
+                                          <div className="absolute top-0 right-0 w-32 h-32 bg-saas-primary/5 rounded-full blur-2xl group-hover:bg-saas-primary/10 transition-all" />
+                                          
+                                          <div className="space-y-4 relative z-10">
+                                             <div className="w-12 h-12 rounded-2xl bg-saas-primary/10 text-saas-primary flex items-center justify-center border border-saas-primary/20 group-hover:scale-110 transition-transform">
+                                                <FileImage size={24} strokeWidth={2.5} />
+                                             </div>
+                                             <div>
+                                                <div className="flex items-center gap-2">
+                                                   <h5 className="text-lg font-manrope font-extrabold uppercase text-white tracking-tight">Popup de Impacto</h5>
+                                                   <span className="text-[8px] font-black uppercase tracking-widest bg-saas-primary/20 text-saas-primary px-2 py-0.5 rounded">Foco Visual</span>
+                                                </div>
+                                                <p className="text-xs text-zinc-400 mt-2 font-normal leading-relaxed">
+                                                   Abre um modal centralizado na tela do usuário assim que acessa o site. Ideal para lançamentos de camisas, ingressos ou anúncios que exigem atenção imediata.
+                                                </p>
+                                             </div>
+
+                                             <div className="p-3 rounded-xl bg-black/40 border border-white/5 space-y-1.5">
+                                                <span className="text-[9px] font-extrabold text-zinc-500 uppercase tracking-wider block">Campos da Experiência:</span>
+                                                <ul className="text-[10px] text-zinc-400 space-y-1 list-disc list-inside font-medium">
+                                                   <li>Controle Interno (Título & Descrição)</li>
+                                                   <li>Imagem de Alta Definição (Anexo)</li>
+                                                   <li>Link de Destino Direto</li>
+                                                </ul>
+                                             </div>
+                                          </div>
+
+                                          <div className="pt-4 mt-4 border-t border-white/5 flex items-center justify-between text-xs font-black uppercase tracking-wider text-saas-primary group-hover:translate-x-1 transition-transform">
+                                             <span>Configurar Popup</span>
+                                             <ChevronRight size={16} />
+                                          </div>
+                                       </button>
+
+                                       {/* Opção CARD */}
+                                       <button
+                                          type="button"
+                                          onClick={() => {
+                                             setCampaignForm({ ...campaignForm, type: 'Card' });
+                                             setCampaignFlowStep('card');
+                                          }}
+                                          className="text-left p-6 rounded-3xl bg-zinc-900/60 border border-white/5 hover:border-saas-primary hover:bg-zinc-900 transition-all flex flex-col justify-between group relative overflow-hidden"
+                                       >
+                                          <div className="absolute top-0 right-0 w-32 h-32 bg-saas-primary/5 rounded-full blur-2xl group-hover:bg-saas-primary/10 transition-all" />
+                                          
+                                          <div className="space-y-4 relative z-10">
+                                             <div className="w-12 h-12 rounded-2xl bg-saas-primary/10 text-saas-primary flex items-center justify-center border border-saas-primary/20 group-hover:scale-110 transition-transform">
+                                                <LayoutDashboard size={24} strokeWidth={2.5} />
+                                             </div>
+                                             <div>
+                                                <div className="flex items-center gap-2">
+                                                   <h5 className="text-lg font-manrope font-extrabold uppercase text-white tracking-tight">Card / Banner Integrado</h5>
+                                                   <span className="text-[8px] font-black uppercase tracking-widest bg-saas-primary/20 text-saas-primary px-2 py-0.5 rounded">Conversão</span>
+                                                </div>
+                                                <p className="text-xs text-zinc-400 mt-2 font-normal leading-relaxed">
+                                                   Insere um elemento ou banner chamativo com textos persuasivos e botão de ação. Ideal para captação contínua de planos de sócio-torcedor.
+                                                </p>
+                                             </div>
+
+                                             <div className="p-3 rounded-xl bg-black/40 border border-white/5 space-y-1.5">
+                                                <span className="text-[9px] font-extrabold text-zinc-500 uppercase tracking-wider block">Campos da Experiência:</span>
+                                                <ul className="text-[10px] text-zinc-400 space-y-1 list-disc list-inside font-medium">
+                                                   <li>Controle Interno (Título & Descrição)</li>
+                                                   <li>Headline & Subheadline Visíveis</li>
+                                                   <li>Botão Customizado + Destino</li>
+                                                </ul>
+                                             </div>
+                                          </div>
+
+                                          <div className="pt-4 mt-4 border-t border-white/5 flex items-center justify-between text-xs font-black uppercase tracking-wider text-saas-primary group-hover:translate-x-1 transition-transform">
+                                             <span>Configurar Card</span>
+                                             <ChevronRight size={16} />
+                                          </div>
+                                       </button>
+                                    </div>
+                                 </div>
+                              )}
+
+                              {/* Corpo do Modal: Passo 2 (Formulário POPUP) */}
+                              {campaignFlowStep === 'popup' && (
+                                 <form onSubmit={handleSaveCampaign} className="flex-1 overflow-hidden flex flex-col">
+                                    <div className="grid grid-cols-1 lg:grid-cols-12 flex-1 overflow-y-auto custom-scrollbar divide-y lg:divide-y-0 lg:divide-x divide-white/5">
+                                       
+                                       {/* Coluna de Preenchimento */}
+                                       <div className="lg:col-span-7 p-8 space-y-6">
+                                          <div className="border-b border-white/5 pb-4">
+                                             <h5 className="text-xs font-extrabold uppercase tracking-widest text-saas-primary">Informações do Popup</h5>
+                                          </div>
+
+                                          <div className="space-y-4">
+                                             <div className="space-y-1.5">
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 block">
+                                                   Título <span className="text-zinc-600 font-bold lowercase italic">(Apenas para controle interno)</span>
+                                                </label>
+                                                <input 
+                                                   type="text" required placeholder="Ex: Lançamento Nova Camisa 2026"
+                                                   value={campaignForm.title}
+                                                   onChange={e => setCampaignForm({...campaignForm, title: e.target.value})}
+                                                   className="w-full bg-zinc-900 border border-white/5 rounded-xl p-3 text-xs text-white font-bold outline-none focus:border-saas-primary/50 transition-all"
+                                                />
+                                             </div>
+
+                                             <div className="space-y-1.5">
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 block">
+                                                   Descrição <span className="text-zinc-600 font-bold lowercase italic">(Apenas para controle interno)</span>
+                                                </label>
+                                                <textarea 
+                                                   rows={2} placeholder="Notas internas sobre a meta ou período de veiculação desta campanha..."
+                                                   value={campaignForm.mkt_copy}
+                                                   onChange={e => setCampaignForm({...campaignForm, mkt_copy: e.target.value})}
+                                                   className="w-full bg-zinc-900 border border-white/5 rounded-xl p-3 text-xs text-white font-medium outline-none focus:border-saas-primary/50 transition-all resize-none"
+                                                />
+                                             </div>
+
+                                             <div className="space-y-1.5">
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 block">
+                                                   Imagem de Alta Conversão <span className="text-saas-primary font-bold">(Sugestão: 1080 x 1080px)</span>
+                                                </label>
+                                                <div className="flex gap-2">
+                                                   <input 
+                                                      type="text" required placeholder="Cole a URL ou faça upload do anexo..."
+                                                      value={campaignForm.image_url}
+                                                      onChange={e => setCampaignForm({...campaignForm, image_url: e.target.value})}
+                                                      className="flex-1 bg-zinc-900 border border-white/5 rounded-xl p-3 text-xs text-white font-bold outline-none focus:border-saas-primary/50 transition-all"
+                                                   />
+                                                   <label className="px-4 rounded-xl bg-zinc-800 hover:bg-zinc-700 flex items-center justify-center gap-2 cursor-pointer border border-white/5 text-saas-primary shrink-0 transition-colors">
+                                                      <Upload size={14} strokeWidth={2.5} />
+                                                      <span className="text-[10px] font-black uppercase tracking-wider">Anexo</span>
+                                                      <input type="file" accept="image/*" className="hidden" onChange={async e => {
+                                                         const f = e.target.files?.[0];
+                                                         if (f) {
+                                                            const u = await handleFileUpload(f, 'noticias');
+                                                            if (u) setCampaignForm({...campaignForm, image_url: u});
+                                                         }
+                                                      }} />
+                                                   </label>
+                                                </div>
+                                                <p className="text-[9px] text-zinc-500 font-medium">Formatos recomendados: PNG transparente, JPG ou WEBP de alta qualidade.</p>
+                                             </div>
+
+                                             <div className="space-y-1.5">
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 block">URL de Destino do Clique</label>
+                                                <input 
+                                                   type="url" required placeholder="https://loja.clube.com.br/produto"
+                                                   value={campaignForm.destinationUrl}
+                                                   onChange={e => setCampaignForm({...campaignForm, destinationUrl: e.target.value})}
+                                                   className="w-full bg-zinc-900 border border-white/5 rounded-xl p-3 text-xs text-white font-bold outline-none focus:border-saas-primary/50 transition-all font-mono"
+                                                />
+                                             </div>
+                                          </div>
+                                       </div>
+
+                                       {/* Coluna de Preview Premium */}
+                                       <div className="lg:col-span-5 p-8 bg-zinc-950/40 flex flex-col justify-between space-y-6">
+                                          <div>
+                                             <span className="text-[9px] font-black uppercase tracking-widest text-zinc-500 block mb-4 text-center">
+                                                Preview em Tempo Real
+                                             </span>
+
+                                             {/* Caixa simulando a tela do visitante com o Popup */}
+                                             <div className="border border-white/10 rounded-2xl bg-[#121214] p-4 shadow-2xl relative overflow-hidden flex flex-col items-center justify-center min-h-[280px]">
+                                                {/* Fundo simulando o site borrado */}
+                                                <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 to-black opacity-40" />
+                                                
+                                                {/* O Popup Renderizado */}
+                                                <div className="relative z-10 w-full max-w-xs rounded-2xl overflow-hidden bg-black border border-white/10 shadow-2xl group cursor-pointer animate-in zoom-in-95 duration-300">
+                                                   {campaignForm.image_url ? (
+                                                      <div className="aspect-square w-full bg-zinc-900 relative">
+                                                         <img src={campaignForm.image_url} alt="Preview" className="w-full h-full object-cover" />
+                                                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-4">
+                                                            <span className="w-full text-center py-2 rounded-xl bg-saas-primary text-black text-[10px] font-black uppercase tracking-wider shadow-lg">
+                                                               Acessar Oferta
+                                                            </span>
+                                                         </div>
+                                                      </div>
+                                                   ) : (
+                                                      <div className="aspect-square w-full bg-zinc-900 flex flex-col items-center justify-center p-6 text-center space-y-2 border-2 border-dashed border-zinc-800">
+                                                         <FileImage size={32} className="text-zinc-700" />
+                                                         <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-tight">1080 x 1080px</span>
+                                                         <span className="text-[9px] text-zinc-500">A imagem do popup ocupará este espaço de alto impacto</span>
+                                                      </div>
+                                                   )}
+                                                </div>
+                                             </div>
+                                          </div>
+
+                                          <div className="p-3 rounded-xl bg-saas-primary/5 border border-saas-primary/10 flex items-center gap-2">
+                                             <Zap size={14} className="text-saas-primary shrink-0" />
+                                             <p className="text-[9px] text-zinc-400 font-medium leading-tight">
+                                                Ao clicar na imagem, o torcedor será levado diretamente para a <strong className="text-white">URL de Destino</strong> configurada.
+                                             </p>
+                                          </div>
+                                       </div>
+                                    </div>
+
+                                    {/* Footer de Ações */}
+                                    <div className="p-6 border-t border-white/5 bg-[#161618] flex items-center justify-between shrink-0">
+                                       <button 
+                                          type="button" 
+                                          onClick={() => setCampaignFlowStep('select')}
+                                          className="px-4 py-2.5 rounded-xl bg-zinc-800 text-zinc-400 hover:text-white text-xs font-bold transition-colors"
+                                       >
+                                          Voltar aos Formatos
+                                       </button>
+                                       <button 
+                                          type="submit" 
+                                          disabled={isSaving}
+                                          className="px-6 py-3 rounded-xl bg-saas-primary text-black font-black text-xs uppercase tracking-wider hover:scale-105 active:scale-95 transition-all shadow-lg"
+                                       >
+                                          {isSaving ? 'Salvando...' : 'Publicar Popup Oficial'}
+                                       </button>
+                                    </div>
+                                 </form>
+                              )}
+
+                              {/* Corpo do Modal: Passo 2 (Formulário CARD) */}
+                              {campaignFlowStep === 'card' && (
+                                 <form onSubmit={handleSaveCampaign} className="flex-1 overflow-hidden flex flex-col">
+                                    <div className="grid grid-cols-1 lg:grid-cols-12 flex-1 overflow-y-auto custom-scrollbar divide-y lg:divide-y-0 lg:divide-x divide-white/5">
+                                       
+                                       {/* Coluna de Preenchimento */}
+                                       <div className="lg:col-span-7 p-8 space-y-6">
+                                          <div className="border-b border-white/5 pb-4">
+                                             <h5 className="text-xs font-extrabold uppercase tracking-widest text-saas-primary">Informações do Card</h5>
+                                          </div>
+
+                                          <div className="space-y-4">
+                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div className="space-y-1.5">
+                                                   <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 block">
+                                                      Título <span className="text-zinc-600 font-bold lowercase italic">(Info Interna)</span>
+                                                   </label>
+                                                   <input 
+                                                      type="text" required placeholder="Ex: Sócio Torcedor Ouro"
+                                                      value={campaignForm.title}
+                                                      onChange={e => setCampaignForm({...campaignForm, title: e.target.value})}
+                                                      className="w-full bg-zinc-900 border border-white/5 rounded-xl p-3 text-xs text-white font-bold outline-none focus:border-saas-primary/50 transition-all"
+                                                   />
+                                                </div>
+                                                <div className="space-y-1.5">
+                                                   <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 block">
+                                                      Descrição <span className="text-zinc-600 font-bold lowercase italic">(Info Interna)</span>
+                                                   </label>
+                                                   <input 
+                                                      type="text" placeholder="Ex: Meta de 500 adesões no mês"
+                                                      value={campaignForm.mkt_copy}
+                                                      onChange={e => setCampaignForm({...campaignForm, mkt_copy: e.target.value})}
+                                                      className="w-full bg-zinc-900 border border-white/5 rounded-xl p-3 text-xs text-white font-bold outline-none focus:border-saas-primary/50 transition-all"
+                                                   />
+                                                </div>
+                                             </div>
+
+                                             <div className="space-y-1.5">
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 block">
+                                                   Imagem de Destaque <span className="text-saas-primary font-bold">(Anexo com sugestão de tamanho)</span>
+                                                </label>
+                                                <div className="flex gap-2">
+                                                   <input 
+                                                      type="text" required placeholder="URL ou upload do anexo..."
+                                                      value={campaignForm.image_url}
+                                                      onChange={e => setCampaignForm({...campaignForm, image_url: e.target.value})}
+                                                      className="flex-1 bg-zinc-900 border border-white/5 rounded-xl p-3 text-xs text-white font-bold outline-none focus:border-saas-primary/50 transition-all"
+                                                   />
+                                                   <label className="px-4 rounded-xl bg-zinc-800 hover:bg-zinc-700 flex items-center justify-center gap-2 cursor-pointer border border-white/5 text-saas-primary shrink-0 transition-colors">
+                                                      <Upload size={14} strokeWidth={2.5} />
+                                                      <span className="text-[10px] font-black uppercase tracking-wider">Anexo</span>
+                                                      <input type="file" accept="image/*" className="hidden" onChange={async e => {
+                                                         const f = e.target.files?.[0];
+                                                         if (f) {
+                                                            const u = await handleFileUpload(f, 'noticias');
+                                                            if (u) setCampaignForm({...campaignForm, image_url: u});
+                                                         }
+                                                      }} />
+                                                   </label>
+                                                </div>
+                                             </div>
+
+                                             <div className="space-y-1.5">
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 block">
+                                                   Headline <span className="text-saas-primary font-bold">(Texto &gt; Título Curto)</span>
+                                                </label>
+                                                <input 
+                                                   type="text" required placeholder="Faça parte da nossa história!"
+                                                   value={campaignForm.headline}
+                                                   onChange={e => setCampaignForm({...campaignForm, headline: e.target.value})}
+                                                   className="w-full bg-zinc-900 border border-white/5 rounded-xl p-3 text-xs text-white font-extrabold outline-none focus:border-saas-primary/50 transition-all"
+                                                />
+                                             </div>
+
+                                             <div className="space-y-1.5">
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 block">
+                                                   Subheadline <span className="text-zinc-500 font-bold">(Texto com descrição curta)</span>
+                                                </label>
+                                                <input 
+                                                   type="text" required placeholder="Planos a partir de R$ 29,90 com acesso exclusivo a jogos."
+                                                   value={campaignForm.subtitle}
+                                                   onChange={e => setCampaignForm({...campaignForm, subtitle: e.target.value})}
+                                                   className="w-full bg-zinc-900 border border-white/5 rounded-xl p-3 text-xs text-white font-medium outline-none focus:border-saas-primary/50 transition-all"
+                                                />
+                                             </div>
+
+                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div className="space-y-1.5">
+                                                   <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 block">Título do Botão</label>
+                                                   <input 
+                                                      type="text" required placeholder="Ex: Seja Sócio Agora"
+                                                      value={campaignForm.buttonText}
+                                                      onChange={e => setCampaignForm({...campaignForm, buttonText: e.target.value})}
+                                                      className="w-full bg-zinc-900 border border-white/5 rounded-xl p-3 text-xs text-saas-primary font-black uppercase tracking-wider outline-none focus:border-saas-primary/50 transition-all"
+                                                   />
+                                                </div>
+                                                <div className="space-y-1.5">
+                                                   <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 block">Link de Destino</label>
+                                                   <input 
+                                                      type="url" required placeholder="https://socio.clube.com.br"
+                                                      value={campaignForm.destinationUrl}
+                                                      onChange={e => setCampaignForm({...campaignForm, destinationUrl: e.target.value})}
+                                                      className="w-full bg-zinc-900 border border-white/5 rounded-xl p-3 text-xs text-white font-bold outline-none focus:border-saas-primary/50 transition-all font-mono"
+                                                   />
+                                                </div>
+                                             </div>
+                                          </div>
+                                       </div>
+
+                                       {/* Coluna de Preview Premium */}
+                                       <div className="lg:col-span-5 p-8 bg-zinc-950/40 flex flex-col justify-between space-y-6">
+                                          <div>
+                                             <span className="text-[9px] font-black uppercase tracking-widest text-zinc-500 block mb-4 text-center">
+                                                Preview do Card no Portal
+                                             </span>
+
+                                             {/* Componente Card Renderizado */}
+                                             <div className="rounded-2xl border border-white/10 bg-[#121214] overflow-hidden shadow-2xl space-y-4 animate-in zoom-in-95 duration-300">
+                                                <div className="aspect-video w-full bg-zinc-900 relative overflow-hidden">
+                                                   {campaignForm.image_url ? (
+                                                      <img src={campaignForm.image_url} alt="Destaque" className="w-full h-full object-cover" />
+                                                   ) : (
+                                                      <div className="w-full h-full flex flex-col items-center justify-center text-zinc-700 space-y-1 border-b border-white/5">
+                                                         <ImageIcon size={28} />
+                                                         <span className="text-[9px] font-bold text-zinc-600">Imagem de Destaque</span>
+                                                      </div>
+                                                   )}
+                                                   <div className="absolute top-2.5 right-2.5">
+                                                      <span className="px-2 py-0.5 rounded bg-black/60 backdrop-blur-md text-white text-[8px] font-black uppercase tracking-wider">
+                                                         Patrocinado
+                                                      </span>
+                                                   </div>
+                                                </div>
+
+                                                <div className="p-5 pt-1 space-y-3">
+                                                   <div className="space-y-1">
+                                                      <h6 className="text-sm font-manrope font-extrabold uppercase text-white leading-tight line-clamp-1">
+                                                         {campaignForm.headline || 'Headline de Destaque'}
+                                                      </h6>
+                                                      <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed font-normal">
+                                                         {campaignForm.subtitle || 'A subheadline descreve a oferta especial ou benefício de forma persuasiva para o torcedor.'}
+                                                      </p>
+                                                   </div>
+
+                                                   <div className="pt-2">
+                                                      <div className="w-full text-center py-2.5 rounded-xl bg-saas-primary text-black font-black text-[10px] uppercase tracking-wider shadow-md truncate px-4">
+                                                         {campaignForm.buttonText || 'Clique Aqui'}
+                                                      </div>
+                                                   </div>
+                                                </div>
+                                             </div>
+                                          </div>
+
+                                          <div className="p-3 rounded-xl bg-zinc-900 border border-white/5 text-center">
+                                             <span className="text-[8px] font-extrabold text-zinc-500 uppercase tracking-widest block">
+                                                Aparência em tempo real no dashboard do torcedor
+                                             </span>
+                                          </div>
+                                       </div>
+                                    </div>
+
+                                    {/* Footer de Ações */}
+                                    <div className="p-6 border-t border-white/5 bg-[#161618] flex items-center justify-between shrink-0">
+                                       <button 
+                                          type="button" 
+                                          onClick={() => setCampaignFlowStep('select')}
+                                          className="px-4 py-2.5 rounded-xl bg-zinc-800 text-zinc-400 hover:text-white text-xs font-bold transition-colors"
+                                       >
+                                          Voltar aos Formatos
+                                       </button>
+                                       <button 
+                                          type="submit" 
+                                          disabled={isSaving}
+                                          className="px-6 py-3 rounded-xl bg-saas-primary text-black font-black text-xs uppercase tracking-wider hover:scale-105 active:scale-95 transition-all shadow-lg"
+                                       >
+                                          {isSaving ? 'Salvando...' : 'Publicar Card Oficial'}
+                                       </button>
+                                    </div>
+                                 </form>
+                              )}
+
+                           </div>
                         </div>
                      )}
                   </div>
@@ -2444,444 +2910,6 @@ export default function Admin() {
 
             </div>
          </main>
-
-
-         {isAddingNews && (
-            <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-6">
-               <div className="absolute inset-0 bg-black/80 backdrop-blur-xl" onClick={() => setIsAddingNews(false)}></div>
-               
-               <div className="relative w-full max-w-5xl h-[85vh] overflow-hidden rounded-[32px] border border-white/10 bg-[#121214] flex flex-col shadow-[0_0_50px_rgba(0,0,0,0.5)] animate-in fade-in zoom-in-95 duration-300">
-                  
-                  {/* Modal Header */}
-                  <div className="px-8 py-6 border-b border-white/5 flex justify-between items-center bg-[#18181b]/50 backdrop-blur-md shrink-0">
-                     <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-[#a3e635]/10 rounded-xl flex items-center justify-center text-saas-primary border border-saas-primary/20">
-                           {editingNews ? <Edit3 size={20} /> : <Plus size={20} strokeWidth={3} />}
-                        </div>
-                        <div>
-                           <h2 className="text-xl font-manrope font-extrabold uppercase tracking-tight leading-none text-white">
-                              {editingNews ? 'Editar Notícia' : 'Publicar Conteúdo'}
-                           </h2>
-                           <p className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 mt-1 italic">
-                              Interface de Edição Premium
-                           </p>
-                        </div>
-                     </div>
-                     <button 
-                        onClick={() => setIsAddingNews(false)} 
-                        className="w-9 h-9 flex items-center justify-center rounded-full bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all active:scale-90"
-                     >
-                        <X size={18} />
-                     </button>
-                  </div>
-
-                  <div className="flex-1 flex overflow-hidden">
-                     {/* Form Side */}
-                     <div className="flex-1 overflow-y-auto custom-scrollbar p-8">
-                        <form onSubmit={handleSaveNews} className="space-y-8 max-w-2xl mx-auto lg:mx-0">
-                           <div className="grid grid-cols-1 gap-6">
-                              <div className="space-y-2">
-                                 <label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-1">Título da Matéria</label>
-                                 <input 
-                                    type="text" 
-                                    required 
-                                    value={newsForm.title} 
-                                    onChange={e => setNewsForm({ ...newsForm, title: e.target.value })} 
-                                    placeholder="Ex: Reforço de peso chega ao clube..." 
-                                    className="w-full p-4 rounded-2xl bg-zinc-900/50 border border-white/5 text-sm font-bold text-white outline-none focus:border-saas-primary/50 focus:bg-zinc-800/80 transition-all placeholder:text-zinc-700" 
-                                 />
-                              </div>
-
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-1">Categoria</label>
-                                    <div className="relative">
-                                       <input 
-                                          type="text" 
-                                          required 
-                                          value={newsForm.category} 
-                                          onChange={e => setNewsForm({ ...newsForm, category: e.target.value })} 
-                                          placeholder="Ex: Futebol, Clube..."
-                                          className="w-full p-4 pl-12 rounded-2xl bg-zinc-900/50 border border-white/5 text-[10px] font-black uppercase text-white outline-none focus:border-saas-primary/50 transition-all placeholder:text-zinc-700" 
-                                       />
-                                       <Tag size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600" />
-                                    </div>
-                                 </div>
-                                 <div className="space-y-2">
-                                     <div className="flex justify-between items-end ml-1">
-                                        <label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em]">Capa da Notícia</label>
-                                        <span className="text-[8px] font-bold text-saas-primary uppercase italic tracking-widest opacity-60">Ideal: 1200x630px</span>
-                                     </div>
-                                    <div className="flex gap-3">
-                                       <div className="relative flex-1">
-                                          <input 
-                                             type="text" 
-                                             required 
-                                             value={newsForm.image} 
-                                             onChange={e => setNewsForm({ ...newsForm, image: e.target.value })} 
-                                             placeholder="URL da imagem ou faça upload..."
-                                             className="w-full p-4 pl-12 rounded-2xl bg-zinc-900/50 border border-white/5 text-[10px] font-bold text-white outline-none focus:border-saas-primary/50 transition-all placeholder:text-zinc-700" 
-                                          />
-                                          <ImageIcon size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600" />
-                                       </div>
-                                       <div className="relative group">
-                                          <button type="button" className="h-full px-5 rounded-2xl bg-zinc-800 border border-white/5 text-zinc-400 hover:text-saas-primary hover:border-saas-primary/30 transition-all flex items-center justify-center gap-2">
-                                             <Upload size={16} />
-                                             <span className="text-[9px] font-black uppercase tracking-widest hidden md:block">Upload</span>
-                                          </button>
-                                          <input 
-                                             type="file" 
-                                             accept="image/*"
-                                             className="absolute inset-0 opacity-0 cursor-pointer"
-                                             onChange={async (e) => {
-                                                const file = e.target.files?.[0];
-                                                if (file) {
-                                                   try {
-                                                      setIsSaving(true);
-                                                      const url = await handleFileUpload(file, 'noticias');
-                                                      if (url) {
-                                                         setNewsForm(prev => ({ ...prev, image: url }));
-                                                         showNotification('Imagem carregada com sucesso!', 'success');
-                                                      }
-                                                   } catch (err) {
-                                                      showNotification('Falha ao processar arquivo', 'error');
-                                                   } finally {
-                                                      setIsSaving(false);
-                                                   }
-                                                }
-                                             }}
-                                          />
-                                       </div>
-                                    </div>
-                                 </div>
-                              </div>
-
-                              <div className="space-y-2">
-                                 <label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-1">Resumo Curto (SEO)</label>
-                                 <textarea 
-                                    rows={2}
-                                    value={newsForm.summary} 
-                                    onChange={e => setNewsForm({ ...newsForm, summary: e.target.value })} 
-                                    placeholder="Uma breve descrição para atrair cliques..."
-                                    className="w-full p-4 rounded-2xl bg-zinc-900/50 border border-white/5 text-[10px] font-medium text-white outline-none focus:border-saas-primary/50 transition-all resize-none placeholder:text-zinc-700"
-                                 />
-                              </div>
-
-                              <div className="space-y-2">
-                                 <label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-1">Conteúdo da Notícia</label>
-                                 <div className="rounded-2xl border border-white/5 overflow-hidden bg-zinc-900/50 focus-within:border-saas-primary/30 transition-all shadow-inner">
-                                    <ReactQuill 
-                                       theme="snow" 
-                                       value={newsForm.content} 
-                                       onChange={content => setNewsForm({ ...newsForm, content })} 
-                                       className="premium-quill" 
-                                    />
-                                 </div>
-                              </div>
-                           </div>
-
-                           <div className="pt-4 sticky bottom-0 bg-[#09090b]/80 backdrop-blur-md pb-4 border-t border-white/5">
-                              <button 
-                                 type="submit" 
-                                 disabled={isSaving} 
-                                 className="w-full bg-[#a3e635] text-black py-4 rounded-2xl font-black uppercase tracking-[0.3em] text-[11px] shadow-[0_10px_30px_rgba(163,230,53,0.2)] hover:shadow-[0_15px_40px_rgba(163,230,53,0.3)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none"
-                              >
-                                 {isSaving ? (
-                                    <div className="flex items-center justify-center gap-2">
-                                       <RefreshCw size={14} className="animate-spin" />
-                                       <span>Sincronizando...</span>
-                                    </div>
-                                 ) : (
-                                    <div className="flex items-center justify-center gap-2">
-                                       {editingNews ? <RefreshCw size={14} /> : <Zap size={14} />}
-                                       <span>{editingNews ? 'Salvar Alterações' : 'Publicar Agora'}</span>
-                                    </div>
-                                 )}
-                              </button>
-                           </div>
-                        </form>
-                     </div>
-
-                     {/* Preview Side - More polished */}
-                     <div className="hidden lg:block w-[400px] bg-[#09090b] border-l border-white/5 overflow-y-auto custom-scrollbar">
-                        <div className="p-8">
-                           <div className="flex items-center justify-between mb-6">
-                              <label className="text-[10px] font-black uppercase text-saas-primary italic flex items-center gap-2 tracking-[0.2em]">
-                                 <Eye size={14} /> Live Preview
-                              </label>
-                              <div className="flex gap-1">
-                                 <div className="w-2 h-2 rounded-full bg-zinc-800"></div>
-                                 <div className="w-2 h-2 rounded-full bg-zinc-800"></div>
-                                 <div className="w-2 h-2 rounded-full bg-zinc-800"></div>
-                              </div>
-                           </div>
-
-                           <div className="rounded-[24px] border border-white/5 bg-[#121214] overflow-hidden shadow-2xl">
-                              <div className="aspect-video bg-zinc-800 overflow-hidden relative">
-                                 {newsForm.image ? (
-                                    <img src={newsForm.image} className="w-full h-full object-cover" alt="Preview" />
-                                 ) : (
-                                    <div className="w-full h-full flex flex-col items-center justify-center text-zinc-700 gap-2">
-                                       <ImageIcon size={32} />
-                                       <span className="text-[8px] font-black uppercase tracking-widest">Sem Imagem</span>
-                                    </div>
-                                 )}
-                                 <div className="absolute top-4 left-4">
-                                    <span className="px-3 py-1 rounded-full bg-[#a3e635] text-black text-[8px] font-black uppercase italic shadow-lg">
-                                       {newsForm.category}
-                                    </span>
-                                 </div>
-                              </div>
-                              <div className="p-6">
-                                 <div className="text-[8px] font-black text-zinc-600 uppercase tracking-widest mb-3 italic">
-                                    Publicado em {new Date().toLocaleDateString('pt-BR')}
-                                 </div>
-                                 <h1 className="text-xl font-manrope font-extrabold uppercase tracking-tight text-white mb-4 leading-tight">
-                                    {newsForm.title || 'Seu título impactante aparecerá aqui'}
-                                 </h1>
-                                 <div 
-                                    className="prose prose-invert prose-xs max-w-none text-zinc-400 text-[11px] leading-relaxed line-clamp-6 news-preview-content" 
-                                    dangerouslySetInnerHTML={{ __html: newsForm.content || '<p>O conteúdo da sua notícia será renderizado aqui com toda a formatação premium...</p>' }} 
-                                 />
-                              </div>
-                           </div>
-                           
-                           <div className="mt-8 p-6 rounded-2xl bg-saas-primary/5 border border-saas-primary/10">
-                              <p className="text-[9px] font-bold text-saas-primary uppercase tracking-widest mb-2 flex items-center gap-2">
-                                 <Target size={12} /> Dica de Engajamento
-                              </p>
-                              <p className="text-[10px] text-zinc-400 leading-relaxed italic">
-                                 Use títulos curtos e imagens de alta resolução para aumentar a taxa de cliques em até 40%.
-                              </p>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-               </div>
-            </div>
-         )}
-
-         {isAddingCampaign && (
-            <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-6">
-               <div className="absolute inset-0 bg-black/80 backdrop-blur-xl" onClick={() => setIsAddingCampaign(false)}></div>
-               
-               <div className="relative w-full max-w-5xl h-[85vh] overflow-hidden rounded-[32px] border border-white/10 bg-[#121214] flex flex-col shadow-[0_0_50px_rgba(0,0,0,0.5)] animate-in fade-in zoom-in-95 duration-300">
-                  
-                  {/* Modal Header */}
-                  <div className="px-8 py-6 border-b border-white/5 flex justify-between items-center bg-[#18181b]/50 backdrop-blur-md shrink-0">
-                     <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-[#a3e635]/10 rounded-xl flex items-center justify-center text-saas-primary border border-saas-primary/20">
-                           {editingCampaign ? <Edit3 size={20} /> : <Plus size={20} strokeWidth={3} />}
-                        </div>
-                        <div>
-                           <h2 className="text-xl font-manrope font-extrabold uppercase tracking-tight leading-none text-white">
-                              {editingCampaign ? 'Editar Campanha' : 'Nova Campanha'}
-                           </h2>
-                           <p className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 mt-1 italic">
-                              Marketing & Conversão Premium
-                           </p>
-                        </div>
-                     </div>
-                     <button 
-                        onClick={() => setIsAddingCampaign(false)} 
-                        className="w-9 h-9 flex items-center justify-center rounded-full bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all active:scale-90"
-                     >
-                        <X size={18} />
-                     </button>
-                  </div>
-
-                  <div className="flex-1 flex overflow-hidden">
-                     {/* Form Side */}
-                     <div className="flex-1 overflow-y-auto custom-scrollbar p-8">
-                        <form onSubmit={handleSaveCampaign} className="space-y-8 max-w-2xl mx-auto lg:mx-0">
-                           <div className="grid grid-cols-1 gap-6">
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-1">Título Interno</label>
-                                    <input 
-                                       type="text" 
-                                       required 
-                                       value={campaignForm.title} 
-                                       onChange={e => setCampaignForm({ ...campaignForm, title: e.target.value })} 
-                                       placeholder="Ex: Campanha Sócios 2024" 
-                                       className="w-full p-4 rounded-2xl bg-zinc-900/50 border border-white/5 text-sm font-bold text-white outline-none focus:border-saas-primary/50 transition-all placeholder:text-zinc-700" 
-                                    />
-                                 </div>
-                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-1">Tipo de Campanha</label>
-                                    <select 
-                                       value={campaignForm.type} 
-                                       onChange={e => setCampaignForm({ ...campaignForm, type: e.target.value as any })} 
-                                       className="w-full p-4 rounded-2xl bg-zinc-900/50 border border-white/5 text-[10px] font-black uppercase text-white outline-none focus:border-saas-primary/50 transition-all"
-                                    >
-                                       <option value="Card">Card no Feed</option>
-                                       <option value="Popup">Popup ao Entrar</option>
-                                    </select>
-                                 </div>
-                              </div>
-
-                              <div className="space-y-2">
-                                 <label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-1">Headline (Título Visível)</label>
-                                 <input 
-                                    type="text" 
-                                    required 
-                                    value={campaignForm.headline} 
-                                    onChange={e => setCampaignForm({ ...campaignForm, headline: e.target.value })} 
-                                    placeholder="Ex: SEJA O PRÓXIMO CRAQUE!" 
-                                    className="w-full p-4 rounded-2xl bg-zinc-900/50 border border-white/5 text-sm font-bold text-white outline-none focus:border-saas-primary/50 transition-all placeholder:text-zinc-700" 
-                                 />
-                              </div>
-
-                              <div className="space-y-2">
-                                 <label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-1">Subheadline</label>
-                                 <input 
-                                    type="text" 
-                                    value={campaignForm.subtitle} 
-                                    onChange={e => setCampaignForm({ ...campaignForm, subtitle: e.target.value })} 
-                                    placeholder="Ex: Clique abaixo e faça sua inscrição agora mesmo" 
-                                    className="w-full p-4 rounded-2xl bg-zinc-900/50 border border-white/5 text-xs font-medium text-zinc-400 outline-none focus:border-saas-primary/50 transition-all placeholder:text-zinc-700" 
-                                 />
-                              </div>
-
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                 <div className="space-y-2">
-                                    <div className="flex justify-between items-end ml-1">
-                                       <label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em]">Imagem de Capa</label>
-                                       <span className="text-[8px] font-bold text-saas-primary uppercase italic tracking-widest opacity-60">Ideal: 1200x800px</span>
-                                    </div>
-                                    <div className="flex gap-3">
-                                       <div className="relative flex-1">
-                                          <input 
-                                             type="text" 
-                                             value={campaignForm.image_url} 
-                                             onChange={e => setCampaignForm({ ...campaignForm, image_url: e.target.value })} 
-                                             placeholder="URL ou Upload..."
-                                             className="w-full p-4 pl-12 rounded-2xl bg-zinc-900/50 border border-white/5 text-[10px] font-bold text-white outline-none focus:border-saas-primary/50 transition-all" 
-                                          />
-                                          <ImageIcon size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600" />
-                                       </div>
-                                       <div className="relative group">
-                                          <button type="button" className="h-full px-5 rounded-2xl bg-zinc-800 border border-white/5 text-zinc-400 hover:text-saas-primary transition-all flex items-center justify-center">
-                                             <Upload size={16} />
-                                          </button>
-                                          <input 
-                                             type="file" 
-                                             accept="image/*"
-                                             className="absolute inset-0 opacity-0 cursor-pointer"
-                                             onChange={async (e) => {
-                                                const file = e.target.files?.[0];
-                                                if (file) {
-                                                   setIsSaving(true);
-                                                   const url = await handleFileUpload(file, 'campanhas');
-                                                   if (url) setCampaignForm({ ...campaignForm, image_url: url });
-                                                   setIsSaving(false);
-                                                }
-                                             }}
-                                          />
-                                       </div>
-                                    </div>
-                                 </div>
-                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-1">Texto do Botão</label>
-                                    <input 
-                                       type="text" 
-                                       value={campaignForm.buttonText} 
-                                       onChange={e => setCampaignForm({ ...campaignForm, buttonText: e.target.value })} 
-                                       placeholder="Ex: QUERO ME INSCREVER" 
-                                       className="w-full p-4 rounded-2xl bg-zinc-900/50 border border-white/5 text-[10px] font-black uppercase text-white outline-none focus:border-saas-primary/50 transition-all" 
-                                    />
-                                 </div>
-                              </div>
-
-                              <div className="space-y-2">
-                                 <label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-1">Link de Redirecionamento (CTA)</label>
-                                 <input 
-                                    type="text" 
-                                    value={campaignForm.destinationUrl} 
-                                    onChange={e => setCampaignForm({ ...campaignForm, destinationUrl: e.target.value })} 
-                                    placeholder="https://..." 
-                                    className="w-full p-4 rounded-2xl bg-zinc-900/50 border border-white/5 text-[10px] font-bold text-zinc-400 outline-none focus:border-saas-primary/50 transition-all" 
-                                 />
-                              </div>
-
-                              <div className="space-y-2">
-                                 <label className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] ml-1">Marketing Copy</label>
-                                 <textarea 
-                                    rows={3}
-                                    value={campaignForm.mkt_copy} 
-                                    onChange={e => setCampaignForm({ ...campaignForm, mkt_copy: e.target.value })} 
-                                    placeholder="Escreva um texto curto e persuasivo..."
-                                    className="w-full p-4 rounded-2xl bg-zinc-900/50 border border-white/5 text-xs font-medium text-white outline-none focus:border-saas-primary/50 transition-all resize-none"
-                                 />
-                              </div>
-
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                 <div className="space-y-2">
-                                    <label className="text-[9px] font-black uppercase text-zinc-500 tracking-widest ml-1">Instagram (@)</label>
-                                    <input type="text" value={campaignForm.social_instagram} onChange={e => setCampaignForm({ ...campaignForm, social_instagram: e.target.value })} className="w-full p-3 rounded-xl bg-zinc-900/50 border border-white/5 text-[10px] text-white outline-none focus:border-saas-primary/50" placeholder="@perfil" />
-                                 </div>
-                                 <div className="space-y-2">
-                                    <label className="text-[9px] font-black uppercase text-zinc-500 tracking-widest ml-1">WhatsApp (DDD+Número)</label>
-                                    <input type="text" value={campaignForm.responsible_whatsapp} onChange={e => setCampaignForm({ ...campaignForm, responsible_whatsapp: e.target.value })} className="w-full p-3 rounded-xl bg-zinc-900/50 border border-white/5 text-[10px] text-white outline-none focus:border-saas-primary/50" placeholder="55..." />
-                                 </div>
-                              </div>
-                           </div>
-
-                           <div className="pt-4 sticky bottom-0 bg-[#09090b]/80 backdrop-blur-md pb-4 border-t border-white/5">
-                              <button 
-                                 type="submit" 
-                                 disabled={isSaving} 
-                                 className="w-full bg-[#a3e635] text-black py-4 rounded-2xl font-black uppercase tracking-[0.3em] text-[11px] shadow-[0_10px_30px_rgba(163,230,53,0.2)] hover:scale-[1.01] active:scale-[0.98] transition-all disabled:opacity-50"
-                              >
-                                 {isSaving ? 'Sincronizando...' : (editingCampaign ? 'Salvar Alterações' : 'Publicar Campanha')}
-                              </button>
-                           </div>
-                        </form>
-                     </div>
-
-                     {/* Preview Side */}
-                     <div className="hidden lg:flex w-80 bg-zinc-900/30 border-l border-white/5 flex-col overflow-hidden">
-                        <div className="p-6 border-b border-white/5 bg-white/2">
-                           <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 italic">Prévia da Campanha</span>
-                        </div>
-                        <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
-                           <div className="space-y-3">
-                              <span className="text-[9px] font-black uppercase text-zinc-600 tracking-[0.2em] block">Como ficará no site:</span>
-                              <div className="bg-[#121214] border border-white/5 rounded-3xl overflow-hidden shadow-2xl">
-                                 {campaignForm.image_url ? (
-                                    <img src={campaignForm.image_url} className="w-full h-32 object-cover" />
-                                 ) : (
-                                    <div className="w-full h-32 bg-zinc-800 flex items-center justify-center text-zinc-600">
-                                       <ImageIcon size={24} />
-                                    </div>
-                                 )}
-                                 <div className="p-4">
-                                    <h4 className="text-xs font-black text-white uppercase italic mb-1">{campaignForm.headline || 'Título Exemplo'}</h4>
-                                    <p className="text-[9px] text-zinc-500 font-medium mb-3 line-clamp-2">{campaignForm.subtitle || 'Subtítulo da campanha...'}</p>
-                                    <button className="w-full py-2.5 rounded-xl bg-saas-primary text-black text-[8px] font-black uppercase tracking-widest">
-                                       {campaignForm.buttonText || 'SAIBA MAIS'}
-                                    </button>
-                                 </div>
-                              </div>
-                           </div>
-                           
-                           <div className="p-4 rounded-2xl bg-zinc-800/50 border border-white/5">
-                              <div className="flex items-center justify-between">
-                                 <span className="text-[9px] font-bold text-zinc-500 uppercase">Status</span>
-                                 <button 
-                                    onClick={() => setCampaignForm({...campaignForm, active: !campaignForm.active})}
-                                    className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest transition-all ${campaignForm.active ? 'bg-saas-primary text-black' : 'bg-red-500/10 text-red-500 border border-red-500/20'}`}
-                                 >
-                                    {campaignForm.active ? 'Ativa' : 'Pausada'}
-                                 </button>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-               </div>
-            </div>
-         )}
       </div>
    );
 }
