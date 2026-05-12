@@ -165,7 +165,8 @@ export default function Admin() {
       tp_whatsapp_channel: '',
       tp_pixel_facebook: '',
       tp_google_analytics: '',
-      tp_google_tag_manager: ''
+      tp_google_tag_manager: '',
+      tp_domain: ''
    });
 
    const [isSaving, setIsSaving] = useState(false);
@@ -525,6 +526,7 @@ export default function Admin() {
                      tp_pixel_facebook: data.tp_pixel_facebook || '',
                      tp_google_analytics: data.tp_google_analytics || '',
                      tp_google_tag_manager: data.tp_google_tag_manager || '',
+                     tp_domain: data.tp_domain || '',
                   });
                }
             });
@@ -708,10 +710,10 @@ export default function Admin() {
                {isSidebarCollapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
             </button>
 
-            <nav className="flex-1 p-3 space-y-7 overflow-y-auto custom-scrollbar">
+            <nav className="flex-1 p-3 space-y-5 overflow-y-auto custom-scrollbar">
                <div>
-                  {!isSidebarCollapsed && <span className="px-4 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 italic mb-2 block">Análise</span>}
-                  <div className="space-y-1">
+                  {!isSidebarCollapsed && <span className="px-4 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 italic mb-1.5 block">Análise</span>}
+                  <div className="space-y-0.5">
                      {[
                         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
                         { id: 'leads', label: 'Leads', icon: Users },
@@ -719,7 +721,7 @@ export default function Admin() {
                         <button
                            key={item.id}
                            onClick={() => setActiveTab(item.id as any)}
-                           className={`w-full flex items-center gap-3 px-4 py-1.5 rounded-xl transition-all relative group ${activeTab === item.id ? 'bg-[#a3e635] text-black shadow-[0_0_20px_rgba(163,230,53,0.3)] font-black' : 'text-zinc-400 hover:bg-white/5 hover:text-white'} ${isSidebarCollapsed ? 'justify-center py-2' : ''}`}
+                           className={`w-full flex items-center gap-3 px-4 py-1 rounded-xl transition-all relative group ${activeTab === item.id ? 'bg-[#a3e635] text-black shadow-[0_0_20px_rgba(163,230,53,0.3)] font-black' : 'text-zinc-400 hover:bg-white/5 hover:text-white'} ${isSidebarCollapsed ? 'justify-center py-1.5' : ''}`}
                         >
                            <item.icon size={17} strokeWidth={activeTab === item.id ? 2.5 : 2} />
                            {!isSidebarCollapsed && <span className="text-[10.5px] font-extrabold uppercase tracking-wider">{item.label}</span>}
@@ -729,17 +731,18 @@ export default function Admin() {
                </div>
 
                <div>
-                  {!isSidebarCollapsed && <span className="px-4 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 italic mb-2 block">Marketing</span>}
-                  <div className="space-y-1">
+                  {!isSidebarCollapsed && <span className="px-4 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 italic mb-1.5 block">Marketing</span>}
+                  <div className="space-y-0.5">
                      {[
                         { id: 'campaign', label: 'Campanha', icon: FileImage },
                         { id: 'identity', label: 'Identidade visual', icon: Palette },
                         { id: 'integration', label: 'Integração', icon: Puzzle },
+                        { id: 'domain', label: 'Domínio', icon: Globe },
                      ].map((item) => (
                         <button
                            key={item.id}
                            onClick={() => setActiveTab(item.id as any)}
-                           className={`w-full flex items-center gap-3 px-4 py-1.5 rounded-xl transition-all relative group ${activeTab === item.id ? 'bg-[#a3e635] text-black shadow-[0_0_20px_rgba(163,230,53,0.3)] font-black' : 'text-zinc-400 hover:bg-white/5 hover:text-white'} ${isSidebarCollapsed ? 'justify-center py-2' : ''}`}
+                           className={`w-full flex items-center gap-3 px-4 py-1 rounded-xl transition-all relative group ${activeTab === item.id ? 'bg-[#a3e635] text-black shadow-[0_0_20px_rgba(163,230,53,0.3)] font-black' : 'text-zinc-400 hover:bg-white/5 hover:text-white'} ${isSidebarCollapsed ? 'justify-center py-1.5' : ''}`}
                         >
                            <item.icon size={17} strokeWidth={activeTab === item.id ? 2.5 : 2} />
                            {!isSidebarCollapsed && <span className="text-[10.5px] font-extrabold uppercase tracking-wider">{item.label}</span>}
@@ -749,8 +752,8 @@ export default function Admin() {
                </div>
 
                <div>
-                  {!isSidebarCollapsed && <span className="px-4 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 italic mb-2 block">Conteúdo</span>}
-                  <div className="space-y-1">
+                  {!isSidebarCollapsed && <span className="px-4 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 italic mb-1.5 block">Conteúdo</span>}
+                  <div className="space-y-0.5">
                      {[
                         { id: 'home', label: 'Home', icon: Home },
                         { id: 'news', label: 'Notícias', icon: FileText },
@@ -761,7 +764,7 @@ export default function Admin() {
                         <button
                            key={item.id}
                            onClick={() => setActiveTab(item.id as any)}
-                           className={`w-full flex items-center gap-3 px-4 py-1.5 rounded-xl transition-all relative group ${activeTab === item.id ? 'bg-[#a3e635] text-black shadow-[0_0_20px_rgba(163,230,53,0.3)] font-black' : 'text-zinc-400 hover:bg-white/5 hover:text-white'} ${isSidebarCollapsed ? 'justify-center py-2' : ''}`}
+                           className={`w-full flex items-center gap-3 px-4 py-1 rounded-xl transition-all relative group ${activeTab === item.id ? 'bg-[#a3e635] text-black shadow-[0_0_20px_rgba(163,230,53,0.3)] font-black' : 'text-zinc-400 hover:bg-white/5 hover:text-white'} ${isSidebarCollapsed ? 'justify-center py-1.5' : ''}`}
                         >
                            <item.icon size={17} strokeWidth={activeTab === item.id ? 2.5 : 2} />
                            {!isSidebarCollapsed && <span className="text-[10.5px] font-extrabold uppercase tracking-wider">{item.label}</span>}
@@ -771,15 +774,15 @@ export default function Admin() {
                </div>
 
                <div>
-                  {!isSidebarCollapsed && <span className="px-4 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 italic mb-2 block">Acesso</span>}
-                  <div className="space-y-1">
+                  {!isSidebarCollapsed && <span className="px-4 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 italic mb-1.5 block">Acesso</span>}
+                  <div className="space-y-0.5">
                      {[
                         { id: 'users', label: 'Usuários', icon: ShieldCheck },
                      ].map((item) => (
                         <button
                            key={item.id}
                            onClick={() => setActiveTab(item.id as any)}
-                           className={`w-full flex items-center gap-3 px-4 py-1.5 rounded-xl transition-all relative group ${activeTab === item.id ? 'bg-[#a3e635] text-black shadow-[0_0_20px_rgba(163,230,53,0.3)] font-black' : 'text-zinc-400 hover:bg-white/5 hover:text-white'} ${isSidebarCollapsed ? 'justify-center py-2' : ''}`}
+                           className={`w-full flex items-center gap-3 px-4 py-1 rounded-xl transition-all relative group ${activeTab === item.id ? 'bg-[#a3e635] text-black shadow-[0_0_20px_rgba(163,230,53,0.3)] font-black' : 'text-zinc-400 hover:bg-white/5 hover:text-white'} ${isSidebarCollapsed ? 'justify-center py-1.5' : ''}`}
                         >
                            <item.icon size={17} strokeWidth={activeTab === item.id ? 2.5 : 2} />
                            {!isSidebarCollapsed && <span className="text-[10.5px] font-extrabold uppercase tracking-wider">{item.label}</span>}
@@ -874,7 +877,7 @@ export default function Admin() {
                   <div className="space-y-8 pb-12">
                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                         <div>
-                           <h1 className="text-xl font-manrope font-extrabold uppercase tracking-tight text-white">Dashboard</h1>
+                           <h1 className="text-[18px] font-manrope font-extrabold uppercase tracking-tight text-white">Dashboard</h1>
                            <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-500 mt-1">Gestão Analítica de Alta Performance</p>
                         </div>
                      </div>
@@ -1001,7 +1004,7 @@ export default function Admin() {
                   <div className="space-y-6 animate-in fade-in duration-300">
                      <div className="flex justify-between items-center bg-[#121214] p-6 rounded-3xl border border-white/5 shadow-xl">
                         <div>
-                           <h3 className="text-xl font-manrope font-extrabold uppercase tracking-tight text-white leading-none">Notícias</h3>
+                           <h3 className="text-[18px] font-manrope font-extrabold uppercase tracking-tight text-white leading-none">Notícias</h3>
                            <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 italic mt-1">Gerencie as matérias publicadas no portal oficial</p>
                         </div>
                         <button 
@@ -1091,8 +1094,8 @@ export default function Admin() {
                   <div className="space-y-8">
                      <div className="flex justify-between items-center bg-[#121214] border border-white/5 p-8 rounded-[32px]">
                         <div>
-                           <h3 className="text-2xl font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-3">
-                              <Home className="text-saas-primary" size={28} strokeWidth={2.5} />
+                           <h3 className="text-[18px] font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-3">
+                              <Home className="text-saas-primary" size={22} strokeWidth={2.5} />
                               Configuração da Home
                            </h3>
                            <p className="text-xs font-black uppercase tracking-widest text-zinc-500 italic mt-1">
@@ -1624,8 +1627,8 @@ export default function Admin() {
                   <div className="space-y-8 animate-in fade-in duration-300">
                      <div className="flex justify-between items-center bg-[#121214] border border-white/5 p-8 rounded-[32px] shadow-xl">
                         <div>
-                           <h3 className="text-2xl font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-3">
-                              <FileImage className="text-saas-primary" size={28} />
+                           <h3 className="text-[18px] font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-3">
+                              <FileImage className="text-saas-primary" size={22} />
                               Campanhas de Marketing
                            </h3>
                            <p className="text-xs font-black uppercase tracking-widest text-zinc-500 italic mt-1">
@@ -2192,8 +2195,8 @@ export default function Admin() {
                   <div className="space-y-8 animate-in fade-in duration-300">
                      <div className="flex justify-between items-center bg-[#121214] border border-white/5 p-8 rounded-[32px] shadow-xl">
                         <div>
-                           <h3 className="text-2xl font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-3">
-                              <Palette className="text-saas-primary" size={28} />
+                           <h3 className="text-[18px] font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-3">
+                              <Palette className="text-saas-primary" size={22} />
                               Identidade Visual do Clube
                            </h3>
                            <p className="text-xs font-black uppercase tracking-widest text-zinc-500 italic mt-1">
@@ -2371,8 +2374,8 @@ export default function Admin() {
                   <div className="space-y-8 animate-in fade-in duration-300">
                      <div className="flex justify-between items-center bg-[#121214] border border-white/5 p-8 rounded-[32px] shadow-xl">
                         <div>
-                           <h3 className="text-2xl font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-3">
-                              <Zap className="text-saas-primary" size={28} />
+                           <h3 className="text-[18px] font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-3">
+                              <Zap className="text-saas-primary" size={22} />
                               Integrações & Tráfego Pago
                            </h3>
                            <p className="text-xs font-black uppercase tracking-widest text-zinc-500 italic mt-1">
@@ -2475,12 +2478,149 @@ export default function Admin() {
                   </div>
                )}
 
+               {activeTab === 'domain' && (
+                  <div className="space-y-8 animate-in fade-in duration-300">
+                     <div className="flex justify-between items-center bg-[#121214] border border-white/5 p-8 rounded-[32px] shadow-xl">
+                        <div>
+                           <h3 className="text-[18px] font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-3">
+                              <Globe className="text-saas-primary" size={22} />
+                              Domínio Personalizado
+                           </h3>
+                           <p className="text-xs font-black uppercase tracking-widest text-zinc-500 italic mt-1">
+                              Conecte seu endereço exclusivo para fortalecer a autoridade do seu clube
+                           </p>
+                        </div>
+                        <button
+                           onClick={async () => {
+                              setIsSaving(true);
+                              try {
+                                 const orgIdToUpdate = currentOrgId || 'dc1f5d6a-4714-46b2-92cc-5ff423c2b3ed';
+                                 const { error } = await supabase.from('organizations').update({
+                                    tp_domain: clubIdentity.tp_domain,
+                                 }).eq('id', orgIdToUpdate);
+                                 if (error) throw error;
+                                 showNotification('Domínio atualizado com sucesso!', 'success');
+                              } catch (err: any) {
+                                 showNotification('Erro ao salvar domínio: ' + err.message, 'error');
+                              } finally {
+                                 setIsSaving(false);
+                              }
+                           }}
+                           disabled={isSaving}
+                           className="bg-[#a3e635] text-black px-8 py-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] flex items-center gap-3 hover:scale-105 transition-all shadow-xl shadow-saas-primary/20 disabled:opacity-50"
+                        >
+                           {isSaving ? <RefreshCw size={18} className="animate-spin" /> : <Save size={18} strokeWidth={3} />}
+                           {isSaving ? 'Salvando...' : 'Salvar Domínio'}
+                        </button>
+                     </div>
+
+                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        {/* Coluna 1: Entrada do Domínio */}
+                        <div className="bg-[#121214] border border-white/5 rounded-[32px] p-8 space-y-6 shadow-xl lg:col-span-1 flex flex-col justify-between">
+                           <div className="space-y-4">
+                              <div className="border-b border-white/5 pb-4">
+                                 <h4 className="text-sm font-black uppercase text-white tracking-widest">Endereço do Site</h4>
+                              </div>
+                              <p className="text-xs text-zinc-400 font-normal leading-relaxed">
+                                 Digite o domínio ou subdomínio exato que deseja usar para o portal do seu clube.
+                              </p>
+                              <div className="space-y-2">
+                                 <label className="text-[10px] font-black uppercase text-zinc-500 tracking-widest block">Seu Domínio</label>
+                                 <input 
+                                    type="text" 
+                                    placeholder="Ex: ingressos.meuclube.com.br" 
+                                    value={clubIdentity.tp_domain || ''} 
+                                    onChange={e => setClubIdentity({ ...clubIdentity, tp_domain: e.target.value })}
+                                    className="w-full bg-zinc-900/80 border border-white/5 rounded-xl p-4 text-xs font-bold text-saas-primary outline-none focus:border-saas-primary/50 tracking-wider font-mono"
+                                 />
+                              </div>
+                              {clubIdentity.tp_domain && (
+                                 <div className="p-4 rounded-2xl bg-saas-primary/5 border border-saas-primary/10 flex items-center gap-3 animate-in fade-in">
+                                    <div className="w-2 h-2 rounded-full bg-saas-primary animate-pulse" />
+                                    <span className="text-[11px] font-bold text-saas-primary tracking-wide">
+                                       Status: Aguardando propagação DNS
+                                    </span>
+                                 </div>
+                              )}
+                           </div>
+                           <div className="pt-6 border-t border-white/5 mt-6">
+                              <div className="flex items-center gap-2 text-zinc-500 text-[11px]">
+                                 <CheckCircle2 size={14} className="text-saas-primary" />
+                                 <span>Certificado SSL Gratuito Incluído</span>
+                              </div>
+                           </div>
+                        </div>
+
+                        {/* Coluna 2 e 3: Instruções Facilitadas */}
+                        <div className="bg-[#121214] border border-white/5 rounded-[32px] p-8 space-y-6 shadow-xl lg:col-span-2">
+                           <div className="border-b border-white/5 pb-4 flex justify-between items-center">
+                              <h4 className="text-sm font-black uppercase text-white tracking-widest">Como Configurar (Passo a Passo)</h4>
+                              <span className="text-[9px] font-black uppercase bg-white/5 text-zinc-400 px-3 py-1 rounded-full">DNS Setup</span>
+                           </div>
+                           
+                           <div className="space-y-4 text-xs text-zinc-300">
+                              <p className="leading-relaxed">
+                                 Acesse o painel do local onde você registrou seu domínio (Registro.br, Hostinger, Cloudflare, GoDaddy, etc.) e adicione um novo registro na sua <strong>Zona de DNS</strong> conforme os dados abaixo:
+                              </p>
+
+                              <div className="bg-zinc-900/60 border border-white/5 rounded-2xl p-4 space-y-3 font-mono text-[11px]">
+                                 <div className="text-xs font-bold text-saas-primary pb-2 border-b border-white/5 flex items-center gap-2">
+                                    <span>Opção Recomendada (CNAME para Subdomínios ou www)</span>
+                                 </div>
+                                 <div className="grid grid-cols-3 gap-2 text-zinc-400 pb-1 text-[10px] uppercase font-black tracking-wider">
+                                    <div>Tipo</div>
+                                    <div>Nome / Host</div>
+                                    <div>Valor / Destino</div>
+                                 </div>
+                                 <div className="grid grid-cols-3 gap-2 text-white items-center bg-white/5 p-2.5 rounded-xl">
+                                    <div className="font-bold text-saas-primary">CNAME</div>
+                                    <div>{clubIdentity.tp_domain ? clubIdentity.tp_domain.split('.')[0] : 'ingressos'}</div>
+                                    <div className="break-all text-zinc-300">cname.timespro.com.br</div>
+                                 </div>
+                              </div>
+
+                              <div className="bg-zinc-900/60 border border-white/5 rounded-2xl p-4 space-y-3 font-mono text-[11px]">
+                                 <div className="text-xs font-bold text-zinc-400 pb-2 border-b border-white/5 flex items-center gap-2">
+                                    <span>Opção Alternativa (Registro A para o Domínio Raiz)</span>
+                                 </div>
+                                 <div className="grid grid-cols-3 gap-2 text-zinc-400 pb-1 text-[10px] uppercase font-black tracking-wider">
+                                    <div>Tipo</div>
+                                    <div>Nome / Host</div>
+                                    <div>Valor / Destino</div>
+                                 </div>
+                                 <div className="grid grid-cols-3 gap-2 text-white items-center bg-white/5 p-2.5 rounded-xl">
+                                    <div className="font-bold text-blue-400">A</div>
+                                    <div>@</div>
+                                    <div className="text-zinc-300">76.76.21.21</div>
+                                 </div>
+                              </div>
+
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                                 <div className="p-4 rounded-xl bg-white/2 border border-white/5 space-y-1.5">
+                                    <span className="text-[10px] font-black uppercase text-amber-400 block tracking-wider">Tempo de Propagação</span>
+                                    <p className="text-[11px] text-zinc-400">
+                                       As alterações de DNS podem levar de <strong>1 a 24 horas</strong> para se espalharem por toda a internet.
+                                    </p>
+                                 </div>
+                                 <div className="p-4 rounded-xl bg-white/2 border border-white/5 space-y-1.5">
+                                    <span className="text-[10px] font-black uppercase text-emerald-400 block tracking-wider">Verificação Automática</span>
+                                    <p className="text-[11px] text-zinc-400">
+                                       Nossos servidores checam continuamente o apontamento para ativar o site com segurança.
+                                    </p>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               )}
+
                {activeTab === 'squad' && (
                   <div className="space-y-8 animate-in fade-in duration-300">
                      <div className="flex justify-between items-center bg-[#121214] border border-white/5 p-8 rounded-[32px] shadow-xl">
                         <div>
-                           <h3 className="text-2xl font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-3">
-                              <ShieldCheck className="text-saas-primary" size={28} />
+                           <h3 className="text-[18px] font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-3">
+                              <ShieldCheck className="text-saas-primary" size={22} />
                               Elenco Oficial
                            </h3>
                            <p className="text-xs font-black uppercase tracking-widest text-zinc-500 italic mt-1">
@@ -2751,8 +2891,8 @@ export default function Admin() {
                   <div className="space-y-8 animate-in fade-in duration-300">
                      <div className="flex justify-between items-center bg-[#121214] border border-white/5 p-8 rounded-[32px] shadow-xl">
                         <div>
-                           <h3 className="text-2xl font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-3">
-                              <Trophy className="text-saas-primary" size={28} />
+                           <h3 className="text-[18px] font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-3">
+                              <Trophy className="text-saas-primary" size={22} />
                               Sala de Títulos Oficiais
                            </h3>
                            <p className="text-xs font-black uppercase tracking-widest text-zinc-500 italic mt-1">
@@ -2793,8 +2933,8 @@ export default function Admin() {
                   <div className="space-y-8 animate-in fade-in duration-300">
                      <div className="flex justify-between items-center bg-[#121214] border border-white/5 p-8 rounded-[32px] shadow-xl">
                         <div>
-                           <h3 className="text-2xl font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-3">
-                              <Users className="text-saas-primary" size={28} />
+                           <h3 className="text-[18px] font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-3">
+                              <Users className="text-saas-primary" size={22} />
                               Portal Institucional
                            </h3>
                            <p className="text-xs font-black uppercase tracking-widest text-zinc-500 italic mt-1">
@@ -2857,8 +2997,8 @@ export default function Admin() {
                   <div className="space-y-8 animate-in fade-in duration-300">
                      <div className="flex justify-between items-center bg-[#121214] border border-white/5 p-8 rounded-[32px] shadow-xl">
                         <div>
-                           <h3 className="text-2xl font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-3">
-                              <ShieldCheck className="text-saas-primary" size={28} />
+                           <h3 className="text-[18px] font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-3">
+                              <ShieldCheck className="text-saas-primary" size={22} />
                               Gestão de Acessos
                            </h3>
                            <p className="text-xs font-black uppercase tracking-widest text-zinc-500 italic mt-1">
