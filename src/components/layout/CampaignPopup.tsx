@@ -2,6 +2,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import { useContext } from 'react';
+import { ConfigContext } from '../../App';
 
 interface Campaign {
   id: string;
@@ -14,15 +16,19 @@ interface Campaign {
 }
 
 export default function CampaignPopup() {
+  const config = useContext(ConfigContext);
   const [isOpen, setIsOpen] = useState(false);
   const [campaign, setCampaign] = useState<Campaign | null>(null);
 
   useEffect(() => {
     const fetchCampaign = async () => {
       try {
+        if (!config.orgId) return;
+
         const { data: docs, error } = await supabase
           .from('campaigns')
           .select('*')
+          .eq('org_id', config.orgId)
           .eq('active', true);
 
         if (docs && docs.length > 0) {
@@ -107,7 +113,7 @@ export default function CampaignPopup() {
                >
                   <img 
                     src={campaign.image} 
-                    alt={campaign.title || 'Campanha Racing FC'} 
+                    alt={campaign.title || `Campanha ${config.shortName}`} 
                     className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                   />
                   

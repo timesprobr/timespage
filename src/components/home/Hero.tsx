@@ -1,11 +1,12 @@
 import { motion } from 'motion/react';
 import { Menu, X, MoreVertical } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Link } from 'react-router-dom';
-import { ACTIVE_CONFIG } from '../../App';
+import { ConfigContext } from '../../App';
 
 export default function Hero() {
+  const config = useContext(ConfigContext);
   const [imageUrl, setImageUrl] = useState('/campeao.png');
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [activeCard, setActiveCard] = useState<any>(null);
@@ -50,17 +51,21 @@ export default function Hero() {
 
     const fetchCard = async () => {
       try {
-        const { data: allCampaigns, error } = await supabase
-          .from('campaigns')
-          .select('*');
-        
-        if (allCampaigns) {
-          // Encontra o primeiro card ativo
-          const active = allCampaigns.find((c: any) => c.type === 'card' && c.active === true);
-          if (active) {
-            setActiveCard(active);
-          } else {
-            setActiveCard(null);
+        if (config.orgId) {
+          const { data: orgCampaigns, error: campaignError } = await supabase
+            .from('campaigns')
+            .select('*')
+            .eq('org_id', config.orgId)
+            .eq('active', true);
+          
+          if (orgCampaigns) {
+            // Encontra o primeiro card ativo
+            const active = orgCampaigns.find((c: any) => c.type?.toLowerCase() === 'card');
+            if (active) {
+              setActiveCard(active);
+            } else {
+              setActiveCard(null);
+            }
           }
         }
       } catch (e) {
@@ -95,7 +100,10 @@ export default function Hero() {
           referrerPolicy="no-referrer"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/40 via-transparent to-transparent"></div>
+        <div 
+          className="absolute inset-0 bg-gradient-to-r from-primary/40 via-transparent to-transparent opacity-80" 
+          style={{ backgroundImage: `linear-gradient(to right, ${config.colors?.primary || '#000000'}66, transparent)` }}
+        ></div>
       </div>
 
       {/* Main Content Overlay */}
@@ -109,7 +117,7 @@ export default function Hero() {
             className="mb-4 flex items-center gap-3"
           >
             <span className="bg-primary text-white text-[9px] font-black px-3 py-1 uppercase tracking-[0.4em] italic">
-              {ACTIVE_CONFIG.name}
+              {config.name}
             </span>
           </motion.div>
 
@@ -118,8 +126,8 @@ export default function Hero() {
             animate={{ opacity: 1, x: 0 }}
             className="text-4xl md:text-6xl font-black text-white uppercase italic tracking-tighter leading-[0.9] mb-12"
           >
-            Uma vez {ACTIVE_CONFIG.shortName}<br />
-            <span className="text-primary">Sempre {ACTIVE_CONFIG.shortName}...</span>
+            Uma vez {config.shortName}<br />
+            <span className="text-primary">Sempre {config.shortName}...</span>
           </motion.h1>
 
           {/* Advertising Card - Dynamic from Firestore */}
@@ -157,8 +165,8 @@ export default function Hero() {
                     <div className="flex items-center gap-2 overflow-hidden">
                       <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 border border-white/5 bg-black flex items-center justify-center">
                         <img 
-                          src={ACTIVE_CONFIG.logo.main} 
-                          alt={ACTIVE_CONFIG.shortName} 
+                          src={config.logo.main} 
+                          alt={config.shortName} 
                           className="w-6 h-6 object-contain opacity-50 group-hover:opacity-100 transition-opacity"
                         />
                       </div>

@@ -1,11 +1,12 @@
 import { motion } from 'motion/react';
 import { Trophy } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { supabase } from '../../lib/supabase';
-import { ACTIVE_CONFIG } from '../../App';
+import { ConfigContext } from '../../App';
 
 export default function TrophiesGallery() {
+  const config = useContext(ConfigContext);
   const [trophies, setTrophies] = useState<any[]>([]);
 
   useEffect(() => {
@@ -53,7 +54,7 @@ export default function TrophiesGallery() {
           >
             <span className="text-red-600 font-black uppercase text-xs tracking-[0.3em] mb-4 block">Nossa Galeria de Glórias</span>
             <h2 className="text-5xl md:text-7xl font-black uppercase italic tracking-tighter mb-4">
-               {ACTIVE_CONFIG.shortName} <span className="text-red-800">CAMPEÃO</span>
+               {config.shortName} <span className="text-red-800">CAMPEÃO</span>
             </h2>
             <p className="text-gray-400 max-w-2xl mx-auto font-medium">
                Momentos eternizados e troféus que contam a história de um clube nascido para vencer.

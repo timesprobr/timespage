@@ -1,8 +1,10 @@
 import { motion } from 'motion/react';
 import { Heart, Users, Globe, ArrowRight } from 'lucide-react';
-import { ACTIVE_CONFIG } from '../../App';
+import { useContext } from 'react';
+import { ConfigContext } from '../../App';
 
 export default function SocialImpact() {
+  const config = useContext(ConfigContext);
   return (
     <section className="py-16 bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -17,7 +19,7 @@ export default function SocialImpact() {
             <div className="aspect-[4/3] relative z-10 overflow-hidden shadow-2xl">
                <img 
                 src="/social.png" 
-                alt={`Impacto Social do ${ACTIVE_CONFIG.shortName}`} 
+                alt={`Impacto Social do ${config.shortName}`} 
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
               />
@@ -27,7 +29,7 @@ export default function SocialImpact() {
             <div className="absolute -bottom-6 -right-6 bg-primary text-white p-6 z-20 shadow-2xl max-w-[240px] hidden md:block">
               <Heart className="mb-3" size={24} />
               <p className="text-lg font-black italic uppercase tracking-tighter leading-tight">
-                "{ACTIVE_CONFIG.socialSlogan}"
+                "{config.socialSlogan}"
               </p>
             </div>
             {/* Background pattern */}
@@ -39,16 +41,16 @@ export default function SocialImpact() {
             <div>
               <span className="text-primary font-black uppercase text-[10px] tracking-[0.3em] mb-3 block">Responsabilidade Social</span>
               <h2 className="text-3xl md:text-5xl font-black text-black leading-tight uppercase italic tracking-tighter">
-                O CORAÇÃO DO {ACTIVE_CONFIG.shortName} PULSA NA <span className="text-primary uppercase">{ACTIVE_CONFIG.community}</span>
+                O CORAÇÃO DO {config.shortName} PULSA NA <span className="text-primary uppercase">{config.community}</span>
               </h2>
             </div>
 
             <div className="space-y-4 text-gray-700 font-medium leading-relaxed text-base">
               <p>
-                Para nós, a vitória vai muito além das quatro linhas. O {ACTIVE_CONFIG.name} entende que sua maior missão é servir à comunidade que nos acolheu. 
+                Para nós, a vitória vai muito além das quatro linhas. O {config.name} entende que sua maior missão é servir à comunidade que nos acolheu. 
               </p>
               <p className="border-l-4 border-primary pl-4 italic text-sm md:text-base bg-gray-50 py-4 pr-4">
-                Atuamos diretamente na região da <span className="text-primary font-bold">{ACTIVE_CONFIG.community}</span>, em {ACTIVE_CONFIG.location}, uma área marcada pela vulnerabilidade social, mas repleta de talentos e sonhos que precisam de uma oportunidade para brilhar.
+                Atuamos diretamente na região da <span className="text-primary font-bold">{config.community}</span>, em {config.location}, uma área marcada pela vulnerabilidade social, mas repleta de talentos e sonhos que precisam de uma oportunidade para brilhar.
               </p>
               <p>
                 Através das nossas escolinhas e projetos de apoio, utilizamos o futebol como ferramenta de transformação. Ajudamos famílias e crianças a encontrarem no esporte um caminho de disciplina, educação e esperança.

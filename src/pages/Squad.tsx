@@ -75,7 +75,7 @@ export default function Squad() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {loading ? (
           <div className="flex justify-center py-20">
-            <div className="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-12 h-12 border-4 border-t-transparent rounded-full animate-spin" style={{ borderColor: config.colors.primary, borderTopColor: 'transparent' }}></div>
           </div>
         ) : players.length > 0 ? (
           <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
@@ -98,7 +98,7 @@ export default function Squad() {
                     )}
                     
                     {player.number && (
-                      <div className="absolute bottom-0 left-0 p-1 text-xl font-black text-black/5 group-hover:text-red-600/20 transition-colors">
+                      <div className="absolute bottom-0 left-0 p-1 text-xl font-black text-black/5 group-hover:opacity-20 transition-all" style={{ color: config.colors.primary }}>
                         #{player.number}
                       </div>
                     )}

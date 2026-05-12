@@ -1,9 +1,11 @@
 import { motion } from 'motion/react';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
+import { ConfigContext } from '../App';
 import { supabase } from '../lib/supabase';
 import { User, Calendar, MapPin, CreditCard, Shirt, Send, CheckCircle } from 'lucide-react';
 
 export default function Socio() {
+  const config = useContext(ConfigContext);
   const [formData, setFormData] = useState({
     name: '',
     birthDate: '',
@@ -76,7 +78,7 @@ export default function Socio() {
             <div className="space-y-6">
               <h2 className="text-3xl font-black text-black uppercase italic tracking-tighter">O Programa está chegando</h2>
               <p className="text-gray-600 font-medium leading-relaxed text-lg">
-                O programa de sócio torcedor do Racing FC está sendo construído em conjunto com uma ampla rede de parceiros locais e nacionais para oferecer os melhores benefícios para você.
+                O programa de sócio torcedor do {config.name} está sendo construído em conjunto com uma ampla rede de parceiros locais e nacionais para oferecer os melhores benefícios para você.
               </p>
               <div className="p-6 border-l-4 border-primary bg-gray-50 space-y-4 shadow-sm">
                 <p className="text-black font-bold text-sm uppercase tracking-widest">Inscrição de Interesse</p>
@@ -110,7 +112,7 @@ export default function Socio() {
                 <CheckCircle size={80} className="mx-auto text-green-500" />
                 <div className="space-y-2">
                   <h3 className="text-2xl font-black text-black uppercase italic tracking-tighter">Interesse Registrado!</h3>
-                  <p className="text-gray-500 font-medium">Obrigado por fazer parte deste novo tempo do {ACTIVE_CONFIG.name}. Em breve entraremos em contato.</p>
+                  <p className="text-gray-500 font-medium">Obrigado por fazer parte deste novo tempo do {config.name}. Em breve entraremos em contato.</p>
                 </div>
                 <button 
                   onClick={() => setSubmitted(false)}

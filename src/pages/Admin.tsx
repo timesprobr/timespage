@@ -35,7 +35,8 @@ import {
    UserPlus,
    User,
    MousePointer2,
-   Calendar
+   Calendar,
+   ExternalLink
 } from 'lucide-react';
 import {
    AreaChart,
@@ -921,77 +922,84 @@ export default function Admin() {
                          </button>
                       </div>
 
-                      <div className="grid grid-cols-1 gap-2 pb-20">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
                          {campaigns.length === 0 ? (
-                            <div className="bg-[#121214] border border-white/5 rounded-2xl p-12 flex flex-col items-center justify-center text-center">
-                               <Target size={32} className="text-zinc-700 mb-4" />
-                               <h4 className="text-sm font-black text-white uppercase italic tracking-tight">Sem campanhas</h4>
+                            <div className="col-span-full bg-[#121214] border border-white/5 rounded-3xl p-12 flex flex-col items-center justify-center text-center">
+                               <Target size={48} className="text-zinc-700 mb-4" />
+                               <h4 className="text-sm font-black text-white uppercase italic tracking-tight">Sem campanhas ativas</h4>
+                               <p className="text-[10px] text-zinc-500 uppercase mt-2">Crie sua primeira campanha para começar a converter</p>
                             </div>
                          ) : (
                             campaigns.map(c => (
-                               <div key={c.id} className="group bg-[#121214] border border-white/5 rounded-xl p-3 hover:border-saas-primary/30 transition-all flex items-center justify-between">
-                                  <div className="flex items-center gap-3">
-                                     <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-white/5 bg-zinc-800 shrink-0">
-                                        <img src={c.image_url || c.image || 'https://via.placeholder.com/400x400'} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
-                                        <div className="absolute top-0.5 right-0.5">
-                                           <span className={`px-1.5 py-0.5 rounded text-[6px] font-black uppercase tracking-widest ${c.type?.toLowerCase() === 'popup' ? 'bg-purple-500 text-white' : 'bg-blue-500 text-white'}`}>
-                                              {c.type}
-                                           </span>
-                                        </div>
+                               <div key={c.id} className="group bg-[#121214] border border-white/5 rounded-[32px] overflow-hidden hover:border-saas-primary/50 transition-all flex flex-col shadow-2xl relative">
+                                  <div className="relative aspect-[16/9] w-full overflow-hidden">
+                                     <img src={c.image_url || c.image || 'https://via.placeholder.com/1200x800'} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                     <div className="absolute top-4 left-4">
+                                        <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest shadow-xl ${c.type?.toLowerCase() === 'popup' ? 'bg-purple-600 text-white' : 'bg-blue-600 text-white'}`}>
+                                           {c.type}
+                                        </span>
                                      </div>
-                                     <div className="flex flex-col">
-                                        <div className="flex items-center gap-2 mb-0.5">
-                                           <span className="text-[8px] font-black text-saas-primary uppercase italic tracking-widest">#{c.title?.split(' ')[0] || 'CAMP'}</span>
-                                           <div className={`w-1 h-1 rounded-full ${c.active ? 'bg-saas-primary animate-pulse' : 'bg-zinc-700'}`}></div>
-                                         </div>
-                                        <h4 className="text-[13px] font-bold text-white uppercase italic tracking-tight line-clamp-1 leading-tight group-hover:text-saas-primary transition-colors">{c.headline}</h4>
-                                        <div className="flex items-center gap-3 mt-1">
-                                           <div className="flex items-center gap-1 text-zinc-500">
-                                              <MousePointer2 size={10} />
-                                              <span className="text-[7px] font-bold uppercase tracking-widest">{c.clicks || 0} CLIQUES</span>
-                                           </div>
-                                           <div className="flex items-center gap-1 text-zinc-500">
-                                              <Calendar size={10} />
-                                              <span className="text-[7px] font-bold uppercase tracking-widest">{new Date(c.createdAt || c.created_at).toLocaleDateString('pt-BR')}</span>
-                                           </div>
-                                        </div>
+                                     <div className="absolute top-4 right-4">
+                                        <div className={`w-3 h-3 rounded-full border-2 border-[#121214] shadow-lg ${c.active ? 'bg-saas-primary animate-pulse' : 'bg-zinc-700'}`}></div>
                                      </div>
+                                     <div className="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent opacity-60"></div>
                                   </div>
-                                  <div className="flex items-center gap-2">
-                                     <button 
-                                        onClick={() => {
-                                           setEditingCampaign(c);
-                                           setCampaignForm({
-                                              title: c.title,
-                                              headline: c.headline,
-                                              subtitle: c.subtitle,
-                                              buttonText: c.buttonText,
-                                              image_url: c.image_url || c.image,
-                                              destinationUrl: c.destinationUrl,
-                                              type: c.type,
-                                              active: c.active,
-                                              mkt_copy: c.mkt_copy || '',
-                                              social_instagram: c.social_instagram || '',
-                                              responsible_whatsapp: c.responsible_whatsapp || '',
-                                              social_facebook: c.social_facebook || ''
-                                           });
-                                           setIsAddingCampaign(true);
-                                        }}
-                                        className="p-2 rounded-lg bg-white/5 text-zinc-500 hover:text-saas-primary transition-all border border-white/5"
-                                     >
-                                        <Edit3 size={14} />
-                                     </button>
-                                     <button 
-                                        onClick={() => handleDeleteCampaign(c.id)}
-                                        className="p-2 rounded-lg bg-white/5 text-zinc-500 hover:text-red-500 transition-all border border-white/5"
-                                     >
-                                        <Trash2 size={14} />
-                                     </button>
+                                  
+                                  <div className="p-6 flex-1 flex flex-col">
+                                     <div className="flex items-center gap-2 mb-2">
+                                        <span className="text-[10px] font-black text-saas-primary uppercase italic tracking-[0.2em]">{c.title?.split(' ')[0] || 'CAMPANHA'}</span>
+                                        <span className="text-white/10 text-[10px]">|</span>
+                                        <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-1">
+                                           <Calendar size={10} /> {new Date(c.createdAt || c.created_at).toLocaleDateString('pt-BR')}
+                                        </span>
+                                     </div>
+                                     
+                                     <h4 className="text-lg font-extrabold text-white uppercase italic tracking-tight line-clamp-2 leading-[1.1] mb-4 group-hover:text-saas-primary transition-colors">{c.headline}</h4>
+                                     
+                                     <div className="mt-auto pt-6 border-t border-white/5 flex items-center justify-between">
+                                        <div className="flex flex-col">
+                                           <span className="text-[10px] font-black text-white">{c.clicks || 0}</span>
+                                           <span className="text-[8px] font-bold text-zinc-500 uppercase tracking-widest">Interações</span>
+                                        </div>
+                                        
+                                        <div className="flex items-center gap-2">
+                                           <button 
+                                              onClick={() => {
+                                                 setEditingCampaign(c);
+                                                 setCampaignForm({
+                                                    title: c.title,
+                                                    headline: c.headline,
+                                                    subtitle: c.subtitle,
+                                                    buttonText: c.buttonText,
+                                                    image_url: c.image_url || c.image,
+                                                    destinationUrl: c.destinationUrl,
+                                                    type: c.type,
+                                                    active: c.active,
+                                                    mkt_copy: c.mkt_copy || '',
+                                                    social_instagram: c.social_instagram || '',
+                                                    responsible_whatsapp: c.responsible_whatsapp || '',
+                                                    social_facebook: c.social_facebook || ''
+                                                 });
+                                                 setIsAddingCampaign(true);
+                                              }}
+                                              className="p-3 rounded-xl bg-white/5 text-zinc-400 hover:text-saas-primary hover:bg-saas-primary/10 transition-all border border-white/5"
+                                           >
+                                              <Edit3 size={16} />
+                                           </button>
+                                           <button 
+                                              onClick={() => handleDeleteCampaign(c.id)}
+                                              className="p-3 rounded-xl bg-white/5 text-zinc-400 hover:text-red-500 hover:bg-red-500/10 transition-all border border-white/5"
+                                           >
+                                              <Trash2 size={16} />
+                                           </button>
+                                        </div>
+                                     </div>
                                   </div>
                                </div>
                             ))
                          )}
                       </div>
+
                    </div>
                 )}
 
@@ -1473,6 +1481,64 @@ export default function Admin() {
                                     </div>
                                  ))}
                               </div>
+                           </div>
+                        </div>
+
+                        {/* Live Preview Card */}
+                        <div className="mb-12">
+                           <label className="text-[10px] font-black uppercase text-zinc-500 italic tracking-widest block mb-4">Pré-visualização em Tempo Real</label>
+                           <div className="bg-[#09090b] border border-white/10 rounded-[40px] p-8 relative overflow-hidden group shadow-2xl">
+                              <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent"></div>
+                              <div className="relative z-10 flex flex-col md:flex-row items-center gap-12">
+                                 {/* Shield Preview */}
+                                 <div className="relative group">
+                                    <div className="w-32 h-32 md:w-48 md:h-48 flex items-center justify-center p-4 rounded-full bg-white/[0.03] border border-white/5 shadow-inner transition-transform duration-700 group-hover:scale-110">
+                                       <img 
+                                          src={clubIdentity.tp_logo_url || ACTIVE_CONFIG.logo.main} 
+                                          className="w-full h-full object-contain [filter:drop-shadow(0_0_15px_rgba(255,255,255,0.1))]" 
+                                       />
+                                    </div>
+                                    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-saas-primary text-black text-[8px] font-black uppercase tracking-widest rounded-full shadow-xl">
+                                       Escudo Oficial
+                                    </div>
+                                 </div>
+
+                                 {/* Branding Info Preview */}
+                                 <div className="flex-1 space-y-6 text-center md:text-left">
+                                    <div>
+                                       <h3 className="text-3xl md:text-5xl font-black uppercase italic tracking-tighter text-white leading-none">
+                                          {clubIdentity.tp_short_name || clubIdentity.name.split(' ')[0] || 'MEU CLUBE'}
+                                       </h3>
+                                       <p className="text-[10px] md:text-xs font-bold text-zinc-500 uppercase tracking-[0.4em] mt-3 italic">
+                                          Identidade Visual Dinâmica
+                                       </p>
+                                    </div>
+
+                                    <div className="flex flex-wrap justify-center md:justify-start gap-4">
+                                       <div className="flex items-center gap-3 bg-white/5 px-5 py-3 rounded-2xl border border-white/5">
+                                          <div className="w-4 h-4 rounded-full shadow-lg" style={{ backgroundColor: clubIdentity.tp_primary_color }}></div>
+                                          <span className="text-[10px] font-black text-white uppercase tracking-widest">Primária</span>
+                                       </div>
+                                       <div className="flex items-center gap-3 bg-white/5 px-5 py-3 rounded-2xl border border-white/5">
+                                          <div className="w-4 h-4 rounded-full shadow-lg" style={{ backgroundColor: clubIdentity.tp_secondary_color }}></div>
+                                          <span className="text-[10px] font-black text-white uppercase tracking-widest">Secundária</span>
+                                       </div>
+                                    </div>
+                                    
+                                    <div className="pt-4 flex items-center justify-center md:justify-start gap-4 opacity-40">
+                                       {clubIdentity.tp_instagram && <Instagram size={16} />}
+                                       {clubIdentity.tp_facebook && <Facebook size={16} />}
+                                       {clubIdentity.tp_youtube && <Youtube size={16} />}
+                                       {clubIdentity.tp_whatsapp && <MessageCircle size={16} />}
+                                    </div>
+                                 </div>
+                              </div>
+                              
+                              {/* Abstract Brand Background */}
+                              <div 
+                                 className="absolute -right-20 -bottom-20 w-80 h-80 rounded-full blur-[120px] opacity-20 transition-colors duration-1000"
+                                 style={{ backgroundColor: clubIdentity.tp_primary_color }}
+                              ></div>
                            </div>
                         </div>
 

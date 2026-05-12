@@ -11,8 +11,8 @@ export default function About() {
       <section className="relative py-24 overflow-hidden bg-black">
         <div className="absolute inset-0 z-0 opacity-30">
            <img 
-            src="/RACING ANTIGO.jpg" 
-            alt="Historical Racing FC" 
+            src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=2000&auto=format&fit=crop" 
+            alt={`História do ${config.name}`} 
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent"></div>
@@ -87,17 +87,17 @@ export default function About() {
               {
                 icon: Target,
                 title: 'Nossa Missão',
-                desc: 'Fomentar o esporte e a cultura em Vitória, formando cidadãos através do futebol e honrando nossas cores em cada competição.'
+                desc: `Fomentar o esporte e a cultura, formando cidadãos através do futebol e honrando o pavilhão do ${config.shortName} em cada competição.`
               },
               {
                 icon: Shield,
                 title: 'Nossa Visão',
-                desc: 'Ser reconhecido como o maior formador de talentos do Espírito Santo, unindo tradição histórica com modernidade administrativa.'
+                desc: 'Ser reconhecido como referência na formação de talentos e excelência esportiva, unindo tradição histórica com modernidade administrativa.'
               },
               {
                 icon: Users,
                 title: 'Nossos Valores',
-                desc: 'Ética, transparência, superação e o respeito incondicional à nossa apaixonada torcida rubro-negra.'
+                desc: 'Ética, transparência, superação e o respeito incondicional à nossa apaixonada torcida.'
               }
             ].map((item, i) => (
               <div key={i} className="p-10 bg-white border border-gray-200 transition-all group shadow-sm hover:border-[var(--hover-color)]" style={{ '--hover-color': `${config.colors.primary}66` } as any}>

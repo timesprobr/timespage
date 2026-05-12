@@ -1,9 +1,11 @@
 import { motion } from 'motion/react';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
+import { ConfigContext } from '../App';
 import { supabase } from '../lib/supabase';
 import { User, Calendar, Phone, Mail, Shirt, Trophy, CheckCircle, Send, Users } from 'lucide-react';
 
 export default function Registration() {
+  const config = useContext(ConfigContext);
   const [formData, setFormData] = useState({
     name: '',
     birthDate: '',
@@ -54,7 +56,7 @@ export default function Registration() {
               Pré-Matrícula <span className="text-primary">Atleta</span>
             </h1>
             <p className="text-gray-400 font-medium text-sm max-w-xl">
-              Inicie sua jornada no maior do Espírito Santo. Torne-se um atleta do Racing FC.
+              Inicie sua jornada no maior clube. Torne-se um atleta do {config.shortName}.
             </p>
           </motion.div>
         </div>
@@ -68,7 +70,7 @@ export default function Registration() {
             <div className="space-y-6">
               <h2 className="text-3xl font-black text-black uppercase italic tracking-tighter">Faça parte do nosso time</h2>
               <p className="text-gray-600 font-medium leading-relaxed">
-                O Racing FC abre suas portas para novos talentos. Preencha o formulário de pré-matrícula para que nossa equipe técnica entre em contato para agendar uma avaliação ou efetivar sua matrícula nas categorias de base.
+                O {config.shortName} abre suas portas para novos talentos. Preencha o formulário de pré-matrícula para que nossa equipe técnica entre em contato para agendar uma avaliação ou efetivar sua matrícula nas categorias de base.
               </p>
               
               <div className="space-y-4">
@@ -87,10 +89,10 @@ export default function Registration() {
             <div className="p-8 bg-black text-white rounded-sm shadow-2xl">
                <h4 className="text-xl font-black uppercase italic mb-4">Atenção!</h4>
                <p className="text-gray-400 text-sm leading-relaxed mb-6">
-                 Para atletas menores de 18 anos, é obrigatório o preenchimento dos dados do responsável legal. O Racing FC preza pela segurança e desenvolvimento integral de seus atletas.
+                 Para atletas menores de 18 anos, é obrigatório o preenchimento dos dados do responsável legal. O {config.shortName} preza pela segurança e desenvolvimento integral de seus atletas.
                </p>
                <div className="flex items-center gap-3 text-red-500 font-bold text-xs uppercase tracking-widest">
-                  <Users size={18} /> Base Forte Racing
+                  <Users size={18} /> Base Forte {config.shortName}
                </div>
             </div>
           </div>

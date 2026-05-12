@@ -1,7 +1,11 @@
 import { motion } from 'motion/react';
 import { Instagram, Heart, MessageCircle, ExternalLink, ArrowRight } from 'lucide-react';
+import { useContext } from 'react';
+import { ConfigContext } from '../../App';
 
 export default function InstagramFeed() {
+  const config = useContext(ConfigContext);
+  
   const posts = [
     {
       id: 1,
@@ -47,6 +51,8 @@ export default function InstagramFeed() {
     }
   ];
 
+  const instagramHandle = config.social.instagram?.split('/').filter(Boolean).pop() || config.shortName.toLowerCase();
+
   return (
     <section className="py-24 bg-black text-white border-t border-white/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -57,25 +63,25 @@ export default function InstagramFeed() {
               <div className="bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 p-[2px] rounded-full">
                 <div className="bg-black p-[2px] rounded-full">
                   <div className="w-16 h-16 bg-black rounded-full overflow-hidden flex items-center justify-center shadow-inner">
-                    <img src="/racing-fc.png" alt="Profile" className="w-full h-full object-contain p-2" />
+                    <img src={config.logo.main} alt={`${config.shortName} Logo`} className="w-full h-full object-contain p-2" />
                   </div>
                 </div>
               </div>
               <div>
-                <h3 className="text-2xl font-black uppercase italic tracking-tighter">@racingfutebolclub</h3>
-                <p className="text-gray-400 font-bold text-sm">Racing Futebol Clube - Oficial</p>
+                <h3 className="text-2xl font-black uppercase italic tracking-tighter">@{instagramHandle}</h3>
+                <p className="text-gray-400 font-bold text-sm">{config.name} - Oficial</p>
               </div>
             </div>
             <p className="max-w-md text-gray-400 font-medium">
-              Acompanhe o dia a dia do maior das comunidades. Bastidores, jogos, projetos sociais e muito mais.
+              Acompanhe o dia a dia do {config.shortName}. Bastidores, jogos, projetos sociais e muito mais.
             </p>
           </div>
           
           <a 
-            href="https://www.instagram.com/racingfutebolclub" 
+            href={config.social.instagram || "https://instagram.com"} 
             target="_blank" 
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-3 bg-white text-black px-8 py-4 font-black uppercase text-xs tracking-widest hover:bg-red-600 hover:text-white transition-all shadow-xl active:scale-95"
+            className="inline-flex items-center gap-3 bg-white text-black px-8 py-4 font-black uppercase text-xs tracking-widest hover:bg-primary hover:text-white transition-all shadow-xl active:scale-95"
           >
             <Instagram size={18} />
             Seguir no Instagram
@@ -87,7 +93,7 @@ export default function InstagramFeed() {
           {posts.map((post, idx) => (
             <motion.a
               key={post.id}
-              href="https://www.instagram.com/racingfutebolclub"
+              href={config.social.instagram || "https://instagram.com"}
               target="_blank"
               rel="noopener noreferrer"
               initial={{ opacity: 0, y: 20 }}
@@ -103,7 +109,7 @@ export default function InstagramFeed() {
                 referrerPolicy="no-referrer"
               />
               {/* Overlay */}
-              <div className="absolute inset-0 bg-red-600/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-6">
+              <div className="absolute inset-0 bg-primary/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-6">
                 <div className="flex items-center gap-2 font-black italic">
                   <Heart size={20} fill="currentColor" />
                   <span>{post.likes}</span>
@@ -130,10 +136,10 @@ export default function InstagramFeed() {
         {/* Mobile Call to Action */}
         <div className="mt-8 text-center md:hidden">
            <a 
-            href="https://www.instagram.com/racingfutebolclub" 
+            href={config.social.instagram || "https://instagram.com"} 
             target="_blank" 
             rel="noopener noreferrer"
-            className="text-red-500 font-black uppercase text-xs tracking-widest items-center gap-2 inline-flex"
+            className="text-primary font-black uppercase text-xs tracking-widest items-center gap-2 inline-flex"
           >
             Ver todas as publicações <ArrowRight size={14} />
           </a>
@@ -142,3 +148,4 @@ export default function InstagramFeed() {
     </section>
   );
 }
+

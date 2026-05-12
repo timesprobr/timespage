@@ -110,6 +110,15 @@ export default function App() {
               document.head.appendChild(favicon);
             }
             favicon.href = data.tp_favicon_url || data.tp_logo_url || data.logo_url || '/favicon.ico';
+            
+            // Injetar Meta Tags de Cor
+            let themeColor = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement;
+            if (!themeColor) {
+              themeColor = document.createElement('meta');
+              themeColor.name = 'theme-color';
+              document.head.appendChild(themeColor);
+            }
+            themeColor.content = data.tp_primary_color || '#000000';
 
             // Injetar Tokens White Label (CSS Variables)
             const root = document.documentElement;

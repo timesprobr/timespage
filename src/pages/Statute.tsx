@@ -1,7 +1,10 @@
 import { motion } from 'motion/react';
 import { FileText, Shield, Download } from 'lucide-react';
+import { useContext } from 'react';
+import { ConfigContext } from '../App';
 
 export default function Statute() {
+  const config = useContext(ConfigContext);
   return (
     <div className="min-h-screen bg-white">
       {/* Header - Keep Dark */}
@@ -13,7 +16,7 @@ export default function Statute() {
             animate={{ opacity: 1, x: 0 }}
             className="space-y-4"
           >
-            <span className="text-red-600 font-black uppercase text-xs tracking-[0.5em]">Racing Futebol Clube</span>
+            <span className="text-red-600 font-black uppercase text-xs tracking-[0.5em]">{config.name}</span>
             <h1 className="text-4xl md:text-6xl font-black text-white uppercase italic tracking-tighter leading-none">
               Estatuto <span className="text-[#c40000]">Social</span>
             </h1>
@@ -34,7 +37,7 @@ export default function Statute() {
             <div className="flex-1 space-y-6">
               <h2 className="text-3xl font-black text-black uppercase italic tracking-tighter">O Documento Fundamental</h2>
               <p className="text-gray-600 font-medium leading-relaxed text-lg">
-                O Estatuto Social do Racing Futebol Clube é o conjunto de normas que regem a organização, o funcionamento e as finalidades da nossa instituição. 
+                O Estatuto Social do {config.name} é o conjunto de normas que regem a organização, o funcionamento e as finalidades da nossa instituição. 
                 Ele define os direitos e deveres dos sócios, as competências da diretoria e os princípios que garantem a integridade e a tradição do nosso clube.
               </p>
               

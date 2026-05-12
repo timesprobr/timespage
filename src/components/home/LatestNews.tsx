@@ -1,14 +1,17 @@
 import { NEWS } from '../../constants';
 import { ArrowRight } from 'lucide-react';
 import { motion } from 'motion/react';
+import { useContext } from 'react';
+import { ConfigContext } from '../../App';
 
 export default function LatestNews() {
+  const config = useContext(ConfigContext);
   return (
     <section className="py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-end justify-between mb-16">
           <div className="space-y-4">
-             <span className="text-red-600 font-black uppercase text-xs tracking-[0.3em]">Racing News</span>
+             <span className="text-red-600 font-black uppercase text-xs tracking-[0.3em]">{config.shortName} News</span>
              <h2 className="text-4xl md:text-6xl font-black text-black leading-none uppercase italic tracking-tighter">
                 Últimas <span className="text-gray-300">Notícias</span>
              </h2>

@@ -1,8 +1,11 @@
 import { MATCHES } from '../../constants';
 import { Calendar, MapPin, Clock } from 'lucide-react';
 import { motion } from 'motion/react';
+import { useContext } from 'react';
+import { ConfigContext } from '../../App';
 
 export default function MatchCenter() {
+  const config = useContext(ConfigContext);
   const nextMatch = MATCHES.find(m => m.status === 'upcoming');
   const lastMatch = MATCHES.find(m => m.status === 'finished');
 
@@ -21,10 +24,10 @@ export default function MatchCenter() {
             <div className="flex items-center justify-around md:justify-between gap-8 mb-12">
                {/* Team Home */}
                <div className="flex flex-col items-center gap-4 text-center">
-                  <div className="w-20 h-20 md:w-32 md:h-32 bg-red-600 rounded-sm flex items-center justify-center border-4 border-white shadow-xl">
-                      <span className="text-white font-black text-4xl italic">RFC</span>
+                  <div className="w-20 h-20 md:w-32 md:h-32 bg-primary rounded-sm flex items-center justify-center border-4 border-white shadow-xl overflow-hidden p-4">
+                      <img src={config.logo.main} alt={config.shortName} className="w-full h-full object-contain" />
                   </div>
-                  <span className="text-white font-black text-xl md:text-2xl uppercase italic">Racing FC</span>
+                  <span className="text-white font-black text-xl md:text-2xl uppercase italic">{config.name}</span>
                </div>
 
                <div className="flex flex-col items-center">
@@ -75,12 +78,12 @@ export default function MatchCenter() {
                    <span className="text-white font-black text-xl">{lastMatch.score?.home}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                   <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center">
-                        <span className="text-[10px] text-white font-black">R</span>
-                      </div>
-                      <span className="text-white font-bold text-sm">Racing FC</span>
-                   </div>
+                    <div className="flex items-center gap-3">
+                       <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center overflow-hidden p-1.5">
+                         <img src={config.logo.main} alt={config.shortName} className="w-full h-full object-contain" />
+                       </div>
+                       <span className="text-white font-bold text-sm">{config.name}</span>
+                    </div>
                    <span className="text-red-600 font-black text-xl">{lastMatch.score?.away}</span>
                 </div>
 
