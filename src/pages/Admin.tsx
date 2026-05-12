@@ -43,7 +43,7 @@ import {
    Search,
    Filter,
    Save,
-   ChevronDown
+   ChevronDown, Puzzle
 } from 'lucide-react';
 import {
    AreaChart,
@@ -64,7 +64,8 @@ export default function Admin() {
 
    const navigate = useNavigate();
    const [loading, setLoading] = useState(true);
-   const [activeTab, setActiveTab] = useState<'dashboard' | 'home' | 'news' | 'trophies' | 'transparency' | 'campaign' | 'squad' | 'leads' | 'board' | 'users' | 'identity' | 'conversion'>('dashboard');
+   const [activeTab, setActiveTab] = useState<'dashboard' | 'leads' | 'campaign' | 'identity' | 'integration' | 'home' | 'news' | 'squad' | 'trophies' | 'institutional' | 'users' | 'board' | 'transparency'>('dashboard');
+   const [institutionalTab, setInstitutionalTab] = useState<'board' | 'transparency'>('board');
    const [theme, setTheme] = useState<'light' | 'dark'>('light');
    const [notification, setNotification] = useState<{ message: string, type: 'success' | 'error' | 'info' } | null>(null);
    const [session, setSession] = useState<any>(null);
@@ -151,7 +152,17 @@ export default function Admin() {
       tp_linkedin: '',
       tp_youtube: '',
       tp_active: false,
-      tp_short_name: ''
+      tp_short_name: '',
+      tp_hero_image_url: '',
+      tp_hero_phrase: '',
+      tp_instagram_handle: '',
+      tp_instagram_link: '',
+      tp_instagram_photos: [] as string[],
+      tp_contact_phone: '',
+      tp_whatsapp_channel: '',
+      tp_pixel_facebook: '',
+      tp_google_analytics: '',
+      tp_google_tag_manager: ''
    });
 
    const [isSaving, setIsSaving] = useState(false);
@@ -508,6 +519,9 @@ export default function Admin() {
                      tp_instagram_photos: data.tp_instagram_photos || [],
                      tp_contact_phone: data.tp_contact_phone || '',
                      tp_whatsapp_channel: data.tp_whatsapp_channel || '',
+                     tp_pixel_facebook: data.tp_pixel_facebook || '',
+                     tp_google_analytics: data.tp_google_analytics || '',
+                     tp_google_tag_manager: data.tp_google_tag_manager || '',
                   });
                }
             });
@@ -691,65 +705,81 @@ export default function Admin() {
                {isSidebarCollapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
             </button>
 
-            <nav className="flex-1 p-3 space-y-4 overflow-y-auto custom-scrollbar">
+            <nav className="flex-1 p-3 space-y-6 overflow-y-auto custom-scrollbar">
                <div>
-                  {!isSidebarCollapsed && <span className="px-4 text-[8px] font-bold uppercase tracking-[0.2em] text-zinc-600 italic mb-2 block">Analytics</span>}
-                  <div className="space-y-1">
+                  {!isSidebarCollapsed && <span className="px-4 text-[8.5px] font-black uppercase tracking-[0.2em] text-zinc-600 italic mb-1.5 block">Análise</span>}
+                  <div className="space-y-0.5">
                      {[
-                        { id: 'dashboard', label: 'Overview', icon: LayoutDashboard },
-                        
-                        { id: 'leads', label: 'Leads & CRM', icon: Users },
+                        { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+                        { id: 'leads', label: 'Leads', icon: Users },
                      ].map((item) => (
                         <button
                            key={item.id}
                            onClick={() => setActiveTab(item.id as any)}
-                           className={`w-full flex items-center gap-3 px-4 py-2 rounded-xl transition-all relative group ${activeTab === item.id ? 'bg-[#a3e635] text-black shadow-[0_0_20px_rgba(163,230,53,0.3)]' : 'text-zinc-500 hover:bg-white/5 hover:text-white'} ${isSidebarCollapsed ? 'justify-center' : ''}`}
+                           className={`w-full flex items-center gap-2.5 px-4 py-1.5 rounded-xl transition-all relative group ${activeTab === item.id ? 'bg-[#a3e635] text-black shadow-[0_0_20px_rgba(163,230,53,0.3)]' : 'text-zinc-500 hover:bg-white/5 hover:text-white'} ${isSidebarCollapsed ? 'justify-center' : ''}`}
                         >
-                           <item.icon size={18} strokeWidth={activeTab === item.id ? 2.5 : 2} />
-                           {!isSidebarCollapsed && <span className="text-[7px] font-bold uppercase tracking-wider">{item.label}</span>}
+                           <item.icon size={16} strokeWidth={activeTab === item.id ? 2.5 : 2} />
+                           {!isSidebarCollapsed && <span className="text-[9px] font-extrabold uppercase tracking-wider">{item.label}</span>}
                         </button>
                      ))}
                   </div>
                </div>
 
                <div>
-                  {!isSidebarCollapsed && <span className="px-4 text-[8px] font-bold uppercase tracking-[0.2em] text-zinc-600 italic mb-2 block">Conteúdo</span>}
-                  <div className="space-y-1">
+                  {!isSidebarCollapsed && <span className="px-4 text-[8.5px] font-black uppercase tracking-[0.2em] text-zinc-600 italic mb-1.5 block">Marketing</span>}
+                  <div className="space-y-0.5">
+                     {[
+                        { id: 'campaign', label: 'Campanha', icon: FileImage },
+                        { id: 'identity', label: 'Identidade visual', icon: Palette },
+                        { id: 'integration', label: 'Integração', icon: Puzzle },
+                     ].map((item) => (
+                        <button
+                           key={item.id}
+                           onClick={() => setActiveTab(item.id as any)}
+                           className={`w-full flex items-center gap-2.5 px-4 py-1.5 rounded-xl transition-all relative group ${activeTab === item.id ? 'bg-[#a3e635] text-black shadow-[0_0_20px_rgba(163,230,53,0.3)]' : 'text-zinc-500 hover:bg-white/5 hover:text-white'} ${isSidebarCollapsed ? 'justify-center' : ''}`}
+                        >
+                           <item.icon size={16} strokeWidth={activeTab === item.id ? 2.5 : 2} />
+                           {!isSidebarCollapsed && <span className="text-[9px] font-extrabold uppercase tracking-wider">{item.label}</span>}
+                        </button>
+                     ))}
+                  </div>
+               </div>
+
+               <div>
+                  {!isSidebarCollapsed && <span className="px-4 text-[8.5px] font-black uppercase tracking-[0.2em] text-zinc-600 italic mb-1.5 block">Conteúdo</span>}
+                  <div className="space-y-0.5">
                      {[
                         { id: 'home', label: 'Home', icon: Home },
                         { id: 'news', label: 'Notícias', icon: FileText },
                         { id: 'squad', label: 'Elenco', icon: ShieldCheck },
                         { id: 'trophies', label: 'Títulos', icon: Trophy },
-                        { id: 'campaign', label: 'Campanhas', icon: FileImage },
+                        { id: 'institutional', label: 'Institucional', icon: Users },
                      ].map((item) => (
                         <button
                            key={item.id}
                            onClick={() => setActiveTab(item.id as any)}
-                           className={`w-full flex items-center gap-3 px-4 py-2 rounded-xl transition-all relative group ${activeTab === item.id ? 'bg-[#a3e635] text-black shadow-[0_0_20px_rgba(163,230,53,0.3)]' : 'text-zinc-500 hover:bg-white/5 hover:text-white'} ${isSidebarCollapsed ? 'justify-center' : ''}`}
+                           className={`w-full flex items-center gap-2.5 px-4 py-1.5 rounded-xl transition-all relative group ${activeTab === item.id ? 'bg-[#a3e635] text-black shadow-[0_0_20px_rgba(163,230,53,0.3)]' : 'text-zinc-500 hover:bg-white/5 hover:text-white'} ${isSidebarCollapsed ? 'justify-center' : ''}`}
                         >
-                           <item.icon size={18} strokeWidth={activeTab === item.id ? 2.5 : 2} />
-                           {!isSidebarCollapsed && <span className="text-[7px] font-bold uppercase tracking-wider">{item.label}</span>}
+                           <item.icon size={16} strokeWidth={activeTab === item.id ? 2.5 : 2} />
+                           {!isSidebarCollapsed && <span className="text-[9px] font-extrabold uppercase tracking-wider">{item.label}</span>}
                         </button>
                      ))}
                   </div>
                </div>
 
                <div>
-                  {!isSidebarCollapsed && <span className="px-4 text-[8px] font-bold uppercase tracking-[0.2em] text-zinc-600 italic mb-2 block">Gestão</span>}
-                  <div className="space-y-1">
+                  {!isSidebarCollapsed && <span className="px-4 text-[8.5px] font-black uppercase tracking-[0.2em] text-zinc-600 italic mb-1.5 block">Acesso</span>}
+                  <div className="space-y-0.5">
                      {[
-                        { id: 'transparency', label: 'Transparência', icon: FileText },
-                        { id: 'board', label: 'Diretoria', icon: Users },
-                        { id: 'identity', label: 'Marca & Visual', icon: Palette },
-                        { id: 'users', label: 'Controle de Acesso', icon: ShieldCheck },
+                        { id: 'users', label: 'Usuários', icon: ShieldCheck },
                      ].map((item) => (
                         <button
                            key={item.id}
                            onClick={() => setActiveTab(item.id as any)}
-                           className={`w-full flex items-center gap-3 px-4 py-2 rounded-xl transition-all relative group ${activeTab === item.id ? 'bg-[#a3e635] text-black shadow-[0_0_20px_rgba(163,230,53,0.3)]' : 'text-zinc-500 hover:bg-white/5 hover:text-white'} ${isSidebarCollapsed ? 'justify-center' : ''}`}
+                           className={`w-full flex items-center gap-2.5 px-4 py-1.5 rounded-xl transition-all relative group ${activeTab === item.id ? 'bg-[#a3e635] text-black shadow-[0_0_20px_rgba(163,230,53,0.3)]' : 'text-zinc-500 hover:bg-white/5 hover:text-white'} ${isSidebarCollapsed ? 'justify-center' : ''}`}
                         >
-                           <item.icon size={18} strokeWidth={activeTab === item.id ? 2.5 : 2} />
-                           {!isSidebarCollapsed && <span className="text-[7px] font-bold uppercase tracking-wider">{item.label}</span>}
+                           <item.icon size={16} strokeWidth={activeTab === item.id ? 2.5 : 2} />
+                           {!isSidebarCollapsed && <span className="text-[9px] font-extrabold uppercase tracking-wider">{item.label}</span>}
                         </button>
                      ))}
                   </div>
@@ -761,14 +791,17 @@ export default function Admin() {
                   onClick={() => {
                      window.open(currentOrgId ? `/?orgId=${currentOrgId}` : '/', '_blank');
                   }}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 rounded-2xl transition-all border border-white/5 bg-white/5 hover:bg-white/10 group"
+                  className="w-full flex items-center gap-3 px-4 py-2.5 rounded-2xl transition-all border border-white/5 bg-white/5 hover:bg-white/10 group relative overflow-hidden"
                >
-                  <Globe size={18} className="text-saas-primary" />
+                  <Globe size={18} className="text-saas-primary shrink-0" />
                   {!isSidebarCollapsed && (
-                     <div className="flex flex-col items-start">
-                        <span className="text-[9px] font-manrope font-bold uppercase tracking-tight text-white">Visitar Site</span>
-                        <span className="text-[8px] font-bold uppercase text-zinc-500">Online Now</span>
-                     </div>
+                     <>
+                        <div className="flex flex-col items-start min-w-0 flex-1">
+                           <span className="text-[9px] font-manrope font-extrabold uppercase tracking-tight text-white group-hover:text-saas-primary transition-colors">Visitar Site</span>
+                           <span className="text-[7.5px] font-bold uppercase tracking-widest text-zinc-500">Online Now</span>
+                        </div>
+                        <ArrowUpRight size={14} className="text-zinc-500 group-hover:text-saas-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />
+                     </>
                   )}
                </button>
             </div>
@@ -791,7 +824,6 @@ export default function Admin() {
 
                <div className="flex items-center gap-4 relative">
                   <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-800 border border-white/5 hover:bg-zinc-700 transition-all group">
-                     <MessageCircle size={16} className="text-saas-primary" />
                      <span className="text-[9px] font-bold uppercase text-zinc-400 group-hover:text-white tracking-widest">Suporte</span>
                   </button>
 
@@ -802,7 +834,7 @@ export default function Admin() {
                         onClick={() => setIsProfileOpen(!isProfileOpen)}
                         className={`p-2.5 rounded-xl transition-all border ${isProfileOpen ? 'bg-saas-primary text-black border-saas-primary' : 'bg-zinc-800 text-zinc-400 border-white/5 hover:text-white'}`}
                      >
-                        <User size={18} />
+                        <Users size={18} />
                      </button>
 
                      {isProfileOpen && (
@@ -848,7 +880,7 @@ export default function Admin() {
                            { label: 'Total de visitas', value: totalVisits, icon: TrendingUp, color: 'text-saas-primary', bg: 'bg-saas-primary/10', trend: '+14%' },
                            { label: 'Notícias ativas', value: news.length, icon: FileText, color: 'text-blue-400', bg: 'bg-blue-400/10', trend: 'Portal' },
                            { label: 'Total de leitura', value: news.reduce((acc, curr) => acc + (curr.views || 0), 0), icon: Eye, color: 'text-emerald-400', bg: 'bg-emerald-400/10', trend: 'Leituras' },
-                           { label: 'Cadastros recebidos', value: registrations.length + socioLeads.length, icon: UserPlus, color: 'text-purple-400', bg: 'bg-purple-400/10', trend: 'Leads' },
+                           { label: 'Cadastros recebidos', value: registrations.length + socioLeads.length, icon: Users, color: 'text-purple-400', bg: 'bg-purple-400/10', trend: 'Leads' },
                            { label: 'Cliques campanhas', value: campaigns.reduce((acc, curr) => acc + (curr.clicks || 0), 0), icon: MousePointer2, color: 'text-orange-400', bg: 'bg-orange-400/10', trend: 'Conversão' },
                         ].map((stat, i) => (
                            <div key={i} className="p-4 bg-[#121214] border border-white/5 rounded-2xl shadow-xl hover:border-saas-primary/40 transition-all group flex items-center gap-4">
@@ -865,190 +897,116 @@ export default function Admin() {
                            </div>
                         ))}
                      </div>
-
-
-
-                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        {/* Evolução de Tráfego */}
-                        <div className="lg:col-span-2 p-6 bg-[#121214] border border-white/5 rounded-2xl shadow-xl relative overflow-hidden">
-                           <div className="flex items-center justify-between mb-8">
-                              <div>
-                                 <h3 className="text-lg font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-2">
-                                    <TrendingUp size={18} className="text-saas-primary" /> Evolução de Tráfego
-                                 </h3>
-                                 <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-500 mt-1">Monitoramento de acessos em tempo real</p>
-                              </div>
-                           </div>
-                           <div className="h-[350px] w-full">
-                              <ResponsiveContainer width="100%" height="100%">
-                                 <AreaChart data={analyticsData.length > 0 ? analyticsData : [{ name: 'Sem Dados', value: 0 }]}>
-                                    <defs>
-                                       <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                                          <stop offset="5%" stopColor="#a3e635" stopOpacity={0.2} />
-                                          <stop offset="95%" stopColor="#a3e635" stopOpacity={0} />
-                                       </linearGradient>
-                                    </defs>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.03)" />
-                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 9, fontWeight: 900, fill: '#52525b' }} dy={10} />
-                                    <YAxis hide />
-                                    <Tooltip
-                                       contentStyle={{ backgroundColor: '#121214', borderRadius: '16px', border: '1px solid rgba(163,230,53,0.1)', color: '#fff' }}
-                                       itemStyle={{ color: '#a3e635', fontWeight: 900, fontSize: '10px', textTransform: 'uppercase' }}
-                                       labelStyle={{ color: '#52525b', fontWeight: 900, fontSize: '10px', marginBottom: '4px' }}
-                                    />
-                                    <Area type="monotone" dataKey="value" stroke="#a3e635" strokeWidth={4} fillOpacity={1} fill="url(#colorValue)" />
-                                 </AreaChart>
-                              </ResponsiveContainer>
-                           </div>
-                        </div>
-
-                        {/* Top Páginas Widget */}
-                        <div className="p-4 bg-[#121214] border border-white/5 rounded-2xl shadow-xl flex flex-col">
-                           <div className="flex items-center justify-between mb-4">
-                              <h3 className="text-sm font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-2">
-                                 <Globe size={16} className="text-saas-primary" /> Páginas Mais Visitadas
-                              </h3>
-                              
-                           </div>
-                           <div className="space-y-3 flex-1">
-                              {pageStats.slice(0, 8).map((page, i) => (
-                                 <div key={i} className="flex items-center justify-between group p-2 rounded-xl hover:bg-white/5 transition-all">
-                                    <div className="flex flex-col min-w-0">
-                                       <span className="text-[10px] font-extrabold text-white truncate uppercase tracking-tight group-hover:text-saas-primary transition-colors cursor-pointer">{page.url}</span>
-                                       <div className="flex items-center gap-2 mt-0.5">
-                                          <span className="text-[7px] font-black text-zinc-500 uppercase tracking-widest flex items-center gap-1">
-                                             <Activity size={8} /> {Math.round(page.totalDuration / page.visits)}s de permanência
-                                          </span>
-                                       </div>
-                                    </div>
-                                    <div className="flex flex-col items-end">
-                                       <span className="text-[10px] font-black text-white">{page.visits}</span>
-                                       <span className="text-[7px] font-bold text-zinc-600 uppercase">Visitas</span>
-                                    </div>
-                                 </div>
-                              ))}
-                              {pageStats.length === 0 && (
-                                 <div className="flex flex-col items-center justify-center h-full py-10 text-zinc-600 gap-2 opacity-50">
-                                    <Activity size={24} />
-                                    <span className="text-[9px] font-black uppercase tracking-widest">Sem dados de acesso</span>
-                                 </div>
-                              )}
-                           </div>
-                        </div>
-                     </div>
-
-                     {/* Nova Sessão de Conversão Rápida */}
-                     <div className="p-4 bg-[#121214] border border-white/5 rounded-2xl shadow-xl">
-                        <div className="flex items-center justify-between mb-4">
-                           <h3 className="text-sm font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-2">
-                              <Target size={16} className="text-saas-primary" /> Conversão & Performance
-                           </h3>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                           <div className="p-4 rounded-xl bg-white/5 border border-white/5">
-                              <span className="text-[8px] font-black text-zinc-500 uppercase tracking-widest">Taxa de Conversão</span>
-                              <div className="text-xl font-manrope font-extrabold text-white mt-1">4.2%</div>
-                           </div>
-                           <div className="p-4 rounded-xl bg-white/5 border border-white/5">
-                              <span className="text-[8px] font-black text-zinc-500 uppercase tracking-widest">Tempo Médio Site</span>
-                              <div className="text-xl font-manrope font-extrabold text-saas-primary mt-1">2m 45s</div>
-                           </div>
-                           <div className="p-4 rounded-xl bg-white/5 border border-white/5">
-                              <span className="text-[8px] font-black text-zinc-500 uppercase tracking-widest">Cliques no Whatsapp</span>
-                              <div className="text-xl font-manrope font-extrabold text-white mt-1">128</div>
-                           </div>
-                           <div className="p-4 rounded-xl bg-white/5 border border-white/5">
-                              <span className="text-[8px] font-black text-zinc-500 uppercase tracking-widest">Novos Sócios (Hoje)</span>
-                              <div className="text-xl font-manrope font-extrabold text-saas-primary mt-1">+12</div>
-                           </div>
-                        </div>
-                     </div>
-
-
                   </div>
                )}
 
                 {activeTab === 'news' && (
-                  <div className="space-y-4">
-                     <div className="flex justify-between items-center bg-[#121214] p-4 rounded-2xl border border-white/5">
+                  <div className="space-y-6 animate-in fade-in duration-300">
+                     <div className="flex justify-between items-center bg-[#121214] p-6 rounded-3xl border border-white/5 shadow-xl">
                         <div>
-                           <h3 className="text-[20px] font-manrope font-extrabold uppercase tracking-tight text-white leading-none">Notícias</h3>
-                           <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-500 italic mt-1">Conteúdo do Portal</p>
+                           <h3 className="text-xl font-manrope font-extrabold uppercase tracking-tight text-white leading-none">Notícias</h3>
+                           <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 italic mt-1">Gerencie as matérias publicadas no portal oficial</p>
                         </div>
                         <button 
                            onClick={() => { setEditingNews(null); setNewsForm({ title: '', content: '', category: 'Notícias', image: '', summary: '' }); setIsAddingNews(true); }}
-                           className="bg-[#a3e635] text-black px-4 py-2.5 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] flex items-center gap-2 transition-all shadow-lg shadow-saas-primary/20 hover:scale-105 active:scale-95"
+                           className="bg-[#a3e635] text-black px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-[0.2em] flex items-center gap-2 transition-all shadow-xl shadow-saas-primary/20 hover:scale-105 active:scale-95 cursor-pointer"
                         >
-                           <PlusCircle size={14} strokeWidth={3} /> Criar Matéria
+                           <PlusCircle size={16} strokeWidth={3} /> Criar Matéria
                         </button>
                      </div>
-                     <div className="grid grid-cols-1 gap-2 pb-20">
-                        {news.length === 0 ? (
-                           <div className="bg-[#121214] border border-white/5 rounded-[24px] p-12 flex flex-col items-center justify-center text-center">
-                              <FileText size={32} className="text-zinc-700 mb-4" />
-                              <h4 className="text-sm font-black text-white uppercase italic tracking-tight">Sem publicações</h4>
+
+                     {news.length === 0 ? (
+                        <div className="bg-[#121214] border border-white/5 rounded-3xl p-12 text-center space-y-4">
+                           <FileText size={48} className="mx-auto text-zinc-700" />
+                           <div className="space-y-1">
+                              <p className="text-sm font-extrabold uppercase text-white tracking-wider">Nenhuma notícia publicada ainda</p>
+                              <p className="text-xs text-zinc-500 font-medium">Clique no botão acima para escrever a primeira matéria do clube.</p>
                            </div>
-                        ) : (
-                           news.map(n => (
-                              <div key={n.id} className="group bg-[#121214] border border-white/5 rounded-[16px] p-3 hover:border-saas-primary/30 transition-all flex items-center justify-between">
-                                 <div className="flex items-center gap-3">
-                                    <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-white/5 bg-zinc-800 shrink-0">
-                                       <img src={n.image || 'https://via.placeholder.com/400x400'} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
-                                       <div className="absolute top-0.5 left-0.5">
-                                          <span className="px-1.5 py-0.5 rounded bg-saas-primary text-black text-[6px] font-black uppercase tracking-widest">
-                                             {n.category}
-                                          </span>
-                                       </div>
-                                    </div>
-                                    <div className="flex flex-col">
-                                       <div className="flex items-center gap-2 mb-0.5">
-                                          <div className="flex items-center gap-1 text-zinc-500">
-                                             <Calendar size={10} />
-                                             <span className="text-[7px] font-bold uppercase tracking-widest">{new Date(n.created_at).toLocaleDateString('pt-BR')}</span>
-                                          </div>
-                                          <div className="flex items-center gap-1 text-zinc-500">
-                                             <Eye size={10} />
-                                             <span className="text-[7px] font-bold uppercase tracking-widest">{n.views || 0} LEITURAS</span>
-                                          </div>
-                                       </div>
-                                       <h4 className="text-[13px] font-bold text-white uppercase italic tracking-tight line-clamp-1 leading-tight group-hover:text-saas-primary transition-colors">{n.title}</h4>
-                                       <p className="text-[9px] text-zinc-500 line-clamp-1 opacity-60 font-medium italic">{n.summary || 'Sem resumo disponível...'}</p>
+                        </div>
+                     ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                           {news.map((item) => (
+                              <div key={item.id} className="bg-[#121214] border border-white/5 rounded-3xl overflow-hidden shadow-xl hover:border-saas-primary/30 transition-all flex flex-col group">
+                                 <div className="aspect-video bg-zinc-800 relative overflow-hidden">
+                                    {item.image ? (
+                                       <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                    ) : (
+                                       <div className="w-full h-full flex items-center justify-center text-zinc-700"><ImageIcon size={24} /></div>
+                                    )}
+                                    <div className="absolute top-3 left-3">
+                                       <span className="px-3 py-1 rounded-full bg-saas-primary text-black text-[9px] font-black uppercase tracking-wider shadow-lg">
+                                          {item.category || 'Notícia'}
+                                       </span>
                                     </div>
                                  </div>
-                                 <div className="flex items-center gap-2">
-                                    <a href={`/noticias/${n.id}`} target="_blank" className="p-2 rounded-lg bg-white/5 text-zinc-500 hover:text-white transition-all">
-                                       <Eye size={14} />
-                                    </a>
-                                    <button 
-                                       onClick={() => {
-                                          setEditingNews(n);
-                                          setNewsForm({ title: n.title, content: n.content, category: n.category, image: n.image, summary: n.summary || '' });
-                                          setIsAddingNews(true);
-                                       }}
-                                       className="p-2 rounded-lg bg-white/5 text-zinc-500 hover:text-saas-primary transition-all"
-                                    >
-                                       <Edit3 size={14} />
-                                    </button>
+                                 <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
+                                    <div className="space-y-2">
+                                       <span className="text-[9px] font-bold text-zinc-600 uppercase tracking-widest block">
+                                          {new Date(item.created_at || Date.now()).toLocaleDateString('pt-BR')}
+                                       </span>
+                                       <h4 className="text-sm font-extrabold uppercase tracking-tight text-white line-clamp-2 leading-snug">
+                                          {item.title}
+                                       </h4>
+                                       <p className="text-xs text-zinc-400 line-clamp-2 font-normal">
+                                          {item.summary || 'Sem resumo cadastrado'}
+                                       </p>
+                                    </div>
+                                    <div className="pt-4 border-t border-white/5 flex items-center justify-end gap-2">
+                                       <button 
+                                          onClick={() => {
+                                             setEditingNews(item);
+                                             setNewsForm({
+                                                title: item.title || '',
+                                                content: item.content || '',
+                                                category: item.category || 'Notícias',
+                                                image: item.image || '',
+                                                summary: item.summary || ''
+                                             });
+                                             setIsAddingNews(true);
+                                          }}
+                                          className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-colors"
+                                          title="Editar"
+                                       >
+                                          <Edit3 size={14} />
+                                       </button>
+                                       <button 
+                                          onClick={async () => {
+                                             if (confirm('Tem certeza que deseja excluir esta matéria?')) {
+                                                await supabase.from('news').delete().eq('id', item.id);
+                                                setNews(news.filter(n => n.id !== item.id));
+                                                showNotification('Matéria excluída com sucesso', 'info');
+                                             }
+                                          }}
+                                          className="p-2 rounded-xl bg-red-500/5 hover:bg-red-500/10 text-zinc-500 hover:text-red-500 transition-colors"
+                                          title="Excluir"
+                                       >
+                                          <Trash2 size={14} />
+                                       </button>
+                                    </div>
                                  </div>
                               </div>
-                           ))
-                        )}
-                     </div>
+                           ))}
+                        </div>
+                     )}
                   </div>
                )}
-
-               {activeTab === 'home' && (
+                {activeTab === 'home' && (
                   <div className="space-y-8">
-                     {/* Header */}
-                     <div className="flex justify-between items-center">
+                     <div className="flex justify-between items-center bg-[#121214] border border-white/5 p-8 rounded-[32px]">
                         <div>
-                           <h3 className="text-xl font-manrope font-extrabold uppercase tracking-tight text-white">Configuração da Home</h3>
-                           <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 italic mt-1">Personalize a página inicial do site oficial</p>
+                           <h3 className="text-2xl font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-3">
+                              <Home className="text-saas-primary" size={28} strokeWidth={2.5} />
+                              Configuração da Home
+                           </h3>
+                           <p className="text-xs font-black uppercase tracking-widest text-zinc-500 italic mt-1">
+                              Personalize a identidade da página inicial e contatos oficiais
+                           </p>
                         </div>
                         <button
                            onClick={async () => {
                               setIsSaving(true);
                               try {
+                                 const orgIdToUpdate = currentOrgId || 'dc1f5d6a-4714-46b2-92cc-5ff423c2b3ed';
                                  const { error } = await supabase.from('organizations').update({
                                     tp_hero_image_url: clubIdentity.tp_hero_image_url,
                                     tp_hero_phrase: clubIdentity.tp_hero_phrase,
@@ -1066,815 +1024,274 @@ export default function Admin() {
                                     tp_linkedin: clubIdentity.tp_linkedin,
                                     tp_youtube: clubIdentity.tp_youtube,
                                     tp_whatsapp_channel: clubIdentity.tp_whatsapp_channel,
-                                 }).eq('id', currentOrgId);
+                                 }).eq('id', orgIdToUpdate);
                                  if (error) throw error;
-                                 setNotification({ message: 'Configurações salvas com sucesso!', type: 'success' });
+                                 showNotification('Configurações da Home salvas com sucesso!', 'success');
                               } catch (err: any) {
-                                 setNotification({ message: 'Erro ao salvar: ' + err.message, type: 'error' });
+                                 showNotification('Erro ao salvar Home: ' + err.message, 'error');
                               } finally {
                                  setIsSaving(false);
                               }
                            }}
                            disabled={isSaving}
-                           className="bg-[#a3e635] text-black px-6 py-4 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-3 transition-all shadow-lg shadow-saas-primary/20 hover:scale-105 disabled:opacity-50"
+                           className="bg-[#a3e635] text-black px-8 py-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] flex items-center gap-3 transition-all shadow-xl shadow-saas-primary/20 hover:scale-105 disabled:opacity-50 cursor-pointer"
                         >
-                           {isSaving ? <RefreshCw size={16} className="animate-spin" /> : <Save size={16} strokeWidth={3} />}
+                           {isSaving ? <RefreshCw size={18} className="animate-spin" /> : <Save size={18} strokeWidth={3} />}
                            {isSaving ? 'Salvando...' : 'Salvar Tudo'}
                         </button>
                      </div>
 
-                     {/* HERO / CAPA */}
-                     <div className="bg-[#121214] border border-white/5 rounded-2xl p-6 space-y-5">
-                        <div className="flex items-center gap-3 mb-2">
-                           <div className="w-8 h-8 rounded-lg bg-saas-primary/10 flex items-center justify-center">
-                              <ImageIcon size={16} className="text-saas-primary" />
-                           </div>
-                           <h4 className="font-manrope font-extrabold text-white uppercase text-sm tracking-tight">Capa Principal (Hero)</h4>
-                        </div>
-                        
-                        {/* Hero Image Preview */}
-                        <div className="relative aspect-[21/9] bg-zinc-900 rounded-xl overflow-hidden border border-white/10 group">
-                           {clubIdentity.tp_hero_image_url ? (
-                              <img src={clubIdentity.tp_hero_image_url} className="w-full h-full object-cover" alt="Capa" />
-                           ) : (
-                              <div className="w-full h-full flex items-center justify-center text-zinc-600">
-                                 <ImageIcon size={48} strokeWidth={1} />
-                              </div>
-                           )}
-                           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                              <span className="text-white text-xs font-bold uppercase tracking-widest">Alterar Imagem</span>
-                           </div>
-                        </div>
-                        
-                        <div>
-                           <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">URL da Imagem de Capa</label>
-                           <input
-                              type="text"
-                              value={clubIdentity.tp_hero_image_url || ''}
-                              onChange={e => setClubIdentity({ ...clubIdentity, tp_hero_image_url: e.target.value })}
-                              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
-                              placeholder="https://exemplo.com/imagem-capa.jpg"
-                           />
-                        </div>
-
-                        <div>
-                           <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Frase da Capa (opcional)</label>
-                           <input
-                              type="text"
-                              value={clubIdentity.tp_hero_phrase || ''}
-                              onChange={e => setClubIdentity({ ...clubIdentity, tp_hero_phrase: e.target.value })}
-                              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
-                              placeholder="Ex: Uma vez Gameleira, Sempre Gameleira..."
-                           />
-                           <p className="text-[9px] text-zinc-600 mt-1 italic">Deixe vazio para não exibir frase na capa.</p>
-                        </div>
-                     </div>
-
-                     {/* INSTAGRAM */}
-                     <div className="bg-[#121214] border border-white/5 rounded-2xl p-6 space-y-5">
-                        <div className="flex items-center gap-3 mb-2">
-                           <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-yellow-400/20 via-red-500/20 to-purple-600/20 flex items-center justify-center">
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-pink-400"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
-                           </div>
-                           <h4 className="font-manrope font-extrabold text-white uppercase text-sm tracking-tight">Instagram do Clube</h4>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                           <div>
-                              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">@ do Instagram</label>
-                              <div className="relative">
-                                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-saas-primary font-bold text-sm">@</span>
-                                 <input
-                                    type="text"
-                                    value={clubIdentity.tp_instagram_handle || ''}
-                                    onChange={e => setClubIdentity({ ...clubIdentity, tp_instagram_handle: e.target.value.replace('@', '') })}
-                                    className="w-full pl-9 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
-                                    placeholder="gameleirafc"
-                                 />
-                              </div>
-                           </div>
-                           <div>
-                              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Link do Instagram (botão)</label>
-                              <input
-                                 type="text"
-                                 value={clubIdentity.tp_instagram_link || ''}
-                                 onChange={e => setClubIdentity({ ...clubIdentity, tp_instagram_link: e.target.value })}
-                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
-                                 placeholder="https://instagram.com/gameleirafc"
-                              />
-                           </div>
-                        </div>
-
-                        {/* 6 Photos */}
-                        <div>
-                           <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-3 block">6 Fotos do Feed</label>
-                           <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
-                              {Array.from({ length: 6 }).map((_, i) => {
-                                 const photos = clubIdentity.tp_instagram_photos || [];
-                                 const photo = photos[i] || '';
-                                 return (
-                                    <div key={i} className="space-y-1.5">
-                                       <div className="aspect-square bg-zinc-900 rounded-lg overflow-hidden border border-white/10 relative group">
-                                          {photo ? (
-                                             <img src={photo} className="w-full h-full object-cover" alt={`Foto ${i + 1}`} />
-                                          ) : (
-                                             <div className="w-full h-full flex items-center justify-center text-zinc-700">
-                                                <Plus size={20} />
-                                             </div>
-                                          )}
-                                       </div>
-                                       <input
-                                          type="text"
-                                          value={photo}
-                                          onChange={e => {
-                                             const newPhotos = [...(clubIdentity.tp_instagram_photos || Array(6).fill(''))];
-                                             while (newPhotos.length < 6) newPhotos.push('');
-                                             newPhotos[i] = e.target.value;
-                                             setClubIdentity({ ...clubIdentity, tp_instagram_photos: newPhotos });
-                                          }}
-                                          className="w-full px-2 py-1.5 bg-white/5 border border-white/10 rounded-lg text-white text-[9px] focus:outline-none focus:border-saas-primary/50 transition-colors"
-                                          placeholder={`URL foto ${i + 1}`}
-                                       />
-                                    </div>
-                                 );
-                              })}
-                           </div>
-                        </div>
-                     </div>
-
-                     {/* CONTATO */}
-                     <div className="bg-[#121214] border border-white/5 rounded-2xl p-6 space-y-5">
-                        <div className="flex items-center gap-3 mb-2">
-                           <div className="w-8 h-8 rounded-lg bg-saas-primary/10 flex items-center justify-center">
-                              <MessageCircle size={16} className="text-saas-primary" />
-                           </div>
-                           <h4 className="font-manrope font-extrabold text-white uppercase text-sm tracking-tight">Contato & Localização</h4>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                           <div>
-                              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Endereço</label>
-                              <input
-                                 type="text"
-                                 value={clubIdentity.tp_address || ''}
-                                 onChange={e => setClubIdentity({ ...clubIdentity, tp_address: e.target.value })}
-                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
-                                 placeholder="Rua dos Esportes, 100 - Centro"
-                              />
-                           </div>
-                           <div>
-                              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Telefone Fixo</label>
-                              <input
-                                 type="text"
-                                 value={clubIdentity.tp_contact_phone || ''}
-                                 onChange={e => setClubIdentity({ ...clubIdentity, tp_contact_phone: e.target.value })}
-                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
-                                 placeholder="(11) 3333-4444"
-                              />
-                           </div>
-                           <div>
-                              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">E-mail</label>
-                              <input
-                                 type="email"
-                                 value={clubIdentity.tp_email || ''}
-                                 onChange={e => setClubIdentity({ ...clubIdentity, tp_email: e.target.value })}
-                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
-                                 placeholder="contato@gameleirafc.com"
-                              />
-                           </div>
-                           <div>
-                              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">WhatsApp</label>
-                              <input
-                                 type="text"
-                                 value={clubIdentity.tp_whatsapp || ''}
-                                 onChange={e => setClubIdentity({ ...clubIdentity, tp_whatsapp: e.target.value })}
-                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
-                                 placeholder="(11) 99999-9999"
-                              />
-                           </div>
-                        </div>
-                     </div>
-
-                     {/* REDES SOCIAIS */}
-                     <div className="bg-[#121214] border border-white/5 rounded-2xl p-6 space-y-5">
-                        <div className="flex items-center gap-3 mb-2">
-                           <div className="w-8 h-8 rounded-lg bg-saas-primary/10 flex items-center justify-center">
-                              <Globe size={16} className="text-saas-primary" />
-                           </div>
-                           <h4 className="font-manrope font-extrabold text-white uppercase text-sm tracking-tight">Redes Sociais</h4>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                           <div>
-                              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Instagram</label>
-                              <input
-                                 type="text"
-                                 value={clubIdentity.tp_instagram || ''}
-                                 onChange={e => setClubIdentity({ ...clubIdentity, tp_instagram: e.target.value })}
-                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
-                                 placeholder="https://instagram.com/seuperfil"
-                              />
-                           </div>
-                           <div>
-                              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Facebook</label>
-                              <input
-                                 type="text"
-                                 value={clubIdentity.tp_facebook || ''}
-                                 onChange={e => setClubIdentity({ ...clubIdentity, tp_facebook: e.target.value })}
-                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
-                                 placeholder="https://facebook.com/seuperfil"
-                              />
-                           </div>
-                           <div>
-                              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">X (Twitter)</label>
-                              <input
-                                 type="text"
-                                 value={clubIdentity.tp_twitter_x || ''}
-                                 onChange={e => setClubIdentity({ ...clubIdentity, tp_twitter_x: e.target.value })}
-                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
-                                 placeholder="https://x.com/seuperfil"
-                              />
-                           </div>
-                           <div>
-                              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">LinkedIn</label>
-                              <input
-                                 type="text"
-                                 value={clubIdentity.tp_linkedin || ''}
-                                 onChange={e => setClubIdentity({ ...clubIdentity, tp_linkedin: e.target.value })}
-                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
-                                 placeholder="https://linkedin.com/company/seuperfil"
-                              />
-                           </div>
-                           <div>
-                              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">YouTube</label>
-                              <input
-                                 type="text"
-                                 value={clubIdentity.tp_youtube || ''}
-                                 onChange={e => setClubIdentity({ ...clubIdentity, tp_youtube: e.target.value })}
-                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
-                                 placeholder="https://youtube.com/@seucanal"
-                              />
-                           </div>
-                           <div>
-                              <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Canal no WhatsApp</label>
-                              <input
-                                 type="text"
-                                 value={clubIdentity.tp_whatsapp_channel || ''}
-                                 onChange={e => setClubIdentity({ ...clubIdentity, tp_whatsapp_channel: e.target.value })}
-                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
-                                 placeholder="https://whatsapp.com/channel/xxx"
-                              />
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-               )}
-
-               {activeTab === 'squad' && (() => {
-                  // Extract unique modalities and categories from loaded data
-                  const modalities = [...new Set(players.map(p => p.modality_name).filter(Boolean))] as string[];
-                  const categoriesForFilter = [...new Set(players.map(p => p.category_name).filter(Boolean))] as string[];
-
-                  // Apply filters
-                  const filtered = players.filter(p => {
-                     const matchSearch = !squadSearch || 
-                        (p.full_name || '').toLowerCase().includes(squadSearch.toLowerCase()) ||
-                        (p.nickname || '').toLowerCase().includes(squadSearch.toLowerCase()) ||
-                        (p.position || '').toLowerCase().includes(squadSearch.toLowerCase());
-                     const matchModality = squadModalityFilter === 'all' || p.modality_name === squadModalityFilter;
-                     const matchCategory = squadCategoryFilter === 'all' || p.category_name === squadCategoryFilter;
-                     return matchSearch && matchModality && matchCategory;
-                  });
-
-                  // Group by modality > category
-                  const grouped: Record<string, Record<string, any[]>> = {};
-                  filtered.forEach(p => {
-                     const mod = p.modality_name || 'Sem Modalidade';
-                     const cat = p.category_name || 'Sem Categoria';
-                     if (!grouped[mod]) grouped[mod] = {};
-                     if (!grouped[mod][cat]) grouped[mod][cat] = [];
-                     grouped[mod][cat].push(p);
-                  });
-
-                  const handleSavePlayer = async () => {
-                     if (!editingPlayer) return;
-                     setSavingPlayer(true);
-                     try {
-                        const { error } = await supabase.from('athletes').update({
-                           nickname: editPlayerForm.nickname,
-                           position: editPlayerForm.position,
-                           number: editPlayerForm.number ? parseInt(editPlayerForm.number) : null,
-                           gender: editPlayerForm.gender,
-                        }).eq('id', editingPlayer.id);
-                        if (error) throw error;
-                        setPlayers(prev => prev.map(p => p.id === editingPlayer.id ? { ...p, ...editPlayerForm, number: editPlayerForm.number ? parseInt(editPlayerForm.number) : p.number } : p));
-                        setEditingPlayer(null);
-                        setNotification({ message: 'Atleta atualizado com sucesso!', type: 'success' });
-                     } catch (err: any) {
-                        setNotification({ message: 'Erro ao salvar: ' + err.message, type: 'error' });
-                     } finally {
-                        setSavingPlayer(false);
-                     }
-                  };
-
-                  return (
-                   <div className="space-y-6">
-                      {/* Header */}
-                      <div className="flex justify-between items-center">
-                         <div>
-                            <h3 className="text-xl font-manrope font-extrabold uppercase tracking-tight text-white">Gestão de Elenco</h3>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 italic mt-1">
-                               {players.length} atleta{players.length !== 1 ? 's' : ''} · {modalities.length} modalidade{modalities.length !== 1 ? 's' : ''}
-                            </p>
-                         </div>
-                         {players.length > 0 && (
-                            <button className="bg-[#a3e635] text-black px-6 py-4 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-3 transition-all shadow-lg shadow-saas-primary/20 hover:scale-105">
-                               <PlusCircle size={16} strokeWidth={3} /> Adicionar Atleta
-                            </button>
-                         )}
-                      </div>
-
-                      {/* Filters Bar */}
-                      {players.length > 0 && (
-                         <div className="flex flex-wrap gap-3 p-4 bg-[#121214] border border-white/5 rounded-2xl">
-                            {/* Search */}
-                            <div className="relative flex-1 min-w-[200px]">
-                               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
-                               <input
-                                  type="text"
-                                  placeholder="Buscar atleta..."
-                                  value={squadSearch}
-                                  onChange={e => setSquadSearch(e.target.value)}
-                                  className="w-full pl-9 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-xs placeholder:text-zinc-600 focus:outline-none focus:border-saas-primary/50 transition-colors"
-                               />
-                            </div>
-                            {/* Modality */}
-                            <div className="relative">
-                               <select
-                                  value={squadModalityFilter}
-                                  onChange={e => { setSquadModalityFilter(e.target.value); setSquadCategoryFilter('all'); }}
-                                  className="appearance-none pl-4 pr-9 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-xs focus:outline-none focus:border-saas-primary/50 transition-colors cursor-pointer"
-                               >
-                                  <option value="all" className="bg-zinc-900">Todas Modalidades</option>
-                                  {modalities.map(m => <option key={m} value={m} className="bg-zinc-900">{m}</option>)}
-                               </select>
-                               <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" />
-                            </div>
-                            {/* Category */}
-                            <div className="relative">
-                               <select
-                                  value={squadCategoryFilter}
-                                  onChange={e => setSquadCategoryFilter(e.target.value)}
-                                  className="appearance-none pl-4 pr-9 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-xs focus:outline-none focus:border-saas-primary/50 transition-colors cursor-pointer"
-                               >
-                                  <option value="all" className="bg-zinc-900">Todas Categorias</option>
-                                  {categoriesForFilter
-                                     .filter(c => squadModalityFilter === 'all' || players.some(p => p.category_name === c && p.modality_name === squadModalityFilter))
-                                     .map(c => <option key={c} value={c} className="bg-zinc-900">{c}</option>)}
-                               </select>
-                               <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" />
-                            </div>
-                         </div>
-                      )}
-
-                      {players.length === 0 ? (
-                         <div className="flex flex-col items-center justify-center py-20 px-4 text-center border border-white/5 rounded-[32px] bg-white/5">
-                            <div className="w-16 h-16 bg-zinc-800 rounded-full flex items-center justify-center mb-6 shadow-inner">
-                               <ShieldCheck size={24} className="text-zinc-500" />
-                            </div>
-                            <h4 className="text-xl font-manrope font-extrabold text-white mb-2 uppercase tracking-tight">Nenhum atleta encontrado</h4>
-                            <p className="text-sm text-zinc-400 max-w-md mb-8">
-                               Se você já possui o plano completo do TimesPro, seus atletas cadastrados no sistema principal aparecerão aqui automaticamente.
-                            </p>
-                            <button className="bg-[#a3e635] text-black px-8 py-4 rounded-xl font-black text-[12px] uppercase tracking-[0.2em] flex items-center gap-3 transition-all shadow-lg shadow-saas-primary/20 hover:scale-105">
-                               <PlusCircle size={18} strokeWidth={3} /> Cadastrar Atleta Manualmente
-                            </button>
-                         </div>
-                      ) : filtered.length === 0 ? (
-                         <div className="flex flex-col items-center justify-center py-16 text-center">
-                            <Search size={32} className="text-zinc-600 mb-4" />
-                            <p className="text-zinc-400 text-sm">Nenhum atleta encontrado com os filtros selecionados.</p>
-                         </div>
-                      ) : (
-                         <div className="space-y-10 pb-20">
-                            {Object.entries(grouped).map(([modality, cats]) => (
-                               <div key={modality}>
-                                  {/* Modality Header */}
-                                  <div className="flex items-center gap-3 mb-6">
-                                     <div className="w-8 h-8 rounded-lg bg-saas-primary/10 flex items-center justify-center">
-                                        <ShieldCheck size={16} className="text-saas-primary" />
-                                     </div>
-                                     <h4 className="text-lg font-manrope font-extrabold uppercase tracking-tight text-white">{modality}</h4>
-                                     <div className="flex-1 h-px bg-white/5"></div>
-                                  </div>
-
-                                  {Object.entries(cats).map(([category, catPlayers]) => (
-                                     <div key={category} className="mb-8">
-                                        {/* Category Sub-Header */}
-                                        <div className="flex items-center gap-2 mb-4 ml-11">
-                                           <span className="text-[10px] font-black uppercase tracking-[0.2em] text-saas-primary italic">{category}</span>
-                                           <span className="text-[10px] text-zinc-600">({catPlayers.length})</span>
-                                        </div>
-
-                                        {/* Player Cards Grid - Vertical Portrait */}
-                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 ml-11">
-                                           {catPlayers.map((p: any) => {
-                                              const age = p.birth_date ? calculateAge(new Date(p.birth_date)) : null;
-                                              return (
-                                                 <div
-                                                    key={p.id}
-                                                    className="bg-[#121214] border border-white/5 rounded-2xl overflow-hidden group hover:border-saas-primary/30 transition-all hover:shadow-lg hover:shadow-saas-primary/5 cursor-pointer"
-                                                 >
-                                                    {/* Photo - Portrait */}
-                                                    <div className="aspect-[3/4] bg-zinc-900 overflow-hidden relative">
-                                                       {p.photo_url ? (
-                                                          <img src={p.photo_url} alt={p.nickname || p.full_name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                                                       ) : (
-                                                          <div className="w-full h-full flex items-center justify-center text-zinc-700 bg-gradient-to-b from-zinc-800 to-zinc-900">
-                                                             <User size={48} strokeWidth={1} />
-                                                          </div>
-                                                       )}
-                                                       {/* Number Badge */}
-                                                       <div className="absolute top-2 right-2 min-w-[28px] h-7 flex items-center justify-center px-1.5 bg-black/70 backdrop-blur-sm rounded-lg border border-white/10">
-                                                          <span className="text-saas-primary font-black text-sm italic">#{p.number || '00'}</span>
-                                                       </div>
-                                                       {/* Gradient overlay */}
-                                                       <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#121214] to-transparent" />
-                                                    </div>
-
-                                                    {/* Info */}
-                                                    <div className="p-3 -mt-2 relative">
-                                                       <h5 className="font-manrope font-extrabold uppercase text-sm text-white truncate leading-none" title={p.full_name}>
-                                                          {p.nickname || p.full_name}
-                                                       </h5>
-                                                       <p className="text-[9px] font-bold uppercase text-zinc-500 mt-1.5 truncate">
-                                                          {p.position || 'Atleta'}
-                                                          {age && ` · ${age} anos`}
-                                                       </p>
-
-                                                       {/* Actions */}
-                                                       <div className="flex gap-1.5 mt-3">
-                                                          <button
-                                                             onClick={() => {
-                                                                setEditingPlayer(p);
-                                                                setEditPlayerForm({
-                                                                   nickname: p.nickname || '',
-                                                                   position: p.position || '',
-                                                                   number: p.number || '',
-                                                                   gender: p.gender || '',
-                                                                });
-                                                             }}
-                                                             className="flex-1 py-2 rounded-lg bg-white/5 text-[8px] font-black uppercase text-zinc-400 hover:bg-saas-primary hover:text-black transition-all flex items-center justify-center gap-1.5"
-                                                          >
-                                                             <Edit3 size={10} /> Editar
-                                                          </button>
-                                                       </div>
-                                                    </div>
-                                                 </div>
-                                              );
-                                           })}
-                                        </div>
-                                     </div>
-                                  ))}
-                               </div>
-                            ))}
-                         </div>
-                      )}
-
-                      {/* Edit Player Modal */}
-                      {editingPlayer && (
-                         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setEditingPlayer(null)}>
-                            <motion.div
-                               initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                               animate={{ opacity: 1, scale: 1, y: 0 }}
-                               className="bg-[#0a0a0b] border border-white/10 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl"
-                               onClick={e => e.stopPropagation()}
-                            >
-                               {/* Modal Header */}
-                               <div className="flex items-center gap-4 p-6 border-b border-white/5">
-                                  <div className="w-14 h-14 rounded-2xl overflow-hidden bg-zinc-800 border border-white/10 shrink-0">
-                                     {editingPlayer.photo_url ? (
-                                        <img src={editingPlayer.photo_url} className="w-full h-full object-cover" />
-                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center text-zinc-600"><User size={24} /></div>
-                                     )}
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                     <h4 className="font-manrope font-extrabold text-white uppercase text-base truncate">{editingPlayer.full_name}</h4>
-                                     <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
-                                        {editingPlayer.modality_name || 'Sem modalidade'} · {editingPlayer.category_name || 'Sem categoria'}
-                                     </p>
-                                  </div>
-                                  <button onClick={() => setEditingPlayer(null)} className="p-2 rounded-xl bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 transition-all">
-                                     <X size={18} />
-                                  </button>
-                               </div>
-
-                               {/* Modal Body */}
-                               <div className="p-6 space-y-5">
-                                  <p className="text-[10px] font-black uppercase tracking-widest text-saas-primary italic">Dados exibidos no Site Oficial</p>
-
-                                  <div className="space-y-4">
-                                     {/* Nickname */}
-                                     <div>
-                                        <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Nome do Jogador (apelido)</label>
-                                        <input
-                                           type="text"
-                                           value={editPlayerForm.nickname || ''}
-                                           onChange={e => setEditPlayerForm({ ...editPlayerForm, nickname: e.target.value })}
-                                           className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
-                                           placeholder="Ex: Neymar Jr"
-                                        />
-                                     </div>
-
-                                     {/* Position */}
-                                     <div>
-                                        <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Posição</label>
-                                        <input
-                                           type="text"
-                                           value={editPlayerForm.position || ''}
-                                           onChange={e => setEditPlayerForm({ ...editPlayerForm, position: e.target.value })}
-                                           className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
-                                           placeholder="Ex: Atacante"
-                                        />
-                                     </div>
-
-                                     <div className="grid grid-cols-2 gap-4">
-                                        {/* Number */}
-                                        <div>
-                                           <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Nº Camisa</label>
-                                           <input
-                                              type="number"
-                                              value={editPlayerForm.number || ''}
-                                              onChange={e => setEditPlayerForm({ ...editPlayerForm, number: e.target.value })}
-                                              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors"
-                                              placeholder="10"
-                                           />
-                                        </div>
-
-                                        {/* Gender */}
-                                        <div>
-                                           <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 block">Gênero</label>
-                                           <select
-                                              value={editPlayerForm.gender || ''}
-                                              onChange={e => setEditPlayerForm({ ...editPlayerForm, gender: e.target.value })}
-                                              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-saas-primary/50 transition-colors cursor-pointer appearance-none"
-                                           >
-                                              <option value="" className="bg-zinc-900">Selecionar</option>
-                                              <option value="Masculino" className="bg-zinc-900">Masculino</option>
-                                              <option value="Feminino" className="bg-zinc-900">Feminino</option>
-                                           </select>
-                                        </div>
-                                     </div>
-                                  </div>
-                               </div>
-
-                               {/* Modal Footer */}
-                               <div className="flex gap-3 p-6 border-t border-white/5">
-                                  <button
-                                     onClick={() => setEditingPlayer(null)}
-                                     className="flex-1 py-3 rounded-xl bg-white/5 text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:bg-white/10 transition-all"
-                                  >
-                                     Cancelar
-                                  </button>
-                                  <button
-                                     onClick={handleSavePlayer}
-                                     disabled={savingPlayer}
-                                     className="flex-1 py-3 rounded-xl bg-[#a3e635] text-black text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:brightness-110 transition-all disabled:opacity-50"
-                                  >
-                                     {savingPlayer ? <RefreshCw size={14} className="animate-spin" /> : <Save size={14} />}
-                                     {savingPlayer ? 'Salvando...' : 'Salvar'}
-                                  </button>
-                               </div>
-                            </motion.div>
-                         </div>
-                      )}
-                   </div>
-                  );
-                })()}
-
-
-               {activeTab === 'trophies' && (
-                  <div className="space-y-6">
-                     <div className="flex justify-between items-center">
-                        <div>
-                           <h3 className="text-xl font-manrope font-extrabold uppercase tracking-tight text-white">Galeria de Títulos</h3>
-                           <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 italic mt-1">A história vitoriosa do clube</p>
-                        </div>
-                        <button className="bg-[#a3e635] text-black px-6 py-4 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-3 transition-all shadow-lg shadow-saas-primary/20 hover:scale-105">
-                           <PlusCircle size={16} strokeWidth={3} /> Novo Título
-                        </button>
-                     </div>
-                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pb-20">
-                        {trophies.map(t => (
-                           <div key={t.id} className="bg-[#121214] border border-white/5 rounded-[32px] p-6 group hover:border-saas-primary/30 transition-all text-center">
-                              <div className="w-20 h-20 bg-saas-primary/10 rounded-full flex items-center justify-center text-saas-primary mx-auto mb-6 border border-saas-primary/10 group-hover:scale-110 transition-transform">
-                                 <Trophy size={32} strokeWidth={2.5} />
-                              </div>
-                              <span className="text-[10px] font-black text-saas-primary italic uppercase tracking-widest">{t.year}</span>
-                              <h4 className="font-manrope font-extrabold uppercase text-xl text-white mt-2 leading-tight">{t.title}</h4>
-                              <p className="text-[9px] font-black uppercase text-zinc-500 mt-4 italic leading-relaxed">{t.description}</p>
-                              <div className="flex gap-2 mt-8">
-                                 <button className="flex-1 py-3 rounded-xl bg-white/5 text-[9px] font-black uppercase text-zinc-400 hover:bg-saas-primary hover:text-black transition-all">Editar</button>
-                                 <button className="p-3 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all"><Trash2 size={16} /></button>
-                              </div>
-                           </div>
-                        ))}
-                     </div>
-                  </div>
-               )}
-
-                {activeTab === 'campaign' && (
-                   <div className="space-y-4">
-                      <div className="flex justify-between items-center bg-[#121214] p-4 rounded-2xl border border-white/5">
-                         <div>
-                            <h3 className="text-[20px] font-manrope font-extrabold uppercase tracking-tight text-white leading-none">Campanhas</h3>
-                            <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-500 italic mt-1">Marketing e Conversão</p>
-                         </div>
-                         <button 
-                            onClick={() => {
-                               setEditingCampaign(null);
-                               setCampaignForm({
-                                  title: '',
-                                  headline: '',
-                                  subtitle: '',
-                                  buttonText: 'Saiba Mais',
-                                  image_url: '',
-                                  destinationUrl: '',
-                                  type: 'card',
-                                  active: true,
-                                  mkt_copy: '',
-                                  social_instagram: '',
-                                  responsible_whatsapp: '',
-                                  social_facebook: ''
-                               });
-                               setIsAddingCampaign(true);
-                            }} 
-                            className="bg-[#a3e635] text-black px-4 py-2.5 rounded-xl font-black text-[9px] uppercase tracking-[0.2em] flex items-center gap-2 transition-all shadow-lg shadow-saas-primary/20 hover:scale-105 active:scale-95"
-                         >
-                            <PlusCircle size={14} strokeWidth={3} /> Nova Campanha
-                         </button>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
-                         {campaigns.length === 0 ? (
-                            <div className="col-span-full bg-[#121214] border border-white/5 rounded-3xl p-12 flex flex-col items-center justify-center text-center">
-                               <Target size={48} className="text-zinc-700 mb-4" />
-                               <h4 className="text-sm font-black text-white uppercase italic tracking-tight">Sem campanhas ativas</h4>
-                               <p className="text-[10px] text-zinc-500 uppercase mt-2">Crie sua primeira campanha para começar a converter</p>
-                            </div>
-                         ) : (
-                            campaigns.map(c => (
-                               <div key={c.id} className="group bg-[#121214] border border-white/5 rounded-[32px] overflow-hidden hover:border-saas-primary/50 transition-all flex flex-col shadow-2xl relative">
-                                  <div className="relative aspect-[16/9] w-full overflow-hidden">
-                                     <img src={c.image_url || c.image || 'https://via.placeholder.com/1200x800'} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                                     <div className="absolute top-4 left-4">
-                                        <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest shadow-xl ${c.type?.toLowerCase() === 'popup' ? 'bg-purple-600 text-white' : 'bg-blue-600 text-white'}`}>
-                                           {c.type}
-                                        </span>
-                                     </div>
-                                     <div className="absolute top-4 right-4">
-                                        <div className={`w-3 h-3 rounded-full border-2 border-[#121214] shadow-lg ${c.active ? 'bg-saas-primary animate-pulse' : 'bg-zinc-700'}`}></div>
-                                     </div>
-                                     <div className="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent opacity-60"></div>
-                                  </div>
-                                  
-                                  <div className="p-6 flex-1 flex flex-col">
-                                     <div className="flex items-center gap-2 mb-2">
-                                        <span className="text-[10px] font-black text-saas-primary uppercase italic tracking-[0.2em]">{c.title?.split(' ')[0] || 'CAMPANHA'}</span>
-                                        <span className="text-white/10 text-[10px]">|</span>
-                                        <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-1">
-                                           <Calendar size={10} /> {new Date(c.createdAt || c.created_at).toLocaleDateString('pt-BR')}
-                                        </span>
-                                     </div>
-                                     
-                                     <h4 className="text-lg font-extrabold text-white uppercase italic tracking-tight line-clamp-2 leading-[1.1] mb-4 group-hover:text-saas-primary transition-colors">{c.headline}</h4>
-                                     
-                                     <div className="mt-auto pt-6 border-t border-white/5 flex items-center justify-between">
-                                        <div className="flex flex-col">
-                                           <span className="text-[10px] font-black text-white">{c.clicks || 0}</span>
-                                           <span className="text-[8px] font-bold text-zinc-500 uppercase tracking-widest">Interações</span>
-                                        </div>
-                                        
-                                        <div className="flex items-center gap-2">
-                                           <button 
-                                              onClick={() => {
-                                                 setEditingCampaign(c);
-                                                 setCampaignForm({
-                                                    title: c.title,
-                                                    headline: c.headline,
-                                                    subtitle: c.subtitle,
-                                                    buttonText: c.buttonText,
-                                                    image_url: c.image_url || c.image,
-                                                    destinationUrl: c.destinationUrl,
-                                                    type: c.type,
-                                                    active: c.active,
-                                                    mkt_copy: c.mkt_copy || '',
-                                                    social_instagram: c.social_instagram || '',
-                                                    responsible_whatsapp: c.responsible_whatsapp || '',
-                                                    social_facebook: c.social_facebook || ''
-                                                 });
-                                                 setIsAddingCampaign(true);
-                                              }}
-                                              className="p-3 rounded-xl bg-white/5 text-zinc-400 hover:text-saas-primary hover:bg-saas-primary/10 transition-all border border-white/5"
-                                           >
-                                              <Edit3 size={16} />
-                                           </button>
-                                           <button 
-                                              onClick={() => handleDeleteCampaign(c.id)}
-                                              className="p-3 rounded-xl bg-white/5 text-zinc-400 hover:text-red-500 hover:bg-red-500/10 transition-all border border-white/5"
-                                           >
-                                              <Trash2 size={16} />
-                                           </button>
-                                        </div>
-                                     </div>
-                                  </div>
-                               </div>
-                            ))
-                         )}
-                      </div>
-
-                   </div>
-                )}
-
-               {activeTab === 'conversion' && (
-                  <div className="space-y-8 pb-12">
-                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-                        <div>
-                           <h1 className="text-lg font-manrope font-extrabold uppercase tracking-tight text-white">Análise de Conversão</h1>
-                           <p className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500 mt-1">Entenda o comportamento e a jornada do usuário</p>
-                        </div>
-                     </div>
-
                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        {/* Páginas Mais Visitadas */}
-                        <div className="bg-[#121214] border border-white/5 rounded-[32px] overflow-hidden flex flex-col">
-                           <div className="p-6 border-b border-white/5 flex items-center justify-between">
-                              <h3 className="text-sm font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-2">
-                                 <FileText size={16} className="text-saas-primary" /> Páginas Mais Visitadas
-                              </h3>
-                           </div>
-                           <div className="flex-1 overflow-x-auto">
-                              <table className="w-full text-left">
-                                 <thead>
-                                    <tr className="bg-white/2 border-b border-white/5">
-                                       <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-zinc-500">URL / Página</th>
-                                       <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-zinc-500 text-center">Acessos</th>
-                                       <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-zinc-500 text-center">Tempo Médio</th>
-                                    </tr>
-                                 </thead>
-                                 <tbody className="divide-y divide-white/5">
-                                    {pageStats.slice(0, 8).map((page, i) => (
-                                       <tr key={i} className="hover:bg-white/2 transition-colors">
-                                          <td className="px-6 py-4">
-                                             <span className="text-[10px] font-bold text-white uppercase tracking-tight">{page.url}</span>
-                                          </td>
-                                          <td className="px-6 py-4 text-center">
-                                             <span className="text-[10px] font-black text-saas-primary">{page.visits}</span>
-                                          </td>
-                                          <td className="px-6 py-4 text-center">
-                                             <span className="text-[10px] font-black text-zinc-400">
-                                                {Math.round(page.totalDuration / page.visits)}s
-                                             </span>
-                                          </td>
-                                       </tr>
-                                    ))}
-                                 </tbody>
-                              </table>
-                           </div>
-                        </div>
-
-                        {/* Mapa de Cliques (Simulação Visual) */}
-                        <div className="bg-[#121214] border border-white/5 rounded-[32px] p-6 flex flex-col">
-                           <div className="flex items-center justify-between mb-6">
-                              <h3 className="text-sm font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-2">
-                                 <MousePointer2 size={16} className="text-saas-primary" /> Intensidade de Cliques
-                              </h3>
-                              <span className="text-[9px] font-black uppercase text-zinc-500 italic">Mapa de Calor</span>
+                        {/* Seção 1: HEAD da Home */}
+                        <div className="bg-[#121214] border border-white/5 rounded-[32px] p-8 space-y-6">
+                           <div className="border-b border-white/5 pb-4">
+                              <h4 className="text-sm font-black uppercase text-white tracking-widest">
+                                 1. Capa & Frase da HEAD
+                              </h4>
                            </div>
                            
-                           <div className="flex-1 bg-black/40 rounded-2xl border border-white/5 relative overflow-hidden flex items-center justify-center group">
-                              {/* Visualização abstrata do heatmap */}
-                              <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_50%_50%,rgba(163,230,53,0.3)_0%,transparent_70%)]"></div>
-                              
-                              {clickMapData.slice(0, 100).map((click, i) => (
-                                 <div 
-                                    key={i}
-                                    className="absolute w-2 h-2 rounded-full bg-saas-primary/30 blur-[2px]"
-                                    style={{ 
-                                       left: `${click.x}%`, 
-                                       top: `${click.y}%`,
-                                       transform: 'translate(-50%, -50%)'
-                                    }}
-                                 />
-                              ))}
+                           <div className="space-y-4">
+                              <label className="text-[10px] font-black uppercase text-zinc-500 tracking-widest block">
+                                 Capa Principal (Hero Image)
+                              </label>
+                              <div className="relative group overflow-hidden rounded-2xl border-2 border-dashed border-white/10 bg-black aspect-video flex items-center justify-center">
+                                 {clubIdentity.tp_hero_image_url ? (
+                                    <img src={clubIdentity.tp_hero_image_url} alt="Capa" className="w-full h-full object-cover" />
+                                 ) : (
+                                    <div className="text-center p-6 space-y-2">
+                                       <FileImage className="mx-auto text-zinc-600" size={32} />
+                                       <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Nenhuma imagem definida</p>
+                                    </div>
+                                 )}
+                                 <label className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 cursor-pointer">
+                                    <Upload size={24} className="text-saas-primary" />
+                                    <span className="text-[10px] font-black uppercase text-white tracking-widest">Alterar Capa</span>
+                                    <input 
+                                       type="file" 
+                                       accept="image/*"
+                                       className="hidden" 
+                                       onChange={async e => {
+                                          const file = e.target.files?.[0];
+                                          if (file) {
+                                             const url = await handleFileUpload(file, 'noticias');
+                                             if (url) setClubIdentity({ ...clubIdentity, tp_hero_image_url: url });
+                                          }
+                                       }}
+                                    />
+                                 </label>
+                              </div>
+                              <input 
+                                 type="text" 
+                                 placeholder="Cole a URL direta da imagem se preferir..."
+                                 value={clubIdentity.tp_hero_image_url}
+                                 onChange={e => setClubIdentity({ ...clubIdentity, tp_hero_image_url: e.target.value })}
+                                 className="w-full bg-zinc-900/50 border border-white/5 rounded-xl p-3 text-xs text-white font-bold outline-none focus:border-saas-primary/50"
+                              />
+                           </div>
 
-                              <div className="relative z-10 text-center p-8">
-                                 <div className="w-16 h-16 bg-saas-primary/10 rounded-full flex items-center justify-center text-saas-primary mx-auto mb-4 border border-saas-primary/20">
-                                    <Activity size={32} />
+                           <div className="space-y-2">
+                              <label className="text-[10px] font-black uppercase text-zinc-500 tracking-widest block">
+                                 Frase de Efeito da HEAD (Vazio = Oculto)
+                              </label>
+                              <input 
+                                 type="text" 
+                                 placeholder="Ex: TRADIÇÃO E RAÇA DESDE 1945"
+                                 value={clubIdentity.tp_hero_phrase}
+                                 onChange={e => setClubIdentity({ ...clubIdentity, tp_hero_phrase: e.target.value })}
+                                 className="w-full bg-zinc-900/50 border border-white/5 rounded-xl p-4 text-xs text-white font-extrabold outline-none focus:border-saas-primary/50 tracking-wide"
+                              />
+                           </div>
+                        </div>
+
+                        {/* Seção 2: Instagram Integrado */}
+                        <div className="bg-[#121214] border border-white/5 rounded-[32px] p-8 space-y-6">
+                           <div className="border-b border-white/5 pb-4">
+                              <h4 className="text-sm font-black uppercase text-white tracking-widest">
+                                 2. Instagram do Clube (Feed)
+                              </h4>
+                           </div>
+
+                           <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                 <label className="text-[10px] font-black uppercase text-zinc-500 tracking-widest block">
+                                    Perfil (@)
+                                 </label>
+                                 <input 
+                                    type="text" 
+                                    placeholder="Ex: @gameleirafc"
+                                    value={clubIdentity.tp_instagram_handle}
+                                    onChange={e => setClubIdentity({ ...clubIdentity, tp_instagram_handle: e.target.value })}
+                                    className="w-full bg-zinc-900/50 border border-white/5 rounded-xl p-3 text-xs text-white font-bold outline-none focus:border-saas-primary/50"
+                                 />
+                              </div>
+                              <div className="space-y-2">
+                                 <label className="text-[10px] font-black uppercase text-zinc-500 tracking-widest block">
+                                    Link do Botão
+                                 </label>
+                                 <input 
+                                    type="text" 
+                                    placeholder="https://instagram.com/..."
+                                    value={clubIdentity.tp_instagram_link}
+                                    onChange={e => setClubIdentity({ ...clubIdentity, tp_instagram_link: e.target.value })}
+                                    className="w-full bg-zinc-900/50 border border-white/5 rounded-xl p-3 text-xs text-white font-bold outline-none focus:border-saas-primary/50"
+                                 />
+                              </div>
+                           </div>
+
+                           <div className="space-y-3">
+                              <label className="text-[10px] font-black uppercase text-zinc-500 tracking-widest block">
+                                 Grid de 06 Fotos em Destaque
+                              </label>
+                              <div className="grid grid-cols-3 gap-3">
+                                 {[0, 1, 2, 3, 4, 5].map(index => {
+                                    const photoUrl = clubIdentity.tp_instagram_photos?.[index];
+                                    return (
+                                       <div key={index} className="relative group aspect-square rounded-xl overflow-hidden bg-zinc-900 border border-white/5 flex items-center justify-center">
+                                          {photoUrl ? (
+                                             <img src={photoUrl} alt={`Foto ${index+1}`} className="w-full h-full object-cover" />
+                                          ) : (
+                                             <Plus size={20} className="text-zinc-700 group-hover:text-saas-primary transition-colors" />
+                                          )}
+                                          <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center cursor-pointer">
+                                             <Upload size={14} className="text-saas-primary mb-1" />
+                                             <span className="text-[8px] font-black text-white uppercase tracking-tight">Mudar</span>
+                                             <input 
+                                                type="file" 
+                                                accept="image/*"
+                                                className="hidden"
+                                                onChange={async e => {
+                                                   const file = e.target.files?.[0];
+                                                   if (file) {
+                                                      const url = await handleFileUpload(file, 'noticias');
+                                                      if (url) {
+                                                         const current = [...(clubIdentity.tp_instagram_photos || [])];
+                                                         current[index] = url;
+                                                         setClubIdentity({ ...clubIdentity, tp_instagram_photos: current });
+                                                      }
+                                                   }
+                                                }}
+                                             />
+                                          </label>
+                                       </div>
+                                    );
+                                 })}
+                              </div>
+                              <p className="text-[9px] text-zinc-600 italic font-bold">Dica: clique em cada quadrado para fazer o upload da foto do feed.</p>
+                           </div>
+                        </div>
+
+                        {/* Seção 3: Endereço & Contatos */}
+                        <div className="bg-[#121214] border border-white/5 rounded-[32px] p-8 space-y-6">
+                           <div className="border-b border-white/5 pb-4">
+                              <h4 className="text-sm font-black uppercase text-white tracking-widest">
+                                 3. Endereço & Contato Fixo
+                              </h4>
+                           </div>
+                           
+                           <div className="space-y-4">
+                              <div className="space-y-2">
+                                 <label className="text-[10px] font-black uppercase text-zinc-500 tracking-widest block">Endereço Completo</label>
+                                 <input 
+                                    type="text" 
+                                    placeholder="Rua, Número, Bairro, Cidade - UF"
+                                    value={clubIdentity.tp_address}
+                                    onChange={e => setClubIdentity({ ...clubIdentity, tp_address: e.target.value })}
+                                    className="w-full bg-zinc-900/50 border border-white/5 rounded-xl p-3 text-xs text-white font-bold outline-none focus:border-saas-primary/50"
+                                 />
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-4">
+                                 <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase text-zinc-500 tracking-widest block">Contato (Fixo)</label>
+                                    <input 
+                                       type="text" 
+                                       placeholder="(00) 0000-0000"
+                                       value={clubIdentity.tp_contact_phone}
+                                       onChange={e => setClubIdentity({ ...clubIdentity, tp_contact_phone: e.target.value })}
+                                       className="w-full bg-zinc-900/50 border border-white/5 rounded-xl p-3 text-xs text-white font-bold outline-none focus:border-saas-primary/50"
+                                    />
                                  </div>
-                                 <p className="text-[10px] font-black uppercase text-white tracking-widest mb-1">{clickMapData.length} Interações</p>
-                                 <p className="text-[9px] text-zinc-500 uppercase font-medium">Pontos de maior retenção identificados</p>
+                                 <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase text-zinc-500 tracking-widest block">WhatsApp Atendimento</label>
+                                    <input 
+                                       type="text" 
+                                       placeholder="(00) 90000-0000"
+                                       value={clubIdentity.tp_whatsapp}
+                                       onChange={e => setClubIdentity({ ...clubIdentity, tp_whatsapp: e.target.value })}
+                                       className="w-full bg-zinc-900/50 border border-white/5 rounded-xl p-3 text-xs text-white font-bold outline-none focus:border-saas-primary/50"
+                                    />
+                                 </div>
+                              </div>
+
+                              <div className="space-y-2">
+                                 <label className="text-[10px] font-black uppercase text-zinc-500 tracking-widest block">E-mail Oficial</label>
+                                 <input 
+                                    type="email" 
+                                    placeholder="contato@clube.com"
+                                    value={clubIdentity.tp_email}
+                                    onChange={e => setClubIdentity({ ...clubIdentity, tp_email: e.target.value })}
+                                    className="w-full bg-zinc-900/50 border border-white/5 rounded-xl p-3 text-xs text-white font-bold outline-none focus:border-saas-primary/50"
+                                 />
+                              </div>
+                           </div>
+                        </div>
+
+                        {/* Seção 4: Redes Sociais */}
+                        <div className="bg-[#121214] border border-white/5 rounded-[32px] p-8 space-y-6">
+                           <div className="border-b border-white/5 pb-4">
+                              <h4 className="text-sm font-black uppercase text-white tracking-widest">
+                                 4. Redes Sociais (URLs)
+                              </h4>
+                           </div>
+
+                           <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-1">
+                                 <label className="text-[9px] font-black uppercase text-zinc-500 tracking-widest block">Instagram</label>
+                                 <input 
+                                    type="text" placeholder="URL do Instagram" value={clubIdentity.tp_instagram}
+                                    onChange={e => setClubIdentity({ ...clubIdentity, tp_instagram: e.target.value })}
+                                    className="w-full bg-zinc-900/50 border border-white/5 rounded-xl p-2.5 text-xs text-white font-bold outline-none focus:border-saas-primary/50"
+                                 />
+                              </div>
+                              <div className="space-y-1">
+                                 <label className="text-[9px] font-black uppercase text-zinc-500 tracking-widest block">Facebook</label>
+                                 <input 
+                                    type="text" placeholder="URL do Facebook" value={clubIdentity.tp_facebook}
+                                    onChange={e => setClubIdentity({ ...clubIdentity, tp_facebook: e.target.value })}
+                                    className="w-full bg-zinc-900/50 border border-white/5 rounded-xl p-2.5 text-xs text-white font-bold outline-none focus:border-saas-primary/50"
+                                 />
+                              </div>
+                              <div className="space-y-1">
+                                 <label className="text-[9px] font-black uppercase text-zinc-500 tracking-widest block">X (Twitter)</label>
+                                 <input 
+                                    type="text" placeholder="URL do X" value={clubIdentity.tp_twitter_x}
+                                    onChange={e => setClubIdentity({ ...clubIdentity, tp_twitter_x: e.target.value })}
+                                    className="w-full bg-zinc-900/50 border border-white/5 rounded-xl p-2.5 text-xs text-white font-bold outline-none focus:border-saas-primary/50"
+                                 />
+                              </div>
+                              <div className="space-y-1">
+                                 <label className="text-[9px] font-black uppercase text-zinc-500 tracking-widest block">LinkedIn</label>
+                                 <input 
+                                    type="text" placeholder="URL do LinkedIn" value={clubIdentity.tp_linkedin}
+                                    onChange={e => setClubIdentity({ ...clubIdentity, tp_linkedin: e.target.value })}
+                                    className="w-full bg-zinc-900/50 border border-white/5 rounded-xl p-2.5 text-xs text-white font-bold outline-none focus:border-saas-primary/50"
+                                 />
+                              </div>
+                              <div className="space-y-1">
+                                 <label className="text-[9px] font-black uppercase text-zinc-500 tracking-widest block">YouTube</label>
+                                 <input 
+                                    type="text" placeholder="URL do Canal" value={clubIdentity.tp_youtube}
+                                    onChange={e => setClubIdentity({ ...clubIdentity, tp_youtube: e.target.value })}
+                                    className="w-full bg-zinc-900/50 border border-white/5 rounded-xl p-2.5 text-xs text-white font-bold outline-none focus:border-saas-primary/50"
+                                 />
+                              </div>
+                              <div className="space-y-1">
+                                 <label className="text-[9px] font-black uppercase text-zinc-500 tracking-widest block">Canal no WhatsApp</label>
+                                 <input 
+                                    type="text" placeholder="URL do Canal WhatsApp" value={clubIdentity.tp_whatsapp_channel}
+                                    onChange={e => setClubIdentity({ ...clubIdentity, tp_whatsapp_channel: e.target.value })}
+                                    className="w-full bg-zinc-900/50 border border-white/5 rounded-xl p-2.5 text-xs text-white font-bold outline-none focus:border-saas-primary/50"
+                                 />
                               </div>
                            </div>
                         </div>
@@ -1883,74 +1300,137 @@ export default function Admin() {
                )}
 
                {activeTab === 'leads' && (
-                  <div className="space-y-6">
-                     <div className="flex justify-between items-center">
+                  <div className="space-y-8 animate-in fade-in duration-300">
+                     <div className="flex justify-between items-center bg-[#121214] border border-white/5 p-8 rounded-[32px] shadow-xl">
                         <div>
-                           <h3 className="text-xl font-manrope font-extrabold uppercase tracking-tight text-white">Cadastros e Leads</h3>
-                           <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 italic mt-1">Atletas e Sócios captados pelo portal</p>
+                           <h3 className="text-2xl font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-3">
+                              <Users className="text-saas-primary" size={28} />
+                              Gestão de Torcedores & Leads
+                           </h3>
+                           <p className="text-xs font-black uppercase tracking-widest text-zinc-500 italic mt-1">
+                              Base centralizada de cadastros, sócios-torcedores e prospecção
+                           </p>
                         </div>
-                        <button className="bg-white/5 text-white px-6 py-4 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-3 transition-all border border-white/5 hover:bg-white/10">
-                           <Download size={16} /> Exportar CSV
-                        </button>
+                        <div className="flex items-center gap-3">
+                           <button 
+                              onClick={() => showNotification('Exportando base de leads para Excel...', 'info')}
+                              className="bg-zinc-800 text-white border border-white/5 px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] flex items-center gap-2 hover:bg-zinc-700 transition-all shadow-xl"
+                           >
+                              <Download size={16} /> Exportar CSV
+                           </button>
+                        </div>
                      </div>
 
-                     <div className="bg-[#121214] border border-white/5 rounded-[40px] overflow-hidden shadow-2xl">
-                        <div className="overflow-x-auto">
-                           <table className="w-full text-left">
+                     {/* Premium Demographics Dashboard */}
+                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div className="bg-[#121214] border border-white/5 rounded-3xl p-6 shadow-xl space-y-4">
+                           <span className="text-[9px] font-black uppercase tracking-widest text-zinc-500 block">Total Geral Capturado</span>
+                           <div className="flex items-baseline gap-3">
+                              <h2 className="text-4xl font-manrope font-extrabold text-white tracking-tight">
+                                 {registrations.length + socioLeads.length}
+                              </h2>
+                              <span className="text-xs font-bold text-saas-primary uppercase tracking-widest">+ Ativos</span>
+                           </div>
+                           <p className="text-[11px] text-zinc-400 font-medium">Torcedores cadastrados através das páginas de alta conversão do clube.</p>
+                        </div>
+
+                        <div className="bg-[#121214] border border-white/5 rounded-3xl p-6 shadow-xl space-y-4">
+                           <span className="text-[9px] font-black uppercase tracking-widest text-zinc-500 block">Distribuição por Gênero</span>
+                           <div className="space-y-3">
+                              {demographics?.gender?.length > 0 ? demographics.gender.map((item: any, i: number) => (
+                                 <div key={i} className="space-y-1">
+                                    <div className="flex justify-between text-xs font-extrabold">
+                                       <span className="text-white uppercase">{item.name}</span>
+                                       <span className="text-saas-primary">{item.value}</span>
+                                    </div>
+                                    <div className="w-full bg-zinc-900 h-2 rounded-full overflow-hidden border border-white/5">
+                                       <div className="bg-saas-primary h-full rounded-full" style={{ width: `${Math.min(100, (item.value / (registrations.length + socioLeads.length || 1)) * 100)}%` }}></div>
+                                    </div>
+                                 </div>
+                              )) : (
+                                 <p className="text-[11px] text-zinc-600 font-bold italic">Sem dados suficientes para segmentação.</p>
+                              )}
+                           </div>
+                        </div>
+
+                        <div className="bg-[#121214] border border-white/5 rounded-3xl p-6 shadow-xl space-y-4">
+                           <span className="text-[9px] font-black uppercase tracking-widest text-zinc-500 block">Faixa Etária Principal</span>
+                           <div className="space-y-3">
+                              {demographics?.age?.length > 0 ? demographics.age.map((item: any, i: number) => (
+                                 <div key={i} className="space-y-1">
+                                    <div className="flex justify-between text-xs font-extrabold">
+                                       <span className="text-white uppercase">{item.name} Anos</span>
+                                       <span className="text-saas-primary">{item.value}</span>
+                                    </div>
+                                    <div className="w-full bg-zinc-900 h-2 rounded-full overflow-hidden border border-white/5">
+                                       <div className="bg-saas-primary h-full rounded-full" style={{ width: `${Math.min(100, (item.value / (registrations.length + socioLeads.length || 1)) * 100)}%` }}></div>
+                                    </div>
+                                 </div>
+                              )) : (
+                                 <p className="text-[11px] text-zinc-600 font-bold italic">Sem dados suficientes para segmentação.</p>
+                              )}
+                           </div>
+                        </div>
+                     </div>
+
+                     {/* Leads Table */}
+                     <div className="bg-[#121214] border border-white/5 rounded-3xl overflow-hidden shadow-2xl">
+                        <div className="p-6 border-b border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                           <span className="text-xs font-extrabold text-white uppercase tracking-wider">Cadastros e Inscrições em Tempo Real</span>
+                        </div>
+                        <div className="overflow-x-auto custom-scrollbar">
+                           <table className="w-full text-left border-collapse">
                               <thead>
-                                 <tr className="bg-white/2 border-b border-white/5">
-                                    <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-zinc-500 italic">Nome Completo</th>
-                                    <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-zinc-500 italic">Contato</th>
-                                    <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-zinc-500 italic">Tipo</th>
-                                    <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-zinc-500 italic">Data</th>
-                                    <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-zinc-500 italic">Ações</th>
+                                 <tr className="border-b border-white/5 bg-zinc-900/40 text-[9px] font-black uppercase text-zinc-500 tracking-widest">
+                                    <th className="p-5">Torcedor</th>
+                                    <th className="p-5">Contato</th>
+                                    <th className="p-5">Origem</th>
+                                    <th className="p-5">Nascimento</th>
+                                    <th className="p-5 text-right">Ação</th>
                                  </tr>
                               </thead>
-                              <tbody className="divide-y divide-white/5">
-                                 {registrations.map(r => (
-                                    <tr key={r.id} className="hover:bg-white/2 transition-colors group">
-                                       <td className="px-8 py-6">
-                                          <div className="flex flex-col">
-                                             <span className="text-sm font-manrope font-extrabold text-white uppercase tracking-tight">{r.fullName || r.name}</span>
-                                             <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">{r.email}</span>
-                                          </div>
-                                       </td>
-                                       <td className="px-8 py-6">
-                                          <span className="text-[10px] font-black text-zinc-400 uppercase italic">{r.whatsapp || r.phone}</span>
-                                       </td>
-                                       <td className="px-8 py-6">
-                                          <span className="px-3 py-1 bg-blue-500/10 text-blue-400 text-[8px] font-black uppercase italic rounded-full border border-blue-500/10 tracking-widest">Avaliação</span>
-                                       </td>
-                                       <td className="px-8 py-6">
-                                          <span className="text-[10px] font-black text-zinc-500 uppercase italic">{new Date(r.createdAt).toLocaleDateString('pt-BR')}</span>
-                                       </td>
-                                       <td className="px-8 py-6">
-                                          <button className="p-3 rounded-xl bg-zinc-800 text-zinc-500 hover:text-saas-primary hover:bg-saas-primary/10 transition-all"><Eye size={16} /></button>
+                              <tbody className="divide-y divide-white/5 text-xs font-bold text-zinc-300">
+                                 {[...registrations, ...socioLeads].length === 0 ? (
+                                    <tr>
+                                       <td colSpan={5} className="p-12 text-center text-zinc-600 font-bold">
+                                          Nenhum torcedor ou lead cadastrado até o momento.
                                        </td>
                                     </tr>
-                                 ))}
-                                 {socioLeads.map(s => (
-                                    <tr key={s.id} className="hover:bg-white/2 transition-colors group">
-                                       <td className="px-8 py-6">
-                                          <div className="flex flex-col">
-                                             <span className="text-sm font-manrope font-extrabold text-white uppercase tracking-tight">{s.name}</span>
-                                             <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">{s.email}</span>
-                                          </div>
-                                       </td>
-                                       <td className="px-8 py-6">
-                                          <span className="text-[10px] font-black text-zinc-400 uppercase italic">{s.phone}</span>
-                                       </td>
-                                       <td className="px-8 py-6">
-                                          <span className="px-3 py-1 bg-saas-primary/10 text-saas-primary text-[8px] font-black uppercase italic rounded-full border border-saas-primary/10 tracking-widest">Sócio</span>
-                                       </td>
-                                       <td className="px-8 py-6">
-                                          <span className="text-[10px] font-black text-zinc-500 uppercase italic">{new Date(s.createdAt).toLocaleDateString('pt-BR')}</span>
-                                       </td>
-                                       <td className="px-8 py-6">
-                                          <button className="p-3 rounded-xl bg-zinc-800 text-zinc-500 hover:text-saas-primary hover:bg-saas-primary/10 transition-all"><Eye size={16} /></button>
-                                       </td>
-                                    </tr>
-                                 ))}
+                                 ) : (
+                                    [...registrations, ...socioLeads].map((lead: any, index: number) => (
+                                       <tr key={index} className="hover:bg-white/2 transition-colors">
+                                          <td className="p-5">
+                                             <div className="flex flex-col">
+                                                <span className="text-white font-extrabold uppercase">{lead.name || lead.full_name || 'Anônimo'}</span>
+                                                <span className="text-[10px] text-zinc-500 font-normal">{lead.email || 'Sem e-mail'}</span>
+                                             </div>
+                                          </td>
+                                          <td className="p-5">
+                                             <span className="text-saas-primary tracking-wide">{lead.phone || lead.whatsapp || lead.contact_phone || 'Não informado'}</span>
+                                          </td>
+                                          <td className="p-5">
+                                             <span className="px-2.5 py-1 rounded-full bg-zinc-800 text-[8px] font-black uppercase text-zinc-400 border border-white/5">
+                                                {lead.plan_name ? `Sócio: ${lead.plan_name}` : 'Página Oficial'}
+                                             </span>
+                                          </td>
+                                          <td className="p-5 text-zinc-400 font-normal">
+                                             {lead.birth_date ? new Date(lead.birth_date).toLocaleDateString('pt-BR') : 'N/A'}
+                                          </td>
+                                          <td className="p-5 text-right">
+                                             {(lead.phone || lead.whatsapp) && (
+                                                <a 
+                                                   href={`https://wa.me/${(lead.phone || lead.whatsapp).replace(/\D/g, '')}`} 
+                                                   target="_blank" 
+                                                   rel="noopener noreferrer"
+                                                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 text-[10px] font-black uppercase tracking-wider transition-all"
+                                                >
+                                                   <MessageCircle size={12} /> WhatsApp
+                                                </a>
+                                             )}
+                                          </td>
+                                       </tr>
+                                    ))
+                                 )}
                               </tbody>
                            </table>
                         </div>
@@ -1958,425 +1438,835 @@ export default function Admin() {
                   </div>
                )}
 
-               {activeTab === 'board' && (
-                  <div className="space-y-6">
-                     <div className="flex justify-between items-center">
+               {activeTab === 'campaign' && (
+                  <div className="space-y-8 animate-in fade-in duration-300">
+                     <div className="flex justify-between items-center bg-[#121214] border border-white/5 p-8 rounded-[32px] shadow-xl">
                         <div>
-                           <h3 className="text-xl font-manrope font-extrabold uppercase tracking-tight text-white">Corpo Diretivo</h3>
-                           <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 italic mt-1">Gestão da liderança do clube</p>
+                           <h3 className="text-2xl font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-3">
+                              <FileImage className="text-saas-primary" size={28} />
+                              Campanhas de Marketing
+                           </h3>
+                           <p className="text-xs font-black uppercase tracking-widest text-zinc-500 italic mt-1">
+                              Gerencie popups, banners e chamadas de alta conversão no portal
+                           </p>
                         </div>
-                        <button className="bg-[#a3e635] text-black px-6 py-4 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-3 transition-all shadow-lg shadow-saas-primary/20 hover:scale-105">
-                           <PlusCircle size={16} strokeWidth={3} /> Novo Diretor
+                        <button 
+                           onClick={() => { setEditingCampaign(null); setIsAddingCampaign(true); }}
+                           className="bg-[#a3e635] text-black px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] flex items-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-xl shadow-saas-primary/20"
+                        >
+                           <PlusCircle size={16} strokeWidth={3} /> Criar Campanha
                         </button>
                      </div>
-                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6 pb-20">
-                        {boardMembers.map(b => (
-                           <div key={b.id} className="bg-[#121214] border border-white/5 rounded-[32px] p-8 group hover:border-saas-primary/30 transition-all text-center">
-                              <div className="w-24 h-24 bg-zinc-800 rounded-3xl mx-auto mb-6 border border-white/5 shadow-inner overflow-hidden relative">
-                                 {b.imageUrl ? <img src={b.imageUrl} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-zinc-700"><User size={40} /></div>}
-                              </div>
-                              <h4 className="font-manrope font-extrabold uppercase text-xl text-white leading-tight">{b.name}</h4>
-                              <p className="text-[9px] font-black uppercase text-saas-primary mt-2 italic tracking-widest">{b.role}</p>
-                              <div className="flex gap-2 mt-8">
-                                 <button className="flex-1 py-3 rounded-xl bg-white/5 text-[9px] font-black uppercase text-zinc-400 hover:bg-saas-primary hover:text-black transition-all">Editar</button>
-                                 <button className="p-3 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all"><Trash2 size={16} /></button>
-                              </div>
-                           </div>
-                        ))}
-                     </div>
-                  </div>
-               )}
 
-               {activeTab === 'transparency' && (
-                  <div className="space-y-6">
-                     <div className="flex justify-between items-center">
-                        <div>
-                           <h3 className="text-xl font-manrope font-extrabold uppercase tracking-tight text-white">Portal da Transparência</h3>
-                           <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 italic mt-1">Documentos e relatórios oficiais</p>
+                     {campaigns.length === 0 ? (
+                        <div className="bg-[#121214] border border-white/5 rounded-3xl p-12 text-center space-y-4">
+                           <Target size={48} className="mx-auto text-zinc-700" />
+                           <p className="text-sm font-extrabold uppercase text-white tracking-wider">Nenhuma campanha cadastrada</p>
+                           <p className="text-xs text-zinc-500 font-medium">Crie campanhas para capturar mais torcedores e alavancar o plano de sócios.</p>
                         </div>
-                        <button className="bg-[#a3e635] text-black px-6 py-4 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-3 transition-all shadow-lg shadow-saas-primary/20 hover:scale-105">
-                           <Upload size={16} strokeWidth={3} /> Upload Documento
-                        </button>
-                     </div>
-                     <div className="grid grid-cols-1 gap-4 pb-20">
-                        {reports.map(r => (
-                           <div key={r.id} className="p-6 flex justify-between items-center bg-[#121214] border border-white/5 rounded-[32px] group hover:border-saas-primary/30 transition-all">
-                              <div className="flex items-center gap-6">
-                                 <div className="w-14 h-14 bg-zinc-800 rounded-2xl flex items-center justify-center text-zinc-500 group-hover:text-saas-primary transition-colors border border-white/5">
-                                    <FileText size={24} />
+                     ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                           {campaigns.map(camp => (
+                              <div key={camp.id} className="bg-[#121214] border border-white/5 rounded-3xl overflow-hidden shadow-xl flex flex-col group">
+                                 <div className="aspect-video bg-zinc-900 relative overflow-hidden">
+                                    {camp.image_url ? (
+                                       <img src={camp.image_url} alt={camp.title} className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" />
+                                    ) : (
+                                       <div className="w-full h-full flex items-center justify-center text-zinc-700"><ImageIcon size={24} /></div>
+                                    )}
+                                    <div className="absolute top-3 left-3 flex gap-2">
+                                       <span className="px-3 py-1 rounded-full bg-zinc-800/90 backdrop-blur-md text-white text-[9px] font-black uppercase tracking-wider border border-white/5">
+                                          {camp.type || 'Card'}
+                                       </span>
+                                       <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider ${camp.active ? 'bg-saas-primary text-black' : 'bg-red-500/90 text-white'}`}>
+                                          {camp.active ? 'Ativa' : 'Pausada'}
+                                       </span>
+                                    </div>
                                  </div>
-                                 <div>
-                                    <h4 className="font-manrope font-extrabold uppercase text-xl text-white leading-none">{r.title}</h4>
-                                    <div className="flex items-center gap-4 mt-3">
-                                       <span className="text-[9px] text-zinc-500 uppercase font-black italic">{r.year}</span>
-                                       <span className="text-[9px] text-zinc-600 uppercase font-black tracking-widest">{r.type}</span>
+
+                                 <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
+                                    <div className="space-y-1">
+                                       <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest block">{camp.title}</span>
+                                       <h4 className="text-sm font-extrabold uppercase text-white line-clamp-1">{camp.headline}</h4>
+                                       <p className="text-xs text-zinc-400 line-clamp-2 font-normal">{camp.subtitle || 'Sem subtítulo'}</p>
+                                    </div>
+
+                                    <div className="pt-4 border-t border-white/5 flex items-center justify-between">
+                                       <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-tight">
+                                          Cliques: <strong className="text-white font-black">{camp.clicks || 0}</strong>
+                                       </span>
+
+                                       <div className="flex items-center gap-1.5">
+                                          <button 
+                                             onClick={async () => {
+                                                const updated = !camp.active;
+                                                await supabase.from('campaigns').update({ active: updated }).eq('id', camp.id);
+                                                showNotification(`Campanha ${updated ? 'ativada' : 'pausada'} com sucesso!`, 'info');
+                                                fetchData(currentOrgId);
+                                             }}
+                                             className={`p-2 rounded-xl border transition-all ${camp.active ? 'bg-zinc-800 text-zinc-400 border-white/5 hover:text-amber-400' : 'bg-saas-primary/10 text-saas-primary border-saas-primary/20'}`}
+                                             title={camp.active ? 'Pausar Campanha' : 'Ativar Campanha'}
+                                          >
+                                             <RefreshCw size={14} />
+                                          </button>
+
+                                          <button 
+                                             onClick={() => {
+                                                setEditingCampaign(camp);
+                                                setCampaignForm({
+                                                   title: camp.title || '', headline: camp.headline || '', subtitle: camp.subtitle || '',
+                                                   buttonText: camp.buttonText || 'Saiba Mais', image_url: camp.image_url || '',
+                                                   destinationUrl: camp.destinationUrl || '', type: camp.type || 'Card',
+                                                   active: camp.active !== false, mkt_copy: camp.mkt_copy || '',
+                                                   social_instagram: camp.social_instagram || '', responsible_whatsapp: camp.responsible_whatsapp || '',
+                                                   social_facebook: camp.social_facebook || ''
+                                                });
+                                                setIsAddingCampaign(true);
+                                             }}
+                                             className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-all"
+                                          >
+                                             <Edit3 size={14} />
+                                          </button>
+
+                                          <button 
+                                             onClick={() => handleDeleteCampaign(camp.id)}
+                                             className="p-2 rounded-xl bg-red-500/5 hover:bg-red-500/10 text-zinc-500 hover:text-red-500 transition-all"
+                                          >
+                                             <Trash2 size={14} />
+                                          </button>
+                                       </div>
                                     </div>
                                  </div>
                               </div>
-                              <div className="flex items-center gap-3">
-                                 <a href={r.fileUrl} target="_blank" className="p-3 rounded-xl bg-zinc-800 text-zinc-500 hover:text-white transition-all"><Download size={18} /></a>
-                                 <button className="p-3 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all"><Trash2 size={18} /></button>
-                              </div>
-                           </div>
-                        ))}
-                     </div>
-                  </div>
-               )}
-
-               {activeTab === 'users' && (
-                  <div className="space-y-6">
-                     <div className="flex justify-between items-center">
-                        <div>
-                           <h3 className="text-xl font-manrope font-extrabold uppercase tracking-tight text-white">Usuários do Sistema</h3>
-                           <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 italic mt-1">Gestão de acessos administrativos</p>
+                           ))}
                         </div>
-                        <button className="bg-[#a3e635] text-black px-6 py-4 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-3 transition-all shadow-lg shadow-saas-primary/20 hover:scale-105">
-                           <PlusCircle size={16} strokeWidth={3} /> Convidar Usuário
-                        </button>
-                     </div>
-                     <div className="bg-[#121214] border border-white/5 rounded-[40px] overflow-hidden shadow-2xl">
-                        <div className="overflow-x-auto">
-                           <table className="w-full text-left">
-                              <thead>
-                                 <tr className="bg-white/2 border-b border-white/5">
-                                    <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-zinc-500 italic">Usuário</th>
-                                    <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-zinc-500 italic">Permissão</th>
-                                    <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-zinc-500 italic">Status</th>
-                                    <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-zinc-500 italic">Ações</th>
-                                 </tr>
-                              </thead>
-                              <tbody className="divide-y divide-white/5">
-                                 {users.map(u => (
-                                    <tr key={u.id} className="hover:bg-white/2 transition-colors">
-                                       <td className="px-8 py-6">
-                                          <div className="flex items-center gap-4">
-                                             <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-500 border border-white/5">
-                                                <User size={18} />
-                                             </div>
-                                             <div className="flex flex-col">
-                                                <span className="text-sm font-black text-white uppercase italic tracking-tight">{u.email.split('@')[0]}</span>
-                                                <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">{u.email}</span>
-                                             </div>
-                                          </div>
-                                       </td>
-                                       <td className="px-8 py-6">
-                                          <span className="text-[10px] font-black text-zinc-400 uppercase italic">Administrador</span>
-                                       </td>
-                                       <td className="px-8 py-6">
-                                          <div className="flex items-center gap-2">
-                                             <div className="w-1.5 h-1.5 rounded-full bg-saas-primary animate-pulse"></div>
-                                             <span className="text-[10px] font-black text-saas-primary uppercase italic">Ativo</span>
-                                          </div>
-                                       </td>
-                                       <td className="px-8 py-6">
-                                          <button className="p-3 rounded-xl bg-zinc-800 text-zinc-500 hover:text-red-500 transition-all"><Trash2 size={16} /></button>
-                                       </td>
-                                    </tr>
-                                 ))}
-                              </tbody>
-                           </table>
-                        </div>
-                     </div>
+                     )}
                   </div>
                )}
 
                {activeTab === 'identity' && (
-                  <div className="space-y-8 pb-20">
-                     <div className="p-8 bg-[#121214] border border-white/5 rounded-[40px] shadow-2xl">
-                        <div className="flex justify-between items-center mb-10">
-                           <div>
-                              <h3 className="text-xl font-manrope font-extrabold uppercase tracking-tight text-white">Marca & Presença Digital</h3>
-                              <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 italic mt-1">Configure como o clube aparece no Timespage</p>
-                           </div>
-                           <div className="flex items-center gap-3 px-6 py-3 bg-zinc-800 rounded-2xl border border-white/5">
-                              <span className="text-[10px] font-black uppercase text-zinc-400">Status do Site:</span>
-                              <button 
-                                 onClick={() => setClubIdentity({...clubIdentity, tp_active: !clubIdentity.tp_active})}
-                                 className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${clubIdentity.tp_active ? 'bg-saas-primary text-black' : 'bg-red-500/10 text-red-500 border border-red-500/20'}`}
-                              >
-                                 {clubIdentity.tp_active ? 'Ativo' : 'Inativo'}
-                              </button>
-                           </div>
+                  <div className="space-y-8 animate-in fade-in duration-300">
+                     <div className="flex justify-between items-center bg-[#121214] border border-white/5 p-8 rounded-[32px] shadow-xl">
+                        <div>
+                           <h3 className="text-2xl font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-3">
+                              <Palette className="text-saas-primary" size={28} />
+                              Identidade Visual do Clube
+                           </h3>
+                           <p className="text-xs font-black uppercase tracking-widest text-zinc-500 italic mt-1">
+                              Gerencie logos, ícones e a paleta de cores oficial da sua página
+                           </p>
                         </div>
+                        <button
+                           onClick={async () => {
+                              setIsSaving(true);
+                              try {
+                                 const orgIdToUpdate = currentOrgId || 'dc1f5d6a-4714-46b2-92cc-5ff423c2b3ed';
+                                 const { error } = await supabase.from('organizations').update({
+                                    tp_primary_color: clubIdentity.tp_primary_color,
+                                    tp_secondary_color: clubIdentity.tp_secondary_color,
+                                    tp_logo_url: clubIdentity.tp_logo_url,
+                                    tp_favicon_url: clubIdentity.tp_favicon_url,
+                                    tp_short_name: clubIdentity.tp_short_name,
+                                 }).eq('id', orgIdToUpdate);
+                                 if (error) throw error;
+                                 showNotification('Identidade visual atualizada com sucesso!', 'success');
+                              } catch (err: any) {
+                                 showNotification('Erro ao salvar identidade: ' + err.message, 'error');
+                              } finally {
+                                 setIsSaving(false);
+                              }
+                           }}
+                           disabled={isSaving}
+                           className="bg-[#a3e635] text-black px-8 py-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] flex items-center gap-3 hover:scale-105 transition-all shadow-xl shadow-saas-primary/20 disabled:opacity-50"
+                        >
+                           {isSaving ? <RefreshCw size={18} className="animate-spin" /> : <Save size={18} strokeWidth={3} />}
+                           {isSaving ? 'Salvando...' : 'Salvar Identidade'}
+                        </button>
+                     </div>
 
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-12">
-                           {/* Coluna 0: Nome do Clube */}
-                           <div className="lg:col-span-2">
-                              <div className="space-y-2">
-                                 <label className="text-[10px] font-black uppercase text-zinc-500 italic tracking-widest">Nome Oficial do Clube</label>
-                                 <input 
-                                    type="text" 
-                                    value={clubIdentity.name} 
-                                    onChange={e => setClubIdentity({ ...clubIdentity, name: e.target.value })} 
-                                    placeholder="Ex: Santos Futebol Clube"
-                                    className="w-full p-5 rounded-[20px] bg-zinc-800 border border-white/5 text-sm font-black text-white outline-none focus:border-saas-primary transition-all shadow-inner" 
-                                 />
-                                 <p className="text-[9px] text-zinc-500 font-bold uppercase mt-2 italic">Este nome será exibido em todo o site e nos metadados (SEO).</p>
-                              </div>
+                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        {/* Cores da Marca */}
+                        <div className="bg-[#121214] border border-white/5 rounded-[32px] p-8 space-y-6 shadow-xl">
+                           <div className="border-b border-white/5 pb-4">
+                              <h4 className="text-sm font-black uppercase text-white tracking-widest">Paleta Oficial de Cores</h4>
                            </div>
-
-                           <div className="lg:col-span-1">
-                              <div className="space-y-2">
-                                 <label className="text-[10px] font-black uppercase text-zinc-500 italic tracking-widest">Nome Curto (Apelido)</label>
-                                 <input 
-                                    type="text" 
-                                    value={clubIdentity.tp_short_name} 
-                                    onChange={e => setClubIdentity({ ...clubIdentity, tp_short_name: e.target.value })} 
-                                    placeholder="Ex: Santos"
-                                    className="w-full p-5 rounded-[20px] bg-zinc-800 border border-white/5 text-sm font-black text-white outline-none focus:border-saas-primary transition-all shadow-inner" 
-                                 />
-                                 <p className="text-[9px] text-zinc-500 font-bold uppercase mt-2 italic">Usado em menus e rodapés compactos.</p>
-                              </div>
-                           </div>
-
-                           {/* Coluna 1: Logos com Upload */}
-                           <div className="space-y-8">
-                              <div className="space-y-3">
-                                 <label className="text-[10px] font-black uppercase text-zinc-500 italic flex items-center gap-2 tracking-widest"><ImageIcon size={12} /> Escudo Oficial</label>
-                                 <div className="w-full h-48 bg-zinc-800 rounded-3xl flex flex-col items-center justify-center p-8 border border-white/5 shadow-inner relative group overflow-hidden cursor-pointer hover:border-saas-primary/30 transition-all">
-                                    {clubIdentity.tp_logo_url ? (
-                                       <img src={clubIdentity.tp_logo_url} className="w-full h-full object-contain relative z-10 transition-transform group-hover:scale-110" />
-                                    ) : (
-                                       <div className="flex flex-col items-center gap-3 text-zinc-500 group-hover:text-saas-primary">
-                                          <Upload size={32} />
-                                          <span className="text-[10px] font-black uppercase">Clique para Upload</span>
-                                       </div>
-                                    )}
-                                    <input 
-                                       type="file" 
-                                       className="absolute inset-0 opacity-0 cursor-pointer z-20" 
-                                       accept="image/*"
-                                       onChange={async (e) => {
-                                          const file = e.target.files?.[0];
-                                          if (file) {
-                                             setIsSaving(true);
-                                             const url = await handleFileUpload(file, 'logos');
-                                             if (url) setClubIdentity({...clubIdentity, tp_logo_url: url});
-                                             setIsSaving(false);
-                                          }
-                                       }}
-                                    />
-                                    <div className="absolute inset-0 bg-saas-primary/5 blur-3xl"></div>
-                                 </div>
-                                 <p className="text-[9px] text-zinc-500 font-bold uppercase text-center">Tamanho recomendado: 512x512px (.png ou .svg)</p>
-                              </div>
-
-                              <div className="space-y-3">
-                                 <label className="text-[10px] font-black uppercase text-zinc-500 italic flex items-center gap-2 tracking-widest">Favicon (Ícone do Navegador)</label>
-                                 <div className="flex gap-4 items-center">
-                                    <div className="w-16 h-16 bg-zinc-800 rounded-2xl flex items-center justify-center p-4 border border-white/5 shadow-inner relative overflow-hidden group">
-                                       <img src={clubIdentity.tp_favicon_url || clubIdentity.tp_logo_url || ACTIVE_CONFIG.logo.main} className="w-6 h-6 relative z-10" />
-                                       <input 
-                                          type="file" 
-                                          className="absolute inset-0 opacity-0 cursor-pointer z-20" 
-                                          accept="image/*"
-                                          onChange={async (e) => {
-                                             const file = e.target.files?.[0];
-                                             if (file) {
-                                                setIsSaving(true);
-                                                const url = await handleFileUpload(file, 'favicons');
-                                                if (url) setClubIdentity({...clubIdentity, tp_favicon_url: url});
-                                                setIsSaving(false);
-                                             }
-                                          }}
-                                       />
-                                    </div>
-                                    <div className="flex-1">
-                                       <button className="text-[10px] font-black uppercase text-zinc-400 bg-white/5 px-4 py-2 rounded-xl border border-white/5 hover:text-white transition-all">Alterar Ícone</button>
-                                    </div>
-                                 </div>
-                              </div>
-                           </div>
-
-                           {/* Coluna 2: Cores e Contato */}
-                           <div className="space-y-8">
-                              <div className="grid grid-cols-2 gap-6">
-                                 <div className="space-y-4">
-                                    <label className="text-[10px] font-black uppercase text-zinc-500 tracking-widest italic">Cor Primária</label>
-                                    <div className="flex gap-4 items-center bg-zinc-800 p-2 rounded-2xl border border-white/5 focus-within:border-saas-primary transition-all">
-                                       <div className="relative w-10 h-10 shrink-0 overflow-hidden rounded-xl border border-white/10">
-                                          <input 
-                                             type="color" 
-                                             value={clubIdentity.tp_primary_color} 
-                                             onChange={e => setClubIdentity({ ...clubIdentity, tp_primary_color: e.target.value })} 
-                                             className="absolute inset-[-8px] w-[200%] h-[200%] cursor-pointer bg-transparent border-none" 
-                                          />
-                                       </div>
-                                       <input 
-                                          type="text" 
-                                          value={clubIdentity.tp_primary_color} 
-                                          onChange={e => setClubIdentity({ ...clubIdentity, tp_primary_color: e.target.value })} 
-                                          className="flex-1 bg-transparent text-[11px] font-mono font-black text-white outline-none uppercase" 
-                                          placeholder="#000000"
-                                       />
-                                    </div>
-                                 </div>
-                                 <div className="space-y-4">
-                                    <label className="text-[10px] font-black uppercase text-zinc-500 tracking-widest italic">Cor Secundária</label>
-                                    <div className="flex gap-4 items-center bg-zinc-800 p-2 rounded-2xl border border-white/5 focus-within:border-saas-primary transition-all">
-                                       <div className="relative w-10 h-10 shrink-0 overflow-hidden rounded-xl border border-white/10">
-                                          <input 
-                                             type="color" 
-                                             value={clubIdentity.tp_secondary_color} 
-                                             onChange={e => setClubIdentity({ ...clubIdentity, tp_secondary_color: e.target.value })} 
-                                             className="absolute inset-[-8px] w-[200%] h-[200%] cursor-pointer bg-transparent border-none" 
-                                          />
-                                       </div>
-                                       <input 
-                                          type="text" 
-                                          value={clubIdentity.tp_secondary_color} 
-                                          onChange={e => setClubIdentity({ ...clubIdentity, tp_secondary_color: e.target.value })} 
-                                          className="flex-1 bg-transparent text-[11px] font-mono font-black text-white outline-none uppercase" 
-                                          placeholder="#000000"
-                                       />
-                                    </div>
-                                 </div>
-                              </div>
-
-                              <div className="space-y-4">
-                                 <span className="text-[10px] font-black uppercase text-zinc-600 italic tracking-widest block border-b border-white/5 pb-2">Informações de Contato</span>
-                                 <div className="space-y-4">
-                                    <div className="relative">
-                                       <input type="email" value={clubIdentity.tp_email} onChange={e => setClubIdentity({...clubIdentity, tp_email: e.target.value})} placeholder="E-mail de Contato" className="w-full p-4 pl-12 rounded-xl bg-zinc-800 border border-white/5 text-xs font-bold text-white outline-none focus:border-saas-primary" />
-                                       <FileText size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" />
-                                    </div>
-                                    <div className="relative">
-                                       <input type="text" value={clubIdentity.tp_phone} onChange={e => setClubIdentity({...clubIdentity, tp_phone: e.target.value})} placeholder="Telefone Fixo" className="w-full p-4 pl-12 rounded-xl bg-zinc-800 border border-white/5 text-xs font-bold text-white outline-none focus:border-saas-primary" />
-                                       <MessageSquare size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" />
-                                    </div>
-                                    <div className="relative">
-                                       <input type="text" value={clubIdentity.tp_whatsapp} onChange={e => setClubIdentity({...clubIdentity, tp_whatsapp: e.target.value})} placeholder="WhatsApp (DDD + Número)" className="w-full p-4 pl-12 rounded-xl bg-zinc-800 border border-white/5 text-xs font-bold text-white outline-none focus:border-saas-primary" />
-                                       <MessageCircle size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-saas-primary" />
-                                    </div>
-                                 </div>
-                              </div>
-                           </div>
-
-                           {/* Coluna 3: Redes Sociais */}
                            <div className="space-y-6">
-                              <span className="text-[10px] font-black uppercase text-zinc-600 italic tracking-widest block border-b border-white/5 pb-2">Links de Redes Sociais</span>
-                              <div className="grid grid-cols-1 gap-4">
-                                 {[
-                                    { key: 'tp_instagram', label: 'Instagram', icon: 'Instagram', placeholder: 'https://instagram.com/...' },
-                                    { key: 'tp_facebook', label: 'Facebook', icon: 'Facebook', placeholder: 'https://facebook.com/...' },
-                                    { key: 'tp_twitter_x', label: 'X (Antigo Twitter)', icon: 'Twitter', placeholder: 'https://x.com/...' },
-                                    { key: 'tp_linkedin', label: 'LinkedIn', icon: 'Linkedin', placeholder: 'https://linkedin.com/...' },
-                                    { key: 'tp_youtube', label: 'YouTube', icon: 'Youtube', placeholder: 'https://youtube.com/...' },
-                                 ].map((social) => (
-                                    <div key={social.key} className="space-y-2">
-                                       <label className="text-[9px] font-black uppercase text-zinc-500 tracking-widest">{social.label}</label>
+                              <div className="space-y-2">
+                                 <label className="text-[10px] font-black uppercase text-zinc-500 tracking-widest block">Cor Primária (Destaques e Botões)</label>
+                                 <div className="flex gap-4 items-center">
+                                    <input 
+                                       type="color" 
+                                       value={clubIdentity.tp_primary_color || '#a3e635'} 
+                                       onChange={e => setClubIdentity({ ...clubIdentity, tp_primary_color: e.target.value })}
+                                       className="w-14 h-14 rounded-2xl border-0 bg-transparent cursor-pointer shrink-0"
+                                    />
+                                    <input 
+                                       type="text" 
+                                       value={clubIdentity.tp_primary_color || '#a3e635'} 
+                                       onChange={e => setClubIdentity({ ...clubIdentity, tp_primary_color: e.target.value })}
+                                       className="w-full bg-zinc-900/50 border border-white/5 rounded-xl p-4 text-xs font-black text-white uppercase outline-none focus:border-saas-primary/50"
+                                       placeholder="#A3E635"
+                                    />
+                                 </div>
+                              </div>
+
+                              <div className="space-y-2">
+                                 <label className="text-[10px] font-black uppercase text-zinc-500 tracking-widest block">Cor Secundária (Fundos e Contrapesos)</label>
+                                 <div className="flex gap-4 items-center">
+                                    <input 
+                                       type="color" 
+                                       value={clubIdentity.tp_secondary_color || '#000000'} 
+                                       onChange={e => setClubIdentity({ ...clubIdentity, tp_secondary_color: e.target.value })}
+                                       className="w-14 h-14 rounded-2xl border-0 bg-transparent cursor-pointer shrink-0"
+                                    />
+                                    <input 
+                                       type="text" 
+                                       value={clubIdentity.tp_secondary_color || '#000000'} 
+                                       onChange={e => setClubIdentity({ ...clubIdentity, tp_secondary_color: e.target.value })}
+                                       className="w-full bg-zinc-900/50 border border-white/5 rounded-xl p-4 text-xs font-black text-white uppercase outline-none focus:border-saas-primary/50"
+                                       placeholder="#000000"
+                                    />
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+
+                        {/* Imagens e Logos */}
+                        <div className="bg-[#121214] border border-white/5 rounded-[32px] p-8 space-y-6 shadow-xl">
+                           <div className="border-b border-white/5 pb-4">
+                              <h4 className="text-sm font-black uppercase text-white tracking-widest">Logotipos e Ícones</h4>
+                           </div>
+                           <div className="space-y-6">
+                              <div className="space-y-2">
+                                 <label className="text-[10px] font-black uppercase text-zinc-500 tracking-widest block">Logo Oficial do Clube (PNG Transparente)</label>
+                                 <div className="flex items-center gap-4">
+                                    <div className="w-16 h-16 rounded-2xl bg-zinc-900 border border-white/5 flex items-center justify-center p-2 shrink-0 overflow-hidden">
+                                       {clubIdentity.tp_logo_url ? (
+                                          <img src={clubIdentity.tp_logo_url} alt="Logo" className="w-full h-full object-contain" />
+                                       ) : (
+                                          <ImageIcon size={24} className="text-zinc-700" />
+                                       )}
+                                    </div>
+                                    <div className="flex-1 space-y-2">
                                        <input 
                                           type="text" 
-                                          value={(clubIdentity as any)[social.key]} 
-                                          onChange={e => setClubIdentity({ ...clubIdentity, [social.key]: e.target.value })} 
-                                          placeholder={social.placeholder}
-                                          className="w-full p-3 rounded-xl bg-zinc-800 border border-white/5 text-[10px] font-medium text-white outline-none focus:border-saas-primary transition-all" 
+                                          placeholder="URL da imagem do logo..." 
+                                          value={clubIdentity.tp_logo_url} 
+                                          onChange={e => setClubIdentity({ ...clubIdentity, tp_logo_url: e.target.value })}
+                                          className="w-full bg-zinc-900/50 border border-white/5 rounded-xl p-3 text-xs font-bold text-white outline-none focus:border-saas-primary/50"
                                        />
-                                    </div>
-                                 ))}
-                              </div>
-                           </div>
-                        </div>
-
-                        {/* Live Preview Card */}
-                        <div className="mb-12">
-                           <label className="text-[10px] font-black uppercase text-zinc-500 italic tracking-widest block mb-4">Pré-visualização em Tempo Real</label>
-                           <div className="bg-[#09090b] border border-white/10 rounded-[40px] p-8 relative overflow-hidden group shadow-2xl">
-                              <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent"></div>
-                              <div className="relative z-10 flex flex-col md:flex-row items-center gap-12">
-                                 {/* Shield Preview */}
-                                 <div className="relative group">
-                                    <div className="w-32 h-32 md:w-48 md:h-48 flex items-center justify-center p-4 rounded-full bg-white/[0.03] border border-white/5 shadow-inner transition-transform duration-700 group-hover:scale-110">
-                                       <img 
-                                          src={clubIdentity.tp_logo_url || ACTIVE_CONFIG.logo.main} 
-                                          className="w-full h-full object-contain [filter:drop-shadow(0_0_15px_rgba(255,255,255,0.1))]" 
-                                       />
-                                    </div>
-                                    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-saas-primary text-black text-[8px] font-black uppercase tracking-widest rounded-full shadow-xl">
-                                       Escudo Oficial
-                                    </div>
-                                 </div>
-
-                                 {/* Branding Info Preview */}
-                                 <div className="flex-1 space-y-6 text-center md:text-left">
-                                    <div>
-                                       <h3 className="text-3xl md:text-5xl font-black uppercase italic tracking-tighter text-white leading-none">
-                                          {clubIdentity.tp_short_name || clubIdentity.name.split(' ')[0] || 'MEU CLUBE'}
-                                       </h3>
-                                       <p className="text-[10px] md:text-xs font-bold text-zinc-500 uppercase tracking-[0.4em] mt-3 italic">
-                                          Identidade Visual Dinâmica
-                                       </p>
-                                    </div>
-
-                                    <div className="flex flex-wrap justify-center md:justify-start gap-4">
-                                       <div className="flex items-center gap-3 bg-white/5 px-5 py-3 rounded-2xl border border-white/5">
-                                          <div className="w-4 h-4 rounded-full shadow-lg" style={{ backgroundColor: clubIdentity.tp_primary_color }}></div>
-                                          <span className="text-[10px] font-black text-white uppercase tracking-widest">Primária</span>
-                                       </div>
-                                       <div className="flex items-center gap-3 bg-white/5 px-5 py-3 rounded-2xl border border-white/5">
-                                          <div className="w-4 h-4 rounded-full shadow-lg" style={{ backgroundColor: clubIdentity.tp_secondary_color }}></div>
-                                          <span className="text-[10px] font-black text-white uppercase tracking-widest">Secundária</span>
-                                       </div>
-                                    </div>
-                                    
-                                    <div className="pt-4 flex items-center justify-center md:justify-start gap-4 opacity-40">
-                                       {clubIdentity.tp_instagram && <Instagram size={16} />}
-                                       {clubIdentity.tp_facebook && <Facebook size={16} />}
-                                       {clubIdentity.tp_youtube && <Youtube size={16} />}
-                                       {clubIdentity.tp_whatsapp && <MessageCircle size={16} />}
+                                       <label className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-800 border border-white/5 hover:bg-zinc-700 text-[9px] font-black uppercase text-zinc-300 cursor-pointer transition-colors">
+                                          <Upload size={12} /> Fazer Upload
+                                          <input 
+                                             type="file" accept="image/*" className="hidden" 
+                                             onChange={async e => {
+                                                const f = e.target.files?.[0];
+                                                if (f) {
+                                                   const u = await handleFileUpload(f, 'noticias');
+                                                   if (u) setClubIdentity({ ...clubIdentity, tp_logo_url: u });
+                                                }
+                                             }} 
+                                          />
+                                       </label>
                                     </div>
                                  </div>
                               </div>
-                              
-                              {/* Abstract Brand Background */}
-                              <div 
-                                 className="absolute -right-20 -bottom-20 w-80 h-80 rounded-full blur-[120px] opacity-20 transition-colors duration-1000"
-                                 style={{ backgroundColor: clubIdentity.tp_primary_color }}
-                              ></div>
+
+                              <div className="space-y-2">
+                                 <label className="text-[10px] font-black uppercase text-zinc-500 tracking-widest block">Ícone do Navegador (Favicon)</label>
+                                 <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-zinc-900 border border-white/5 flex items-center justify-center p-1.5 shrink-0 overflow-hidden">
+                                       {clubIdentity.tp_favicon_url ? (
+                                          <img src={clubIdentity.tp_favicon_url} alt="Favicon" className="w-full h-full object-contain" />
+                                       ) : (
+                                          <Globe size={20} className="text-zinc-700" />
+                                       )}
+                                    </div>
+                                    <div className="flex-1 space-y-2">
+                                       <input 
+                                          type="text" 
+                                          placeholder="URL do favicon..." 
+                                          value={clubIdentity.tp_favicon_url} 
+                                          onChange={e => setClubIdentity({ ...clubIdentity, tp_favicon_url: e.target.value })}
+                                          className="w-full bg-zinc-900/50 border border-white/5 rounded-xl p-3 text-xs font-bold text-white outline-none focus:border-saas-primary/50"
+                                       />
+                                       <label className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-800 border border-white/5 hover:bg-zinc-700 text-[9px] font-black uppercase text-zinc-300 cursor-pointer transition-colors">
+                                          <Upload size={12} /> Fazer Upload
+                                          <input 
+                                             type="file" accept="image/*" className="hidden" 
+                                             onChange={async e => {
+                                                const f = e.target.files?.[0];
+                                                if (f) {
+                                                   const u = await handleFileUpload(f, 'noticias');
+                                                   if (u) setClubIdentity({ ...clubIdentity, tp_favicon_url: u });
+                                                }
+                                             }} 
+                                          />
+                                       </label>
+                                    </div>
+                                 </div>
+                              </div>
+
+                              <div className="space-y-2">
+                                 <label className="text-[10px] font-black uppercase text-zinc-500 tracking-widest block">Nome Curto / Apelido da Marca</label>
+                                 <input 
+                                    type="text" 
+                                    placeholder="Ex: Gameleira" 
+                                    value={clubIdentity.tp_short_name || ''} 
+                                    onChange={e => setClubIdentity({ ...clubIdentity, tp_short_name: e.target.value })}
+                                    className="w-full bg-zinc-900/50 border border-white/5 rounded-xl p-3 text-xs font-bold text-white outline-none focus:border-saas-primary/50"
+                                 />
+                              </div>
                            </div>
                         </div>
-
-                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <button onClick={async () => {
-                               setIsSaving(true);
-                               const params = new URLSearchParams(window.location.search);
-                               const orgId = params.get('orgId');
-                               if (orgId) {
-                                  const updateData: any = {};
-                                  Object.keys(clubIdentity).forEach(key => {
-                                     if (key.startsWith('tp_') || key === 'name') {
-                                        updateData[key] = (clubIdentity as any)[key];
-                                     }
-                                  });
-
-                                  const { error } = await supabase.from('organizations').update(updateData).eq('id', orgId);
-                                  
-                                  if (!error) { 
-                                     showNotification('Identidade Visual Sincronizada!'); 
-                                     setTimeout(() => window.location.reload(), 1000);
-                                  } else { 
-                                     showNotification(`Erro ao salvar: ${error.message}`, 'error'); 
-                                  }
-                               }
-                               setIsSaving(false);
-                            }} disabled={isSaving} className="w-full bg-[#a3e635] text-black py-5 rounded-2xl font-black uppercase tracking-[0.3em] text-[11px] shadow-2xl shadow-saas-primary/20 hover:scale-[1.01] active:scale-95 transition-all">
-                               {isSaving ? 'Sincronizando...' : 'Salvar Alterações'}
-                            </button>
-                            <a 
-                               href={`/?orgId=${currentOrgId}`} 
-                               target="_blank" 
-                               rel="noopener noreferrer"
-                               className="w-full bg-white/5 text-white border border-white/10 py-5 rounded-2xl font-black uppercase tracking-[0.3em] text-[11px] flex items-center justify-center gap-3 hover:bg-white/10 transition-all"
-                            >
-                               <ExternalLink size={14} />
-                               Visualizar Site Ao Vivo
-                            </a>
-                         </div>
                      </div>
                   </div>
                )}
+
+               {activeTab === 'integration' && (
+                  <div className="space-y-8 animate-in fade-in duration-300">
+                     <div className="flex justify-between items-center bg-[#121214] border border-white/5 p-8 rounded-[32px] shadow-xl">
+                        <div>
+                           <h3 className="text-2xl font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-3">
+                              <Zap className="text-saas-primary" size={28} />
+                              Integrações & Tráfego Pago
+                           </h3>
+                           <p className="text-xs font-black uppercase tracking-widest text-zinc-500 italic mt-1">
+                              Conecte pixels e scripts de rastreamento para maximizar conversões
+                           </p>
+                        </div>
+                        <button
+                           onClick={async () => {
+                              setIsSaving(true);
+                              try {
+                                 const orgIdToUpdate = currentOrgId || 'dc1f5d6a-4714-46b2-92cc-5ff423c2b3ed';
+                                 const { error } = await supabase.from('organizations').update({
+                                    tp_pixel_facebook: clubIdentity.tp_pixel_facebook,
+                                    tp_google_analytics: clubIdentity.tp_google_analytics,
+                                    tp_google_tag_manager: clubIdentity.tp_google_tag_manager,
+                                 }).eq('id', orgIdToUpdate);
+                                 if (error) throw error;
+                                 showNotification('Scripts de integração atualizados com sucesso!', 'success');
+                              } catch (err: any) {
+                                 showNotification('Erro ao salvar integrações: ' + err.message, 'error');
+                              } finally {
+                                 setIsSaving(false);
+                              }
+                           }}
+                           disabled={isSaving}
+                           className="bg-[#a3e635] text-black px-8 py-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] flex items-center gap-3 hover:scale-105 transition-all shadow-xl shadow-saas-primary/20 disabled:opacity-50"
+                        >
+                           {isSaving ? <RefreshCw size={18} className="animate-spin" /> : <Save size={18} strokeWidth={3} />}
+                           {isSaving ? 'Salvando...' : 'Salvar Scripts'}
+                        </button>
+                     </div>
+
+                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="bg-[#121214] border border-white/5 rounded-3xl p-6 shadow-xl space-y-4">
+                           <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center font-black">
+                                 f
+                              </div>
+                              <div>
+                                 <h4 className="text-xs font-extrabold text-white uppercase tracking-wider">Meta Pixel (Facebook)</h4>
+                                 <span className="text-[9px] text-zinc-500 uppercase tracking-widest block font-bold">Rastreamento de Leads</span>
+                              </div>
+                           </div>
+                           <p className="text-xs text-zinc-400 font-normal leading-relaxed">
+                              Insira o ID do seu Pixel para rastrear acessos, captação de sócios e engajamento em campanhas.
+                           </p>
+                           <input 
+                              type="text" 
+                              placeholder="Ex: 123456789012345" 
+                              value={clubIdentity.tp_pixel_facebook || ''}
+                              onChange={e => setClubIdentity({ ...clubIdentity, tp_pixel_facebook: e.target.value })}
+                              className="w-full bg-zinc-900/80 border border-white/5 rounded-xl p-3 text-xs font-bold text-saas-primary outline-none focus:border-saas-primary/50 tracking-wider font-mono"
+                           />
+                        </div>
+
+                        <div className="bg-[#121214] border border-white/5 rounded-3xl p-6 shadow-xl space-y-4">
+                           <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center font-black">
+                                 G
+                              </div>
+                              <div>
+                                 <h4 className="text-xs font-extrabold text-white uppercase tracking-wider">Google Analytics 4</h4>
+                                 <span className="text-[9px] text-zinc-500 uppercase tracking-widest block font-bold">Métricas de Audiência</span>
+                              </div>
+                           </div>
+                           <p className="text-xs text-zinc-400 font-normal leading-relaxed">
+                              Cole sua tag de medição G-XXXXX para ter relatórios detalhados de tráfego, sessões e origens.
+                           </p>
+                           <input 
+                              type="text" 
+                              placeholder="Ex: G-ABC123XYZ" 
+                              value={clubIdentity.tp_google_analytics || ''}
+                              onChange={e => setClubIdentity({ ...clubIdentity, tp_google_analytics: e.target.value })}
+                              className="w-full bg-zinc-900/80 border border-white/5 rounded-xl p-3 text-xs font-bold text-saas-primary outline-none focus:border-saas-primary/50 tracking-wider font-mono"
+                           />
+                        </div>
+
+                        <div className="bg-[#121214] border border-white/5 rounded-3xl p-6 shadow-xl space-y-4">
+                           <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-black">
+                                 GTM
+                              </div>
+                              <div>
+                                 <h4 className="text-xs font-extrabold text-white uppercase tracking-wider">Tag Manager</h4>
+                                 <span className="text-[9px] text-zinc-500 uppercase tracking-widest block font-bold">Injeção Avançada</span>
+                              </div>
+                           </div>
+                           <p className="text-xs text-zinc-400 font-normal leading-relaxed">
+                              Gerencie todas as suas tags de conversão diretamente pelo contêiner oficial do Google Tag Manager.
+                           </p>
+                           <input 
+                              type="text" 
+                              placeholder="Ex: GTM-XXXXXXX" 
+                              value={clubIdentity.tp_google_tag_manager || ''}
+                              onChange={e => setClubIdentity({ ...clubIdentity, tp_google_tag_manager: e.target.value })}
+                              className="w-full bg-zinc-900/80 border border-white/5 rounded-xl p-3 text-xs font-bold text-saas-primary outline-none focus:border-saas-primary/50 tracking-wider font-mono"
+                           />
+                        </div>
+                     </div>
+                  </div>
+               )}
+
+               {activeTab === 'squad' && (
+                  <div className="space-y-8 animate-in fade-in duration-300">
+                     <div className="flex justify-between items-center bg-[#121214] border border-white/5 p-8 rounded-[32px] shadow-xl">
+                        <div>
+                           <h3 className="text-2xl font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-3">
+                              <ShieldCheck className="text-saas-primary" size={28} />
+                              Elenco Oficial
+                           </h3>
+                           <p className="text-xs font-black uppercase tracking-widest text-zinc-500 italic mt-1">
+                              Gerencie os dados visíveis no site oficial para cada craque do clube
+                           </p>
+                        </div>
+                        <button 
+                           onClick={() => {
+                              setEditingPlayer(null);
+                              setEditPlayerForm({
+                                 full_name: '', known_as: '', position: 'Atacante', shirt_number: '10',
+                                 photo_url: '', birth_date: '', gender: 'Masculino',
+                                 organization_id: currentOrgId || 'dc1f5d6a-4714-46b2-92cc-5ff423c2b3ed'
+                              });
+                           }}
+                           className="bg-[#a3e635] text-black px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] flex items-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-xl shadow-saas-primary/20"
+                        >
+                           <PlusCircle size={16} strokeWidth={3} /> Cadastrar Atleta
+                        </button>
+                     </div>
+
+                     {/* Filtros solicitados: barra de pesquisa, categorias, modalidades */}
+                     <div className="bg-[#121214] border border-white/5 p-6 rounded-3xl flex flex-col md:flex-row gap-4 items-center justify-between">
+                        <div className="relative w-full md:w-96">
+                           <input 
+                              type="text" 
+                              placeholder="Pesquisar por nome ou apelido..." 
+                              value={squadSearch} 
+                              onChange={e => setSquadSearch(e.target.value)}
+                              className="w-full bg-zinc-900 border border-white/5 rounded-2xl p-3 pl-11 text-xs text-white font-bold outline-none focus:border-saas-primary/50"
+                           />
+                           <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600" />
+                        </div>
+
+                        <div className="flex items-center gap-3 w-full md:w-auto">
+                           <div className="flex items-center gap-2 bg-zinc-900 border border-white/5 rounded-2xl px-3 py-1.5 w-full md:w-auto justify-between">
+                              <span className="text-[9px] font-black uppercase text-zinc-600 tracking-wider">Modalidade:</span>
+                              <select 
+                                 value={squadModalityFilter} 
+                                 onChange={e => setSquadModalityFilter(e.target.value)}
+                                 className="bg-transparent text-xs font-extrabold text-white outline-none border-none cursor-pointer"
+                              >
+                                 <option value="all" className="bg-zinc-900">Todas</option>
+                                 <option value="Futebol" className="bg-zinc-900">Futebol</option>
+                                 <option value="Futsal" className="bg-zinc-900">Futsal</option>
+                              </select>
+                           </div>
+
+                           <div className="flex items-center gap-2 bg-zinc-900 border border-white/5 rounded-2xl px-3 py-1.5 w-full md:w-auto justify-between">
+                              <span className="text-[9px] font-black uppercase text-zinc-600 tracking-wider">Categoria:</span>
+                              <select 
+                                 value={squadCategoryFilter} 
+                                 onChange={e => setSquadCategoryFilter(e.target.value)}
+                                 className="bg-transparent text-xs font-extrabold text-white outline-none border-none cursor-pointer"
+                              >
+                                 <option value="all" className="bg-zinc-900">Todas</option>
+                                 <option value="Profissional" className="bg-zinc-900">Profissional</option>
+                                 <option value="Sub-20" className="bg-zinc-900">Sub-20</option>
+                                 <option value="Base" className="bg-zinc-900">Base</option>
+                              </select>
+                           </div>
+                        </div>
+                     </div>
+
+                     {/* Listagem de Atletas: Card em pé retangular com bordas arredondadas */}
+                     {players.length === 0 ? (
+                        <div className="bg-[#121214] border border-white/5 rounded-3xl p-12 text-center space-y-3">
+                           <Users size={48} className="mx-auto text-zinc-700" />
+                           <p className="text-sm font-extrabold uppercase text-white tracking-wider">Nenhum atleta cadastrado</p>
+                           <p className="text-xs text-zinc-500 font-medium">Cadastre os jogadores para exibi-los com destaque na página oficial.</p>
+                        </div>
+                     ) : (
+                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                           {players
+                              .filter(p => {
+                                 const matchSearch = p.full_name?.toLowerCase().includes(squadSearch.toLowerCase()) || 
+                                                     p.known_as?.toLowerCase().includes(squadSearch.toLowerCase());
+                                 const matchModality = squadModalityFilter === 'all' || p.modality_name === squadModalityFilter || p.modality === squadModalityFilter;
+                                 const matchCategory = squadCategoryFilter === 'all' || p.category_name === squadCategoryFilter || p.category === squadCategoryFilter;
+                                 return matchSearch && matchModality && matchCategory;
+                              })
+                              .map(player => (
+                                 <div 
+                                    key={player.id} 
+                                    className="bg-gradient-to-b from-zinc-800 to-[#121214] border border-white/10 rounded-[24px] overflow-hidden shadow-2xl hover:scale-105 hover:border-saas-primary/50 transition-all duration-300 flex flex-col group relative aspect-[3/4]"
+                                 >
+                                    {/* Número da camisa flutuante */}
+                                    <div className="absolute top-3 left-3 z-10 font-black text-2xl text-white italic drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+                                       {player.shirt_number || '-'}
+                                    </div>
+
+                                    {/* Foto em pé preenchendo o card */}
+                                    <div className="flex-1 w-full bg-zinc-900 relative overflow-hidden flex items-end justify-center pt-8">
+                                       {player.photo_url ? (
+                                          <img src={player.photo_url} alt={player.known_as || player.full_name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                       ) : (
+                                          <div className="w-20 h-20 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-600 mb-6 border border-white/5"><User size={32} /></div>
+                                       )}
+                                       {/* Degradê na base para legibilidade do nome */}
+                                       <div className="absolute inset-0 bg-gradient-to-t from-[#121214] via-[#121214]/40 to-transparent"></div>
+                                    </div>
+
+                                    {/* Dados básicos exibidos na base */}
+                                    <div className="p-4 relative z-10 flex flex-col items-center text-center space-y-1 bg-[#121214]">
+                                       <span className="text-[9px] font-black uppercase text-saas-primary tracking-widest leading-none">
+                                          {player.position || 'Jogador'}
+                                       </span>
+                                       <h4 className="text-xs font-extrabold uppercase text-white truncate w-full tracking-tight">
+                                          {player.known_as || player.full_name || 'Atleta'}
+                                       </h4>
+                                       <span className="text-[8px] text-zinc-500 font-bold uppercase block truncate w-full">
+                                          {player.category_name || player.category || 'Profissional'}
+                                       </span>
+
+                                       <button 
+                                          onClick={() => {
+                                             setEditingPlayer(player);
+                                             setEditPlayerForm({
+                                                full_name: player.full_name || '', known_as: player.known_as || '',
+                                                position: player.position || 'Atacante', shirt_number: player.shirt_number || '',
+                                                photo_url: player.photo_url || '', birth_date: player.birth_date || '',
+                                                gender: player.gender || 'Masculino',
+                                                organization_id: player.organization_id || currentOrgId
+                                             });
+                                          }}
+                                          className="absolute top-[-36px] right-3 w-8 h-8 rounded-full bg-saas-primary text-black flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:scale-110"
+                                          title="Editar Dados Oficiais"
+                                       >
+                                          <Edit3 size={14} strokeWidth={2.5} />
+                                       </button>
+                                    </div>
+                                 </div>
+                              ))}
+                        </div>
+                     )}
+
+                     {/* Formulário de Edição/Cadastro de Atleta */}
+                     {editPlayerForm.organization_id && (
+                        <div className="bg-[#121214] border border-white/5 rounded-[32px] p-8 space-y-6 shadow-2xl border-t-2 border-t-saas-primary">
+                           <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                              <h4 className="text-sm font-black uppercase text-white tracking-widest flex items-center gap-2">
+                                 <Edit3 className="text-saas-primary" size={16} />
+                                 {editingPlayer ? `Editando Atleta: ${editingPlayer.known_as || editingPlayer.full_name}` : 'Cadastrando Novo Atleta Oficial'}
+                              </h4>
+                              <button onClick={() => { setEditingPlayer(null); setEditPlayerForm({}); }} className="text-zinc-500 hover:text-white">
+                                 <X size={16} />
+                              </button>
+                           </div>
+
+                           <form onSubmit={async e => {
+                              e.preventDefault();
+                              setSavingPlayer(true);
+                              try {
+                                 const payload = {
+                                    ...editPlayerForm,
+                                    organization_id: currentOrgId || 'dc1f5d6a-4714-46b2-92cc-5ff423c2b3ed'
+                                 };
+                                 let res;
+                                 if (editingPlayer) {
+                                    res = await supabase.from('athletes').update(payload).eq('id', editingPlayer.id);
+                                 } else {
+                                    res = await supabase.from('athletes').insert([payload]);
+                                 }
+                                 if (!res.error) {
+                                    showNotification('Dados do atleta atualizados para o site oficial!', 'success');
+                                    setEditingPlayer(null);
+                                    setEditPlayerForm({});
+                                    fetchData(currentOrgId);
+                                 } else throw res.error;
+                              } catch (err: any) {
+                                 showNotification('Erro ao salvar: ' + err.message, 'error');
+                              } finally {
+                                 setSavingPlayer(false);
+                              }
+                           }} className="space-y-6">
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                 <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase text-zinc-500 tracking-widest block">Nome Completo</label>
+                                    <input 
+                                       type="text" required placeholder="Nome inteiro do atleta" value={editPlayerForm.full_name || ''} 
+                                       onChange={e => setEditPlayerForm({...editPlayerForm, full_name: e.target.value})}
+                                       className="w-full bg-zinc-900 border border-white/5 rounded-xl p-3 text-xs text-white font-bold outline-none focus:border-saas-primary/50"
+                                    />
+                                 </div>
+                                 <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase text-zinc-500 tracking-widest block">Nome do Jogador (Camisa/Site)</label>
+                                    <input 
+                                       type="text" required placeholder="Ex: Gabigol" value={editPlayerForm.known_as || ''} 
+                                       onChange={e => setEditPlayerForm({...editPlayerForm, known_as: e.target.value})}
+                                       className="w-full bg-zinc-900 border border-white/5 rounded-xl p-3 text-xs text-white font-bold outline-none focus:border-saas-primary/50"
+                                    />
+                                 </div>
+                                 <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase text-zinc-500 tracking-widest block">Posição</label>
+                                    <input 
+                                       type="text" required placeholder="Goleiro, Zagueiro, Atacante..." value={editPlayerForm.position || ''} 
+                                       onChange={e => setEditPlayerForm({...editPlayerForm, position: e.target.value})}
+                                       className="w-full bg-zinc-900 border border-white/5 rounded-xl p-3 text-xs text-white font-bold outline-none focus:border-saas-primary/50"
+                                    />
+                                 </div>
+                              </div>
+
+                              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                                 <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase text-zinc-500 tracking-widest block">Número da Camisa</label>
+                                    <input 
+                                       type="text" placeholder="Ex: 10" value={editPlayerForm.shirt_number || ''} 
+                                       onChange={e => setEditPlayerForm({...editPlayerForm, shirt_number: e.target.value})}
+                                       className="w-full bg-zinc-900 border border-white/5 rounded-xl p-3 text-xs text-white font-bold outline-none focus:border-saas-primary/50 font-mono"
+                                    />
+                                 </div>
+                                 <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase text-zinc-500 tracking-widest block">Data de Nascimento</label>
+                                    <input 
+                                       type="date" value={editPlayerForm.birth_date || ''} 
+                                       onChange={e => setEditPlayerForm({...editPlayerForm, birth_date: e.target.value})}
+                                       className="w-full bg-zinc-900 border border-white/5 rounded-xl p-3 text-xs text-white font-bold outline-none focus:border-saas-primary/50"
+                                    />
+                                 </div>
+                                 <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase text-zinc-500 tracking-widest block">Sexo</label>
+                                    <select 
+                                       value={editPlayerForm.gender || 'Masculino'} 
+                                       onChange={e => setEditPlayerForm({...editPlayerForm, gender: e.target.value})}
+                                       className="w-full bg-zinc-900 border border-white/5 rounded-xl p-3 text-xs text-white font-bold outline-none focus:border-saas-primary/50"
+                                    >
+                                       <option value="Masculino">Masculino</option>
+                                       <option value="Feminino">Feminino</option>
+                                    </select>
+                                 </div>
+                                 <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase text-zinc-500 tracking-widest block">Foto em Pé (URL/Upload)</label>
+                                    <div className="flex gap-2">
+                                       <input 
+                                          type="text" placeholder="URL da foto..." value={editPlayerForm.photo_url || ''} 
+                                          onChange={e => setEditPlayerForm({...editPlayerForm, photo_url: e.target.value})}
+                                          className="w-full bg-zinc-900 border border-white/5 rounded-xl p-3 text-xs text-white font-bold outline-none focus:border-saas-primary/50"
+                                       />
+                                       <label className="px-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 flex items-center justify-center cursor-pointer border border-white/5 text-saas-primary" title="Upload">
+                                          <Upload size={14} />
+                                          <input type="file" accept="image/*" className="hidden" onChange={async e => {
+                                             const f = e.target.files?.[0];
+                                             if (f) {
+                                                const u = await handleFileUpload(f, 'noticias');
+                                                if (u) setEditPlayerForm({...editPlayerForm, photo_url: u});
+                                             }
+                                          }} />
+                                       </label>
+                                    </div>
+                                 </div>
+                              </div>
+
+                              <div className="flex justify-end gap-3 pt-4 border-t border-white/5">
+                                 <button type="button" onClick={() => { setEditingPlayer(null); setEditPlayerForm({}); }} className="px-5 py-2.5 rounded-xl bg-zinc-800 text-xs font-bold text-zinc-400 hover:text-white">
+                                    Cancelar
+                                 </button>
+                                 <button type="submit" disabled={savingPlayer} className="px-6 py-2.5 rounded-xl bg-saas-primary text-black text-xs font-black uppercase tracking-wider hover:scale-105 transition-transform">
+                                    {savingPlayer ? 'Salvando...' : 'Confirmar Dados Oficiais'}
+                                 </button>
+                              </div>
+                           </form>
+                        </div>
+                     )}
+                  </div>
+               )}
+
+               {activeTab === 'trophies' && (
+                  <div className="space-y-8 animate-in fade-in duration-300">
+                     <div className="flex justify-between items-center bg-[#121214] border border-white/5 p-8 rounded-[32px] shadow-xl">
+                        <div>
+                           <h3 className="text-2xl font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-3">
+                              <Trophy className="text-saas-primary" size={28} />
+                              Sala de Títulos Oficiais
+                           </h3>
+                           <p className="text-xs font-black uppercase tracking-widest text-zinc-500 italic mt-1">
+                              Imortalize as maiores conquistas e troféus exibidos no portal
+                           </p>
+                        </div>
+                        <button 
+                           onClick={() => showNotification('Cadastramento de troféus ativado.', 'success')}
+                           className="bg-[#a3e635] text-black px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] flex items-center gap-2 hover:scale-105 transition-all shadow-xl"
+                        >
+                           <PlusCircle size={16} strokeWidth={3} /> Adicionar Troféu
+                        </button>
+                     </div>
+
+                     {trophies.length === 0 ? (
+                        <div className="bg-[#121214] border border-white/5 rounded-3xl p-12 text-center space-y-3">
+                           <Trophy size={48} className="mx-auto text-amber-500/40" />
+                           <p className="text-sm font-extrabold uppercase text-white tracking-wider">Nenhum título cadastrado</p>
+                           <p className="text-xs text-zinc-500 font-medium">Cadastre campeonatos estaduais, copas e títulos históricos do clube.</p>
+                        </div>
+                     ) : (
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                           {trophies.map(t => (
+                              <div key={t.id} className="bg-[#121214] border border-white/5 rounded-3xl p-6 flex flex-col items-center text-center space-y-3 relative group">
+                                 <div className="w-16 h-16 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center font-black text-xl border border-amber-500/20 shadow-inner">
+                                    🏆
+                                 </div>
+                                 <span className="text-lg font-manrope font-extrabold text-white">{t.year || '2024'}</span>
+                                 <h4 className="text-xs font-bold uppercase text-zinc-300 line-clamp-2">{t.title || t.name || 'Campeão Invicto'}</h4>
+                              </div>
+                           ))}
+                        </div>
+                     )}
+                  </div>
+               )}
+
+               {activeTab === 'institutional' && (
+                  <div className="space-y-8 animate-in fade-in duration-300">
+                     <div className="flex justify-between items-center bg-[#121214] border border-white/5 p-8 rounded-[32px] shadow-xl">
+                        <div>
+                           <h3 className="text-2xl font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-3">
+                              <Users className="text-saas-primary" size={28} />
+                              Portal Institucional
+                           </h3>
+                           <p className="text-xs font-black uppercase tracking-widest text-zinc-500 italic mt-1">
+                              Divulgação pública da Diretoria Executiva e Portal de Transparência
+                           </p>
+                        </div>
+                        <div className="flex bg-zinc-900 border border-white/5 rounded-2xl p-1 gap-1">
+                           <button 
+                              onClick={() => setInstitutionalTab('board')}
+                              className={`px-4 py-2 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all ${institutionalTab === 'board' ? 'bg-saas-primary text-black' : 'text-zinc-500 hover:text-white'}`}
+                           >
+                              Diretoria
+                           </button>
+                           <button 
+                              onClick={() => setInstitutionalTab('transparency')}
+                              className={`px-4 py-2 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all ${institutionalTab === 'transparency' ? 'bg-saas-primary text-black' : 'text-zinc-500 hover:text-white'}`}
+                           >
+                              Transparência
+                           </button>
+                        </div>
+                     </div>
+
+                     {institutionalTab === 'board' ? (
+                        <div className="bg-[#121214] border border-white/5 rounded-3xl p-8 space-y-6">
+                           <h4 className="text-xs font-extrabold uppercase tracking-wider text-saas-primary">Membros do Conselho & Diretoria</h4>
+                           {boardMembers.length === 0 ? (
+                              <p className="text-xs text-zinc-500 font-bold italic">Nenhum diretor cadastrado. Utilize a API para injetar os cargos oficiais.</p>
+                           ) : (
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                 {boardMembers.map(b => (
+                                    <div key={b.id} className="p-4 rounded-2xl bg-zinc-900 border border-white/5 space-y-1">
+                                       <h5 className="text-sm font-extrabold text-white uppercase">{b.name}</h5>
+                                       <span className="text-[10px] font-bold text-saas-primary uppercase tracking-widest block">{b.role}</span>
+                                    </div>
+                                 ))}
+                              </div>
+                           )}
+                        </div>
+                     ) : (
+                        <div className="bg-[#121214] border border-white/5 rounded-3xl p-8 space-y-6">
+                           <h4 className="text-xs font-extrabold uppercase tracking-wider text-saas-primary">Relatórios Financeiros e Atas Oficiais</h4>
+                           {reports.length === 0 ? (
+                              <p className="text-xs text-zinc-500 font-bold italic">Nenhum documento de transparência publicado.</p>
+                           ) : (
+                              <div className="space-y-3">
+                                 {reports.map(r => (
+                                    <div key={r.id} className="flex items-center justify-between p-4 rounded-2xl bg-zinc-900 border border-white/5">
+                                       <span className="text-xs font-bold text-white">{r.title || 'Balancete Geral'}</span>
+                                       <a href={r.file_url || '#'} target="_blank" className="text-[10px] text-saas-primary font-black uppercase hover:underline">Baixar PDF</a>
+                                    </div>
+                                 ))}
+                              </div>
+                           )}
+                        </div>
+                     )}
+                  </div>
+               )}
+
+               {activeTab === 'users' && (
+                  <div className="space-y-8 animate-in fade-in duration-300">
+                     <div className="flex justify-between items-center bg-[#121214] border border-white/5 p-8 rounded-[32px] shadow-xl">
+                        <div>
+                           <h3 className="text-2xl font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-3">
+                              <ShieldCheck className="text-saas-primary" size={28} />
+                              Gestão de Acessos
+                           </h3>
+                           <p className="text-xs font-black uppercase tracking-widest text-zinc-500 italic mt-1">
+                              Controle de administradores e permissões na plataforma
+                           </p>
+                        </div>
+                     </div>
+
+                     <div className="bg-[#121214] border border-white/5 rounded-3xl overflow-hidden shadow-xl">
+                        <div className="p-6 border-b border-white/5">
+                           <span className="text-xs font-extrabold text-white uppercase tracking-wider">Contas com Permissão Administrativa</span>
+                        </div>
+                        <div className="divide-y divide-white/5">
+                           <div className="p-6 flex items-center justify-between hover:bg-white/2 transition-colors">
+                              <div className="flex items-center gap-4">
+                                 <div className="w-10 h-10 rounded-full bg-saas-primary/10 text-saas-primary flex items-center justify-center font-black">
+                                    A
+                                 </div>
+                                 <div>
+                                    <h5 className="text-xs font-extrabold text-white uppercase">{session?.user?.email || 'admin@clube.com'}</h5>
+                                    <span className="text-[9px] text-zinc-500 uppercase tracking-widest block font-bold">Proprietário (Owner)</span>
+                                 </div>
+                              </div>
+                              <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-[8px] font-black uppercase tracking-widest border border-emerald-500/20">
+                                 Acesso Total
+                              </span>
+                           </div>
+
+                           {users.filter(u => u.id !== session?.user?.id).map(u => (
+                              <div key={u.id} className="p-6 flex items-center justify-between hover:bg-white/2 transition-colors">
+                                 <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-full bg-zinc-800 text-zinc-400 flex items-center justify-center font-black">
+                                       G
+                                    </div>
+                                    <div>
+                                       <h5 className="text-xs font-extrabold text-white uppercase">{u.email || u.full_name || 'Gestor'}</h5>
+                                       <span className="text-[9px] text-zinc-500 uppercase tracking-widest block font-bold">Membro da Equipe</span>
+                                    </div>
+                                 </div>
+                                 <span className="px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-[8px] font-black uppercase tracking-widest border border-blue-500/20">
+                                    Editor
+                                 </span>
+                              </div>
+                           ))}
+                        </div>
+                     </div>
+                  </div>
+               )}
+
             </div>
          </main>
+
 
          {isAddingNews && (
             <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-6">
