@@ -66,6 +66,7 @@ export default function Admin() {
    const [loading, setLoading] = useState(true);
    const [activeTab, setActiveTab] = useState<'dashboard' | 'leads' | 'campaign' | 'identity' | 'integration' | 'home' | 'news' | 'squad' | 'trophies' | 'institutional' | 'users' | 'board' | 'transparency'>('dashboard');
    const [institutionalTab, setInstitutionalTab] = useState<'board' | 'transparency'>('board');
+   const [leadsTab, setLeadsTab] = useState<'all' | 'athletes' | 'partners' | 'fans'>('all');
    const [theme, setTheme] = useState<'light' | 'dark'>('light');
    const [notification, setNotification] = useState<{ message: string, type: 'success' | 'error' | 'info' } | null>(null);
    const [session, setSession] = useState<any>(null);
@@ -897,6 +898,98 @@ export default function Admin() {
                            </div>
                         ))}
                      </div>
+
+                     {/* Charts and Page Access Grid */}
+                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-2">
+                        {/* Area Chart - Traffic Growth */}
+                        <div className="lg:col-span-2 bg-[#121214] border border-white/5 rounded-3xl p-6 shadow-xl flex flex-col justify-between">
+                           <div className="flex items-center justify-between gap-4 mb-6">
+                              <div>
+                                 <h3 className="text-sm font-manrope font-extrabold uppercase tracking-tight text-white">Crescimento de Tráfego</h3>
+                                 <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 italic mt-0.5">Visitas únicas e evolução de engajamento</p>
+                              </div>
+                              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-saas-primary/10 border border-saas-primary/20">
+                                 <div className="w-1.5 h-1.5 rounded-full bg-saas-primary animate-pulse" />
+                                 <span className="text-[8px] font-extrabold text-saas-primary uppercase tracking-widest">Live</span>
+                              </div>
+                           </div>
+
+                           <div className="h-[260px] w-full">
+                              <ResponsiveContainer width="100%" height="100%">
+                                 <AreaChart data={analyticsData.length > 1 ? analyticsData : [
+                                    { name: '06/05', value: 12 },
+                                    { name: '07/05', value: 25 },
+                                    { name: '08/05', value: 45 },
+                                    { name: '09/05', value: 68 },
+                                    { name: '10/05', value: 95 },
+                                    { name: '11/05', value: 140 },
+                                    { name: '12/05', value: 210 },
+                                 ]}>
+                                    <defs>
+                                       <linearGradient id="trafficColor" x1="0" y1="0" x2="0" y2="1">
+                                          <stop offset="5%" stopColor="#a3e635" stopOpacity={0.4}/>
+                                          <stop offset="95%" stopColor="#a3e635" stopOpacity={0}/>
+                                       </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#ffffff" strokeOpacity={0.05} vertical={false} />
+                                    <XAxis dataKey="name" stroke="#71717a" fontSize={9} tickLine={false} axisLine={false} />
+                                    <YAxis stroke="#71717a" fontSize={9} tickLine={false} axisLine={false} width={30} />
+                                    <Tooltip 
+                                       contentStyle={{ backgroundColor: '#18181b', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '1rem', fontSize: '11px', fontWeight: 'bold', color: '#fff' }}
+                                       itemStyle={{ color: '#a3e635' }}
+                                    />
+                                    <Area type="monotone" dataKey="value" name="Visitas" stroke="#a3e635" strokeWidth={3} fillOpacity={1} fill="url(#trafficColor)" />
+                                 </AreaChart>
+                              </ResponsiveContainer>
+                           </div>
+                        </div>
+
+                        {/* Page Access List */}
+                        <div className="bg-[#121214] border border-white/5 rounded-3xl p-6 shadow-xl flex flex-col justify-between">
+                           <div>
+                              <div className="mb-6">
+                                 <h3 className="text-sm font-manrope font-extrabold uppercase tracking-tight text-white">Acessos por Página</h3>
+                                 <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 italic mt-0.5">Páginas mais visitadas do portal</p>
+                              </div>
+
+                              <div className="space-y-4">
+                                 {(pageStats.length > 0 ? pageStats : [
+                                    { url: '/home', visits: 142 },
+                                    { url: '/noticias', visits: 89 },
+                                    { url: '/elenco', visits: 64 },
+                                    { url: '/titulos', visits: 38 },
+                                    { url: '/institucional', visits: 25 },
+                                 ]).slice(0, 5).map((page: any, idx: number) => {
+                                    const maxVisits = pageStats.length > 0 ? Math.max(...pageStats.map((p: any) => p.visits)) : 142;
+                                    const percent = Math.min(100, Math.max(12, (page.visits / maxVisits) * 100));
+                                    
+                                    return (
+                                       <div key={idx} className="space-y-1 group">
+                                          <div className="flex items-center justify-between text-xs">
+                                             <span className="font-extrabold text-zinc-300 group-hover:text-white transition-colors truncate max-w-[180px]">
+                                                {page.url === '/' ? '/home' : page.url}
+                                             </span>
+                                             <span className="font-black text-saas-primary text-[11px] bg-saas-primary/10 px-2 py-0.5 rounded-md">
+                                                {page.visits}
+                                             </span>
+                                          </div>
+                                          <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
+                                             <div 
+                                                className="h-full bg-gradient-to-r from-saas-primary/60 to-saas-primary rounded-full transition-all duration-500" 
+                                                style={{ width: `${percent}%` }}
+                                             />
+                                          </div>
+                                       </div>
+                                    );
+                                 })}
+                              </div>
+                           </div>
+
+                           <div className="pt-4 border-t border-white/5 mt-4 text-center">
+                              <span className="text-[8px] font-bold text-zinc-600 uppercase tracking-widest block">Atualização em tempo real</span>
+                           </div>
+                        </div>
+                     </div>
                   </div>
                )}
 
@@ -1299,144 +1392,229 @@ export default function Admin() {
                   </div>
                )}
 
-               {activeTab === 'leads' && (
-                  <div className="space-y-8 animate-in fade-in duration-300">
-                     <div className="flex justify-between items-center bg-[#121214] border border-white/5 p-8 rounded-[32px] shadow-xl">
-                        <div>
-                           <h3 className="text-2xl font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-3">
-                              <Users className="text-saas-primary" size={28} />
-                              Gestão de Torcedores & Leads
-                           </h3>
-                           <p className="text-xs font-black uppercase tracking-widest text-zinc-500 italic mt-1">
-                              Base centralizada de cadastros, sócios-torcedores e prospecção
-                           </p>
+               {activeTab === 'leads' && (() => {
+                  const allLeadsMapped = [
+                     ...registrations.map((r: any) => ({ ...r, _leadType: 'athlete' })),
+                     ...socioLeads.map((s: any) => ({ ...s, _leadType: s.plan_name ? 'partner' : 'fan' }))
+                  ];
+
+                  const filteredLeads = allLeadsMapped.filter((lead: any) => {
+                     if (leadsTab === 'athletes') return lead._leadType === 'athlete';
+                     if (leadsTab === 'partners') return lead._leadType === 'partner';
+                     if (leadsTab === 'fans') return lead._leadType === 'fan';
+                     return true;
+                  });
+
+                  const totalFiltered = filteredLeads.length || 1;
+                  const dynamicGender = filteredLeads.reduce((acc: any, lead: any) => {
+                     const g = lead.gender || 'Não Informado';
+                     acc[g] = (acc[g] || 0) + 1;
+                     return acc;
+                  }, {});
+                  const genderArr = Object.entries(dynamicGender).map(([name, value]) => ({ name, value }));
+
+                  const dynamicAge = filteredLeads.reduce((acc: any, lead: any) => {
+                     if (!lead.birth_date) return acc;
+                     const age = calculateAge(new Date(lead.birth_date));
+                     let bracket = '45+';
+                     if (age < 25) bracket = '18-24';
+                     else if (age < 35) bracket = '25-34';
+                     else if (age < 45) bracket = '35-44';
+                     acc[bracket] = (acc[bracket] || 0) + 1;
+                     return acc;
+                  }, { '18-24': 0, '25-34': 0, '35-44': 0, '45+': 0 });
+                  const ageArr = Object.entries(dynamicAge).map(([name, value]) => ({ name, value }));
+
+                  return (
+                     <div className="space-y-6 animate-in fade-in duration-300">
+                        <div className="flex justify-between items-center bg-[#121214] border border-white/5 p-6 rounded-[28px] shadow-xl">
+                           <div>
+                              <h3 className="text-lg font-manrope font-extrabold uppercase tracking-tight text-white flex items-center gap-2.5">
+                                 <Users className="text-saas-primary" size={22} />
+                                 Gestão de Torcedores & Leads
+                              </h3>
+                              <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 italic mt-0.5">
+                                 Base centralizada de cadastros, sócios-torcedores e prospecção
+                              </p>
+                           </div>
+                           <div className="flex items-center gap-3">
+                              <button 
+                                 onClick={() => showNotification('Exportando base de leads para Excel...', 'info')}
+                                 className="bg-zinc-800 text-white border border-white/5 px-4 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-2 hover:bg-zinc-700 transition-all shadow-xl"
+                              >
+                                 <Download size={14} /> Exportar CSV
+                              </button>
+                           </div>
                         </div>
-                        <div className="flex items-center gap-3">
+
+                        {/* Premium Tabs Segment */}
+                        <div className="flex flex-wrap items-center gap-2 bg-[#121214] border border-white/5 p-1.5 rounded-2xl w-fit shadow-xl">
                            <button 
-                              onClick={() => showNotification('Exportando base de leads para Excel...', 'info')}
-                              className="bg-zinc-800 text-white border border-white/5 px-6 py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] flex items-center gap-2 hover:bg-zinc-700 transition-all shadow-xl"
+                              onClick={() => setLeadsTab('all')}
+                              className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-2 ${leadsTab === 'all' ? 'bg-saas-primary text-black shadow-md shadow-saas-primary/10' : 'text-zinc-500 hover:text-white'}`}
                            >
-                              <Download size={16} /> Exportar CSV
+                              Total
+                              <span className={`px-1.5 py-0.5 rounded-md text-[8.5px] font-extrabold ${leadsTab === 'all' ? 'bg-black/10 text-black' : 'bg-zinc-800 text-zinc-400'}`}>
+                                 {allLeadsMapped.length}
+                              </span>
+                           </button>
+
+                           <button 
+                              onClick={() => setLeadsTab('athletes')}
+                              className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-2 ${leadsTab === 'athletes' ? 'bg-saas-primary text-black shadow-md shadow-saas-primary/10' : 'text-zinc-500 hover:text-white'}`}
+                           >
+                              Matrículas
+                              <span className={`px-1.5 py-0.5 rounded-md text-[8.5px] font-extrabold ${leadsTab === 'athletes' ? 'bg-black/10 text-black' : 'bg-zinc-800 text-zinc-400'}`}>
+                                 {allLeadsMapped.filter(l => l._leadType === 'athlete').length}
+                              </span>
+                           </button>
+
+                           <button 
+                              onClick={() => setLeadsTab('partners')}
+                              className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-2 ${leadsTab === 'partners' ? 'bg-saas-primary text-black shadow-md shadow-saas-primary/10' : 'text-zinc-500 hover:text-white'}`}
+                           >
+                              Sócios-Torcedores
+                              <span className={`px-1.5 py-0.5 rounded-md text-[8.5px] font-extrabold ${leadsTab === 'partners' ? 'bg-black/10 text-black' : 'bg-zinc-800 text-zinc-400'}`}>
+                                 {allLeadsMapped.filter(l => l._leadType === 'partner').length}
+                              </span>
+                           </button>
+
+                           <button 
+                              onClick={() => setLeadsTab('fans')}
+                              className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-2 ${leadsTab === 'fans' ? 'bg-saas-primary text-black shadow-md shadow-saas-primary/10' : 'text-zinc-500 hover:text-white'}`}
+                           >
+                              Torcedores
+                              <span className={`px-1.5 py-0.5 rounded-md text-[8.5px] font-extrabold ${leadsTab === 'fans' ? 'bg-black/10 text-black' : 'bg-zinc-800 text-zinc-400'}`}>
+                                 {allLeadsMapped.filter(l => l._leadType === 'fan').length}
+                              </span>
                            </button>
                         </div>
-                     </div>
 
-                     {/* Premium Demographics Dashboard */}
-                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div className="bg-[#121214] border border-white/5 rounded-3xl p-6 shadow-xl space-y-4">
-                           <span className="text-[9px] font-black uppercase tracking-widest text-zinc-500 block">Total Geral Capturado</span>
-                           <div className="flex items-baseline gap-3">
-                              <h2 className="text-4xl font-manrope font-extrabold text-white tracking-tight">
-                                 {registrations.length + socioLeads.length}
-                              </h2>
-                              <span className="text-xs font-bold text-saas-primary uppercase tracking-widest">+ Ativos</span>
+                        {/* Premium Demographics Dashboard */}
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                           <div className="bg-[#121214] border border-white/5 rounded-2xl p-5 shadow-xl space-y-3">
+                              <span className="text-[8.5px] font-black uppercase tracking-widest text-zinc-500 block">
+                                 {leadsTab === 'all' ? 'Total Geral Capturado' : leadsTab === 'athletes' ? 'Total Matrículas Capturadas' : leadsTab === 'partners' ? 'Total Sócios Ativos' : 'Total Torcedores Capturados'}
+                              </span>
+                              <div className="flex items-baseline gap-2.5">
+                                 <h2 className="text-3xl font-manrope font-extrabold text-white tracking-tight">
+                                    {filteredLeads.length}
+                                 </h2>
+                                 <span className="text-[10px] font-bold text-saas-primary uppercase tracking-widest">+ Segmento</span>
+                              </div>
+                              <p className="text-[10px] text-zinc-400 font-medium">Torcedores e leads segmentados pela origem do cadastro de alta conversão.</p>
                            </div>
-                           <p className="text-[11px] text-zinc-400 font-medium">Torcedores cadastrados através das páginas de alta conversão do clube.</p>
-                        </div>
 
-                        <div className="bg-[#121214] border border-white/5 rounded-3xl p-6 shadow-xl space-y-4">
-                           <span className="text-[9px] font-black uppercase tracking-widest text-zinc-500 block">Distribuição por Gênero</span>
-                           <div className="space-y-3">
-                              {demographics?.gender?.length > 0 ? demographics.gender.map((item: any, i: number) => (
-                                 <div key={i} className="space-y-1">
-                                    <div className="flex justify-between text-xs font-extrabold">
-                                       <span className="text-white uppercase">{item.name}</span>
-                                       <span className="text-saas-primary">{item.value}</span>
+                           <div className="bg-[#121214] border border-white/5 rounded-2xl p-5 shadow-xl space-y-3">
+                              <span className="text-[8.5px] font-black uppercase tracking-widest text-zinc-500 block">Distribuição por Gênero</span>
+                              <div className="space-y-2.5">
+                                 {genderArr.length > 0 ? genderArr.map((item: any, i: number) => (
+                                    <div key={i} className="space-y-1">
+                                       <div className="flex justify-between text-[11px] font-extrabold">
+                                          <span className="text-white uppercase">{item.name}</span>
+                                          <span className="text-saas-primary">{item.value}</span>
+                                       </div>
+                                       <div className="w-full bg-zinc-900 h-1.5 rounded-full overflow-hidden border border-white/5">
+                                          <div className="bg-saas-primary h-full rounded-full" style={{ width: `${Math.min(100, (item.value / totalFiltered) * 100)}%` }}></div>
+                                       </div>
                                     </div>
-                                    <div className="w-full bg-zinc-900 h-2 rounded-full overflow-hidden border border-white/5">
-                                       <div className="bg-saas-primary h-full rounded-full" style={{ width: `${Math.min(100, (item.value / (registrations.length + socioLeads.length || 1)) * 100)}%` }}></div>
+                                 )) : (
+                                    <p className="text-[10px] text-zinc-600 font-bold italic">Sem dados suficientes para segmentação.</p>
+                                 )}
+                              </div>
+                           </div>
+
+                           <div className="bg-[#121214] border border-white/5 rounded-2xl p-5 shadow-xl space-y-3">
+                              <span className="text-[8.5px] font-black uppercase tracking-widest text-zinc-500 block">Faixa Etária Principal</span>
+                              <div className="space-y-2.5">
+                                 {ageArr.length > 0 ? ageArr.map((item: any, i: number) => (
+                                    <div key={i} className="space-y-1">
+                                       <div className="flex justify-between text-[11px] font-extrabold">
+                                          <span className="text-white uppercase">{item.name} Anos</span>
+                                          <span className="text-saas-primary">{item.value}</span>
+                                       </div>
+                                       <div className="w-full bg-zinc-900 h-1.5 rounded-full overflow-hidden border border-white/5">
+                                          <div className="bg-saas-primary h-full rounded-full" style={{ width: `${Math.min(100, (item.value / totalFiltered) * 100)}%` }}></div>
+                                       </div>
                                     </div>
-                                 </div>
-                              )) : (
-                                 <p className="text-[11px] text-zinc-600 font-bold italic">Sem dados suficientes para segmentação.</p>
-                              )}
+                                 )) : (
+                                    <p className="text-[10px] text-zinc-600 font-bold italic">Sem dados suficientes para segmentação.</p>
+                                 )}
+                              </div>
                            </div>
                         </div>
 
-                        <div className="bg-[#121214] border border-white/5 rounded-3xl p-6 shadow-xl space-y-4">
-                           <span className="text-[9px] font-black uppercase tracking-widest text-zinc-500 block">Faixa Etária Principal</span>
-                           <div className="space-y-3">
-                              {demographics?.age?.length > 0 ? demographics.age.map((item: any, i: number) => (
-                                 <div key={i} className="space-y-1">
-                                    <div className="flex justify-between text-xs font-extrabold">
-                                       <span className="text-white uppercase">{item.name} Anos</span>
-                                       <span className="text-saas-primary">{item.value}</span>
-                                    </div>
-                                    <div className="w-full bg-zinc-900 h-2 rounded-full overflow-hidden border border-white/5">
-                                       <div className="bg-saas-primary h-full rounded-full" style={{ width: `${Math.min(100, (item.value / (registrations.length + socioLeads.length || 1)) * 100)}%` }}></div>
-                                    </div>
-                                 </div>
-                              )) : (
-                                 <p className="text-[11px] text-zinc-600 font-bold italic">Sem dados suficientes para segmentação.</p>
-                              )}
+                        {/* Leads Table */}
+                        <div className="bg-[#121214] border border-white/5 rounded-2xl overflow-hidden shadow-2xl">
+                           <div className="p-5 border-b border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                              <span className="text-[11px] font-extrabold text-white uppercase tracking-wider">Cadastros e Inscrições em Tempo Real</span>
                            </div>
-                        </div>
-                     </div>
-
-                     {/* Leads Table */}
-                     <div className="bg-[#121214] border border-white/5 rounded-3xl overflow-hidden shadow-2xl">
-                        <div className="p-6 border-b border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                           <span className="text-xs font-extrabold text-white uppercase tracking-wider">Cadastros e Inscrições em Tempo Real</span>
-                        </div>
-                        <div className="overflow-x-auto custom-scrollbar">
-                           <table className="w-full text-left border-collapse">
-                              <thead>
-                                 <tr className="border-b border-white/5 bg-zinc-900/40 text-[9px] font-black uppercase text-zinc-500 tracking-widest">
-                                    <th className="p-5">Torcedor</th>
-                                    <th className="p-5">Contato</th>
-                                    <th className="p-5">Origem</th>
-                                    <th className="p-5">Nascimento</th>
-                                    <th className="p-5 text-right">Ação</th>
-                                 </tr>
-                              </thead>
-                              <tbody className="divide-y divide-white/5 text-xs font-bold text-zinc-300">
-                                 {[...registrations, ...socioLeads].length === 0 ? (
-                                    <tr>
-                                       <td colSpan={5} className="p-12 text-center text-zinc-600 font-bold">
-                                          Nenhum torcedor ou lead cadastrado até o momento.
-                                       </td>
+                           <div className="overflow-x-auto custom-scrollbar">
+                              <table className="w-full text-left border-collapse">
+                                 <thead>
+                                    <tr className="border-b border-white/5 bg-zinc-900/40 text-[8.5px] font-black uppercase text-zinc-500 tracking-widest">
+                                       <th className="p-4">Torcedor</th>
+                                       <th className="p-4">Contato</th>
+                                       <th className="p-4">Origem</th>
+                                       <th className="p-4">Nascimento</th>
+                                       <th className="p-4 text-right">Ação</th>
                                     </tr>
-                                 ) : (
-                                    [...registrations, ...socioLeads].map((lead: any, index: number) => (
-                                       <tr key={index} className="hover:bg-white/2 transition-colors">
-                                          <td className="p-5">
-                                             <div className="flex flex-col">
-                                                <span className="text-white font-extrabold uppercase">{lead.name || lead.full_name || 'Anônimo'}</span>
-                                                <span className="text-[10px] text-zinc-500 font-normal">{lead.email || 'Sem e-mail'}</span>
-                                             </div>
-                                          </td>
-                                          <td className="p-5">
-                                             <span className="text-saas-primary tracking-wide">{lead.phone || lead.whatsapp || lead.contact_phone || 'Não informado'}</span>
-                                          </td>
-                                          <td className="p-5">
-                                             <span className="px-2.5 py-1 rounded-full bg-zinc-800 text-[8px] font-black uppercase text-zinc-400 border border-white/5">
-                                                {lead.plan_name ? `Sócio: ${lead.plan_name}` : 'Página Oficial'}
-                                             </span>
-                                          </td>
-                                          <td className="p-5 text-zinc-400 font-normal">
-                                             {lead.birth_date ? new Date(lead.birth_date).toLocaleDateString('pt-BR') : 'N/A'}
-                                          </td>
-                                          <td className="p-5 text-right">
-                                             {(lead.phone || lead.whatsapp) && (
-                                                <a 
-                                                   href={`https://wa.me/${(lead.phone || lead.whatsapp).replace(/\D/g, '')}`} 
-                                                   target="_blank" 
-                                                   rel="noopener noreferrer"
-                                                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 text-[10px] font-black uppercase tracking-wider transition-all"
-                                                >
-                                                   <MessageCircle size={12} /> WhatsApp
-                                                </a>
-                                             )}
+                                 </thead>
+                                 <tbody className="divide-y divide-white/5 text-[11px] font-bold text-zinc-300">
+                                    {filteredLeads.length === 0 ? (
+                                       <tr>
+                                          <td colSpan={5} className="p-10 text-center text-zinc-600 font-bold text-xs">
+                                             Nenhum registro encontrado nesta categoria.
                                           </td>
                                        </tr>
-                                    ))
-                                 )}
-                              </tbody>
-                           </table>
+                                    ) : (
+                                       filteredLeads.map((lead: any, index: number) => (
+                                          <tr key={index} className="hover:bg-white/2 transition-colors">
+                                             <td className="p-4">
+                                                <div className="flex flex-col">
+                                                   <span className="text-white font-extrabold uppercase">{lead.name || lead.full_name || 'Anônimo'}</span>
+                                                   <span className="text-[9px] text-zinc-500 font-normal">{lead.email || 'Sem e-mail'}</span>
+                                                </div>
+                                             </td>
+                                             <td className="p-4">
+                                                <span className="text-saas-primary tracking-wide">{lead.phone || lead.whatsapp || lead.contact_phone || 'Não informado'}</span>
+                                              </td>
+                                             <td className="p-4">
+                                                <span className={`px-2.5 py-1 rounded-full text-[8px] font-black uppercase tracking-wider border ${
+                                                   lead._leadType === 'athlete' 
+                                                      ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' 
+                                                      : lead._leadType === 'partner'
+                                                      ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                                                      : 'bg-zinc-800 text-zinc-400 border-white/5'
+                                                }`}>
+                                                   {lead._leadType === 'athlete' ? 'Matrícula / Atleta' : lead.plan_name ? `Sócio: ${lead.plan_name}` : 'Torcedor (Apoio)'}
+                                                </span>
+                                             </td>
+                                             <td className="p-4 text-zinc-400 font-normal">
+                                                {lead.birth_date ? new Date(lead.birth_date).toLocaleDateString('pt-BR') : 'N/A'}
+                                             </td>
+                                             <td className="p-4 text-right">
+                                                {(lead.phone || lead.whatsapp) && (
+                                                   <a 
+                                                      href={`https://wa.me/${(lead.phone || lead.whatsapp).replace(/\D/g, '')}`} 
+                                                      target="_blank" 
+                                                      rel="noopener noreferrer"
+                                                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 text-[9px] font-black uppercase tracking-wider transition-all"
+                                                   >
+                                                      <MessageCircle size={10} /> WhatsApp
+                                                   </a>
+                                                )}
+                                             </td>
+                                          </tr>
+                                       ))
+                                    )}
+                                 </tbody>
+                              </table>
+                           </div>
                         </div>
                      </div>
-                  </div>
-               )}
+                  );
+               })()}
 
                {activeTab === 'campaign' && (
                   <div className="space-y-8 animate-in fade-in duration-300">
